@@ -101,7 +101,7 @@ az group create --name azp-ch01-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch01 azp-lifecycle=ephemeral
 ```
 
-次に、いま未登録のプロバイダーを確認します。本書の検証時は Microsoft.Web（App Service など）が未登録だったので、それを例にします。
+次に、いま未登録のプロバイダーを確認します。本書の検証時は Microsoft.Web（App Service など）が未登録だったので、それを例にします。もし手元で既に Registered になっている場合は、前節の一覧コマンドで未登録のものを選び直し、以降の名前空間を読み替えてください。この演習は一度成功させると（経路 2 の自動登録で）プロバイダーが登録済みに変わるため、同じプロバイダーでは再現できなくなります。登録を消して作り直すことは、後述する理由からしてはいけません。
 
 ```bash
 az provider show --namespace Microsoft.Web --query registrationState -o tsv
