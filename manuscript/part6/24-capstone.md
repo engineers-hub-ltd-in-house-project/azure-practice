@@ -8,8 +8,8 @@
 
 ```mermaid
 flowchart TB
-  subgraph SUB["サブスクリプション (app-image-dev)"]
-    subgraph RG["リソースグループ: image-app-rg"]
+  subgraph SUB["app-image-dev サブスクリプション"]
+    subgraph RG["image-app-rg リソースグループ"]
       F["Functions (Flex) 受付と加工"]
       Q["Service Bus キュー"]
       ST["Storage 画像の保管"]
@@ -17,7 +17,7 @@ flowchart TB
       MI["ユーザー割り当てマネージド ID"]
     end
   end
-  MG["管理グループ: landingzones/dev"] --> SUB
+  MG["landingzones/dev 管理グループ"] --> SUB
   F -->|"送信"| Q
   Q -->|"トリガー"| F
   F --> ST

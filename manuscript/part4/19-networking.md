@@ -147,10 +147,10 @@ az functionapp vnet-integration list --name azp-ch19-func -g azp-ch19-rg --query
 ```mermaid
 flowchart LR
   subgraph V["VNet 10.10.0.0/16"]
-    subgraph S1["integration-subnet"]
+    subgraph S1["integration-subnet サブネット"]
       F["Flex Functions (出口)"]
     end
-    subgraph S2["pe-subnet"]
+    subgraph S2["pe-subnet サブネット"]
       PE["Private Endpoint 10.10.1.4 (入口)"]
     end
   end

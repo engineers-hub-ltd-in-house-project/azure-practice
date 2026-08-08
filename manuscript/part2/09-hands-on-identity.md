@@ -10,7 +10,7 @@ Part 2 はここで閉じます。手順の実体は `scripts/chapters/ch09-iden
 
 ```mermaid
 flowchart TB
-  subgraph RG["リソースグループ: azp-ch09-rg"]
+  subgraph RG["azp-ch09-rg リソースグループ"]
     MI["ユーザー割り当てマネージド ID"]
     ST["ストレージアカウント (キー認証は生まれつき無効)"]
   end

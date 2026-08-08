@@ -8,8 +8,8 @@ CLI で理解し、IaC で固定する。本書がここまで辿ってきた流
 
 ```mermaid
 flowchart TB
-  STK["スタック: azp-ch13-stack (サブスクリプションスコープ)"]
-  STK --> RG["リソースグループ: azp-ch13-rg"]
+  STK["azp-ch13-stack スタック (サブスクリプションスコープ)"]
+  STK --> RG["azp-ch13-rg リソースグループ"]
   RG --> ID["マネージド ID (AVM モジュール)"]
   RG --> ST["キー無効ストレージ (自作モジュール)"]
   ID -->|"Storage Blob Data Contributor (RG スコープ)"| RG

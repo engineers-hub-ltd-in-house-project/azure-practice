@@ -40,8 +40,8 @@ az group show --name <名前> --query "{name:name, location:location, tags:tags}
 ```mermaid
 flowchart TB
   S["サブスクリプション"]
-  S --> RG1["リソースグループ: アプリ A"]
-  S --> RG2["リソースグループ: 共有基盤"]
+  S --> RG1["アプリ A のリソースグループ"]
+  S --> RG2["共有基盤のリソースグループ"]
   RG1 --> A1["Function App"]
   RG1 --> A2["ストレージ"]
   RG2 --> B1["Key Vault"]

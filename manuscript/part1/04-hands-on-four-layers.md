@@ -9,9 +9,9 @@ Part 1 はここで閉じます。以降の章は、この 4 階層の上に何�
 ```mermaid
 flowchart TB
   T["テナント (Entra ID)"]
-  T --> MG["管理グループ: azp-ch04-mg"]
+  T --> MG["azp-ch04-mg 管理グループ"]
   MG --> SUB["サブスクリプション (移動する)"]
-  SUB --> RG["リソースグループ: azp-ch04-rg"]
+  SUB --> RG["azp-ch04-rg リソースグループ"]
   RG --> ST["ストレージアカウント (キー認証は無効)"]
   RG --> ID["ユーザー割り当てマネージド ID"]
   ID -->|"Storage Blob Data Contributor"| ST
