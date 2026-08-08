@@ -10,4 +10,5 @@ infra/**/*.json
 .env
 .env.local
 scripts/.env
-.claude/
+.claude/worktrees/
+.claude/settings.local.json
