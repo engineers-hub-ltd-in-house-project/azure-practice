@@ -125,6 +125,6 @@ flowchart TB
 - Key Vault の soft-delete: 削除しても名前は約 90 日予約される。teardown に `az keyvault purge` を含めないと章が再実行不能になる（第 16 章）
 - Cosmos DB の Free Tier はサブスクリプションに 1 つだけ。再実行で壊れるため Free Tier を使わず serverless で書く（第 18 章）
 - 管理グループの削除は空でないと失敗する。teardown は順序依存になる（第 4 章）
-- Flex Consumption はリージョン限定。章の冒頭で対応リージョンの確認コマンドを置く（第 14 章）
+- Flex Consumption の対応リージョンは一覧を持つが、2026-08 実測で 52 リージョン（日本 2 リージョン含む）まで拡大済み。確認コマンドは置くが「限定」と強調しない（第 14 章）
 - RBAC 割り当ての伝播遅延。verify スクリプトはリトライ付きにする（第 6・9 章）
 - **未登録プロバイダーの壊す演習は `az provider unregister` で作らない**。対象リソースが存在すると unregister が失敗し、演習が再現不能になる。検証時に実際に未登録のプロバイダーを選ぶ（第 1 章）
