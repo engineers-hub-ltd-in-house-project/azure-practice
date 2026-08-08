@@ -35,7 +35,7 @@ az aks show --name azp-ch17-aks -g azp-ch17-rg --query "nodeResourceGroup" -o ts
 MC_azp-ch17-rg_azp-ch17-aks_japaneast
 ```
 
-ノードの VM やディスクなどの実体は、自分の RG ではなくこの MC_ の中に置かれます。クラスタというリソース（自分の RG）と、その部品（MC_）でライフサイクルの層が分かれており、クラスタを消せば MC_ も自動で消えます。第3章の「一緒に消えるべきもの」を AKS が自前で実装している、と読めます。
+ノードの VM やディスクなどの実体は、自分の RG ではなくこの `MC_` の中に置かれます。クラスタというリソース（自分の RG）と、その部品（`MC_`）でライフサイクルの層が分かれており、クラスタを消せば `MC_` も自動で消えます。第3章の「一緒に消えるべきもの」を AKS が自前で実装している、と読めます。
 
 ## 3. 横の繋がり ― 認証認可
 
@@ -71,7 +71,7 @@ az aks show --name azp-ch17-aks -g azp-ch17-rg --query "identityProfile.kubeleti
 Microsoft.ManagedIdentity/userAssignedIdentities/azp-ch17-aks-agentpool
 ```
 
-こちらはユーザー割り当てで、しかも置き場所は MC_ の中です。クラスタの ID とノードの ID が別物として分かれていることを、まず押さえてください。
+こちらはユーザー割り当てで、しかも置き場所は `MC_` の中です。クラスタの ID とノードの ID が別物として分かれていることを、まず押さえてください。
 
 ### その 3: Pod から Azure への ID ― Workload ID
 
@@ -169,7 +169,7 @@ in location 'japaneast'. The available VM sizes are 'standard_b2als_v2,...'
 az group delete --name azp-ch17-rg --yes
 ```
 
-自分の RG を消すと、クラスタが消え、連動して MC_ のノード RG も自動で消えます。消し忘れ = 課金し続け、の章なので、削除の完了まで確認してください。
+自分の RG を消すと、クラスタが消え、連動して `MC_` のノード RG も自動で消えます。消し忘れ = 課金し続け、の章なので、削除の完了まで確認してください。
 
 ```bash
 az group list --query "[?starts_with(name,'MC_') || starts_with(name,'azp-ch17')].name" -o tsv
@@ -177,12 +177,12 @@ az group list --query "[?starts_with(name,'MC_') || starts_with(name,'azp-ch17')
 
 ### 振り返り
 
-| ブロック   | ハンズオンでの確認箇所                                                        |
-| ---------- | ----------------------------------------------------------------------------- |
-| 2 縦       | VM サイズの許可リストとクォータの二重チェック。MC_ リソースグループの自動生成 |
-| 3 認証認可 | 5 つの ID の実物。OIDC 発行者 URL と連合資格情報の subject                    |
-| 4 足回り   | Free tier + 最小ノードという検証構成の選択                                    |
-| 5 課金     | 時間課金ゆえの即時 teardown                                                   |
+| ブロック   | ハンズオンでの確認箇所                                                          |
+| ---------- | ------------------------------------------------------------------------------- |
+| 2 縦       | VM サイズの許可リストとクォータの二重チェック。`MC_` リソースグループの自動生成 |
+| 3 認証認可 | 5 つの ID の実物。OIDC 発行者 URL と連合資格情報の subject                      |
+| 4 足回り   | Free tier + 最小ノードという検証構成の選択                                      |
+| 5 課金     | 時間課金ゆえの即時 teardown                                                     |
 
 ## 検証環境
 
