@@ -116,11 +116,15 @@ RBAC は加算的です。あるスコープで許可されたことを、下位
 
 以下の手順は本書の検証環境（新規テナント、サブスクリプション所有者、昇格なし）で実行し、動作を確認済みです。
 
-```bash
-# 管理グループを作ります。親を指定しなければテナントルートの子になります
-az account management-group create --name azp-ch02-mg --display-name "継承の観察用"
+管理グループを作ります。親を指定しなければテナントルートの子になります。
 
-# サブスクリプションを配下に移します。課金の付け替えではなく、継承経路の付け替えです
+```bash
+az account management-group create --name azp-ch02-mg --display-name "継承の観察用"
+```
+
+サブスクリプションを配下に移します。課金の付け替えではなく、継承経路の付け替えです。
+
+```bash
 az account management-group subscription add \
   --name azp-ch02-mg \
   --subscription "$(az account show --query id -o tsv)"
@@ -134,11 +138,17 @@ az account management-group subscription add \
 mg_id="/providers/Microsoft.Management/managementGroups/azp-ch02-mg"
 sub_id="/subscriptions/$(az account show --query id -o tsv)"
 me=$(az ad signed-in-user show --query id -o tsv)
+```
 
-# 管理グループスコープに Reader を割り当てます（一時的に失敗したら少し待って再試行）
+管理グループスコープに Reader を割り当てます（一時的に失敗したら少し待って再試行）
+
+```bash
 az role assignment create --assignee "$me" --role Reader --scope "$mg_id"
+```
 
-# サブスクリプション側から見ると、継承された割り当てとして現れます
+サブスクリプション側から見ると、継承された割り当てとして現れます。
+
+```bash
 az role assignment list --scope "$sub_id" --include-inherited \
   --query "[].{role:roleDefinitionName, scope:scope}" -o table
 ```

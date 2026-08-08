@@ -98,20 +98,30 @@ flowchart LR
 
 実際にやってみます。以下は頭からコピペで実行できる列で、出力は本書の検証環境の実物です（なお、こうした後片付けを本書では teardown と呼び、スクリプト名もこれに合わせています）。
 
+器と、題材のマネージド ID を作ります。
+
 ```bash
-# 器と、題材のマネージド ID を作ります
 az group create --name azp-ch03-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch03 azp-lifecycle=ephemeral
 az identity create --name azp-ch03-id --resource-group azp-ch03-rg
+```
 
-# 削除の前に、台帳側の 1 行を指す識別子を控えておきます
+削除の前に、台帳側の 1 行を指す識別子を控えておきます。
+
+```bash
 principal_id=$(az identity show --name azp-ch03-id --resource-group azp-ch03-rg --query principalId -o tsv)
 echo "$principal_id"
+```
 
-# リソースグループごと削除します（完了まで待ちます）
+リソースグループごと削除します（完了まで待ちます）。
+
+```bash
 az group delete --name azp-ch03-rg --yes
+```
 
-# 台帳側の 1 行はどうなったかを確認します
+台帳側の 1 行はどうなったかを確認します。
+
+```bash
 az ad sp show --id "$principal_id"
 ```
 
@@ -124,8 +134,9 @@ objects are not present.
 
 より確実に残るのは、ロール割り当ての残骸です。ID を先に消すと、その ID を指していたロール割り当てが対象不明のまま残ります。
 
+削除された ID を指すロール割り当てを探します。
+
 ```bash
-# 削除された ID を指すロール割り当てを探します
 az role assignment list --all \
   --query "[?principalName==null].{scope:scope, role:roleDefinitionName, id:principalId}" -o table
 ```
@@ -156,8 +167,9 @@ az role assignment list --all \
 
 CLI は「同名の削除済み Vault が自分のサブスクリプションにあるなら復元する」ところまで面倒を見てくれます。一方、テンプレートの素のデプロイは復元を指定しない限り衝突します。第1章の壊す演習と同じ構図で、道具が挙動の差を作っています。IaC でハンズオンを繰り返す本書では、削除だけでは不十分で、purge まで行って初めて再実行可能になります。
 
+論理削除された Key Vault を一覧します。
+
 ```bash
-# 論理削除された Key Vault を一覧します
 az keyvault list-deleted --query "[].{name:name, deletionDate:properties.deletionDate, purgeDate:properties.scheduledPurgeDate}" -o table
 ```
 

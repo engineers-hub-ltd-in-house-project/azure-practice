@@ -66,8 +66,9 @@ az group create --name azp-ch06-a --location japaneast \
 az group create --name azp-ch06-b --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch06 azp-lifecycle=ephemeral
 az ad sp create-for-rbac --name azp-ch06-sp
-# 出力の appId / password / tenant を控えます。password の扱いは第5章の警告のとおりです
 ```
+
+出力の appId / password / tenant を控えます。password の扱いは第5章の警告のとおりです。
 
 まず、広すぎる割り当てをします。サブスクリプション全体に Reader です。
 
@@ -164,8 +165,9 @@ Microsoft.Authorization/roleAssignments/...'
 
 ## クリーンアップ演習
 
+管理者側で実行します。
+
 ```bash
-# 管理者側で実行します
 az role assignment delete --assignee <appId> \
   --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
 az ad app delete --id <appId>

@@ -115,8 +115,9 @@ azp-ch20-mg-audit
 az policy assignment delete --name azp-ch20-mg-audit --scope <管理グループ>
 az policy assignment delete --name azp-ch20-audit-localauth --scope <リソースグループ>
 az group delete --name azp-ch20-rg --yes
-# サブスクリプションをルートへ戻してから管理グループを削除（第2章の順序）
 ```
+
+サブスクリプションをルートへ戻してから管理グループを削除（第2章の順序）
 
 ポリシーの割り当ては、対象のリソースが消えても残ります。リソースグループスコープの割り当てはリソースグループと共に消えますが、管理グループスコープのものは明示的に消すまで組織全体に効き続けます。teardown の順序に割り当てを含める習慣は、この章から先の運用でも重要です。
 

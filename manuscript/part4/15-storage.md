@@ -88,21 +88,30 @@ Functions のデプロイパッケージ（コードの zip）の置き場です
 
 第14章で見たとおり、この関係は既定では接続文字列（キー）で結ばれています。スクリプトの後半はこれを 4 手で解体します。
 
-```bash
-# 1. Function App にシステム割り当て ID を与える（第7章）
-az functionapp identity assign --name azp-ch15-func -g azp-ch15-rg
+1. Function App にシステム割り当て ID を与える（第7章）
 
-# 2. その ID にデータプレーンのロールを割り当てる（第8章）
-#    ホストは BLOB・キュー・テーブルを使うため 3 つ
+```bash
+az functionapp identity assign --name azp-ch15-func -g azp-ch15-rg
+```
+
+2. その ID にデータプレーンのロールを割り当てる（第8章） ホストは BLOB・キュー・テーブルを使うため 3 つ。
+
+```bash
 az role assignment create --assignee <principalId> --role "Storage Blob Data Owner" --scope <ストレージ>
 az role assignment create --assignee <principalId> --role "Storage Queue Data Contributor" --scope <ストレージ>
 az role assignment create --assignee <principalId> --role "Storage Table Data Contributor" --scope <ストレージ>
+```
 
-# 3. 接続文字列の設定を「アカウント名だけ」の設定に置き換える
+3. 接続文字列の設定を「アカウント名だけ」の設定に置き換える。
+
+```bash
 az functionapp config appsettings set --settings AzureWebJobsStorage__accountName=<ストレージ名> ...
 az functionapp config appsettings delete --setting-names AzureWebJobsStorage ...
+```
 
-# 4. デプロイ側の認証も ID へ切り替え、最後にキーを止める
+4. デプロイ側の認証も ID へ切り替え、最後にキーを止める。
+
+```bash
 az functionapp deployment config set --deployment-storage-auth-type SystemAssignedIdentity ...
 az storage account update --allow-shared-key-access false ...
 ```

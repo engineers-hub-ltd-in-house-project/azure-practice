@@ -174,12 +174,16 @@ flowchart LR
 
 作ったものを消しながら、どちらの世界の操作なのかを意識してください。
 
+テナント側の掃除。アプリを消すとサービスプリンシパルも一緒に消えます。
+
 ```bash
-# テナント側の掃除。アプリを消すとサービスプリンシパルも一緒に消えます
 az ad app delete --id 3ff75678-dd8a-4556-98d7-73101d6845a3
 az ad group delete --group azp-ch05-group
+```
 
-# サブスクリプション側の掃除
+サブスクリプション側の掃除。
+
+```bash
 az group delete --name azp-ch05-rg --yes
 ```
 

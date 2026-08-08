@@ -136,6 +136,20 @@ for (const file of files) {
     }
   }
 
+  // 手順のコマンドブロック内の行頭コメントは禁止。説明は本文に書く。
+  // （コピペの単位を小さく保つ。行末の補足コメントは許可する）
+  {
+    const lines3 = text.split('\n');
+    let inBash = false;
+    for (let i = 0; i < lines3.length; i++) {
+      if (/^\s*```bash/.test(lines3[i])) { inBash = true; continue; }
+      if (inBash && /^\s*```/.test(lines3[i])) { inBash = false; continue; }
+      if (inBash && /^\s*#\s/.test(lines3[i])) {
+        errors.push(`${rel}:${i + 1}: bash ブロック内の行頭コメント。説明は本文に出す`);
+      }
+    }
+  }
+
   // 本文の太字は禁止。どこが重要かは読者が決めるものであり、書き手が強調で固定しない。
   // コードフェンス内は対象外にする。
   {

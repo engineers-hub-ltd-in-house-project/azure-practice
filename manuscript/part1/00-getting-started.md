@@ -60,7 +60,7 @@ flowchart TB
 
 1. <https://azure.microsoft.com> にアクセスし、サインアップを開始します
 2. サインイン方法の選択で GitHub を選びます
-3. GitHub 側で認可すると、その GitHub アカウントに紐づいた Microsoft アカウントが作られます（既にあればそれが使われます）
+3. GitHub 側で認可すると、その GitHub アカウントに紐づいた Microsoft アカウントが作られます（既にあればそれが使われます）。
 
 ここで生まれたのは Microsoft アカウント、つまり「あなた自身」の ID だけです。まだ Azure のリソースは何も作れません。
 
@@ -131,11 +131,15 @@ az login
 
 ブラウザが開き、サインインを求められます。WSL（Windows Subsystem for Linux。Windows 上で Linux を動かす仕組み）などブラウザ連携が不安定な環境では、次のどちらかが確実です。
 
-```bash
-# ブラウザを一切開かず、表示されたコードを任意の端末のブラウザで入力する
-az login --use-device-code
+ブラウザを一切開かず、表示されたコードを任意の端末のブラウザで入力する。
 
-# WSL から Windows 側の既定ブラウザを開かせる（wslu がインストール済みの場合）
+```bash
+az login --use-device-code
+```
+
+WSL から Windows 側の既定ブラウザを開かせる（wslu がインストール済みの場合）
+
+```bash
 BROWSER=wslview az login
 ```
 
