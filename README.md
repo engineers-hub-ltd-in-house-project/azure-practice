@@ -75,7 +75,7 @@ Part 4 の各章は、以下の 6 ブロックで統一して書かれていま�
 | 5   | [Entra ID の基本 ― ユーザー・グループ・サービスプリンシパル・マネージド ID](manuscript/part2/05-entra-id-basics.md) | 執筆済 |
 | 6   | [RBAC ― スコープとロールの掛け算で権限が決まる](manuscript/part2/06-rbac.md)                                        | 執筆済 |
 | 7   | [マネージド ID ― リソース間の内向き認証](manuscript/part2/07-managed-identity.md)                                   | 執筆済 |
-| 8   | [外向き認証 ― アクセスキー・Entra ID 認証・フェデレーション](manuscript/part2/08-outbound-auth.md)                  | 骨格   |
+| 8   | [外向き認証 ― アクセスキー・Entra ID 認証・フェデレーション](manuscript/part2/08-outbound-auth.md)                  | 執筆済 |
 | 9   | [統合ハンズオン ― ID と権限を 1 つのシナリオで通す](manuscript/part2/09-hands-on-identity.md)                       | 骨格   |
 
 ### Part 3 IaC でリソースを再現可能にする
