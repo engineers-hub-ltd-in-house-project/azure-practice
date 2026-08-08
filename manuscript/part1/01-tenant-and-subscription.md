@@ -92,13 +92,23 @@ az provider list --query "[?registrationState=='NotRegistered'].namespace" -o ts
 
 ### 壊す演習 ― 未登録プロバイダーの素の挙動を観察する
 
-未登録のプロバイダーのリソースを作ろうとすると何が起きるかを、2 つの経路で試します。結果が違います。
+未登録のプロバイダーのリソースを作ろうとすると何が起きるかを、2 つの経路で試します。結果が違います。以下のコマンドと出力は、すべて本書の検証環境（作りたての従量課金サブスクリプション）で実際に実行した結果です。
 
-まず、いま未登録のプロバイダーを 1 つ確認します。本書の検証時は Microsoft.Web（App Service など）が未登録だったので、それを例にします。
+まず、演習で使うリソースグループを作ります。リソースグループの意味は第3章で扱うので、ここでは「リソースを入れる箱を先に用意した」とだけ理解してください。
+
+```bash
+az group create --name azp-ch01-rg --location japaneast \
+  --tags azp-book=azure-practice azp-chapter=ch01 azp-lifecycle=ephemeral
+```
+
+次に、いま未登録のプロバイダーを確認します。本書の検証時は Microsoft.Web（App Service など）が未登録だったので、それを例にします。
 
 ```bash
 az provider show --namespace Microsoft.Web --query registrationState -o tsv
-# NotRegistered
+```
+
+```text
+NotRegistered
 ```
 
 経路 1: 管理の窓口へ直接リクエストを送ります。Azure のすべての管理操作は、Azure Resource Manager（以下 ARM）という共通の窓口が受け付けています。ポータルのボタンも az コマンドも、最終的にはこの ARM へ HTTP リクエストを送っているにすぎません。`az rest` は、その ARM へ生のリクエストを送るコマンドです。
@@ -110,30 +120,52 @@ az rest --method put \
   --body '{"location":"japaneast","sku":{"name":"F1","tier":"Free"}}'
 ```
 
-次のエラーが返ります（検証済み。リソースグループ azp-ch01-rg は事前に作ってあるとします）。
-
 ```text
-(MissingSubscriptionRegistration) The subscription is not registered to use namespace 'Microsoft.Web'.
-See https://aka.ms/rps-not-found for how to register subscriptions.
+ERROR: Conflict({"error":{"code":"MissingSubscriptionRegistration","message":"The subscription is not registered to use namespace 'Microsoft.Web'. See https://aka.ms/rps-not-found for how to register subscriptions."}})
 ```
 
-エラーコードが権限（AuthorizationFailed）でもクォータ（QuotaExceeded）でもなく、MissingSubscriptionRegistration であることを確認してください。権限は足りている、それでも作れない。サブスクリプションが課金とは別に「使えるリソースの種類」という状態を持っていることの現れです。
+エラーコードが権限（AuthorizationFailed）でもクォータでもなく、MissingSubscriptionRegistration であることを確認してください。権限は足りている、それでも作れない。サブスクリプションが課金とは別に「使えるリソースの種類」という状態を持っていることの現れです。
 
-経路 2: 同じことを `az deployment`（Bicep テンプレートのデプロイ）でやってみます。
+なお、最初のリソースグループ作成を飛ばしてこのコマンドを打つと、別のエラーが先に返ります。
+
+```text
+ERROR: Not Found({"error":{"code":"ResourceGroupNotFound","message":"Resource group 'azp-ch01-rg' could not be found."}})
+```
+
+ARM は前提を手前から順に検査します。リソースグループの存在確認が先、プロバイダー登録の確認はその後です。目的のエラーに出会うには、そこまでの前提をすべて満たしておく必要があります。エラーが想定と違うときは、まず「どの段階の検査で止まったのか」を疑ってください。
+
+経路 2: 同じことを `az deployment`（Bicep テンプレートのデプロイ）でやってみます。テンプレートは `infra/bicep/chapters/ch01-provider/app-plan.bicep` にあります。
 
 ```bash
 az deployment group create --resource-group azp-ch01-rg \
   --template-file infra/bicep/chapters/ch01-provider/app-plan.bicep
 ```
 
-こちらは失敗しません。デプロイは成功し、あとから確認するとプロバイダーが登録済みに変わっています（検証済み）。
+本書の検証環境では、このデプロイは失敗しました。ただし、経路 1 とはまったく別の理由でです。
+
+```text
+ERROR: {"status":"Failed","error":{"code":"DeploymentFailed", ... "details":[{"code":"Unauthorized",
+"message":"... Operation cannot be completed without additional quota.
+Additional details - Current Limit (Total VMs): 0 ... Amount required for this deployment (Total VMs): 1 ..."}]}}
+```
+
+MissingSubscriptionRegistration はどこにも出ていません。代わりにクォータ不足で落ちています。作りたての従量課金サブスクリプションでは、App Service の仮想マシン枠の上限が 0 のことがあり、無料の F1 プランですら 1 枠を要求するため作れないのです（上限の引き上げはポータルから申請できます）。
+
+ここでプロバイダーの状態をもう一度見ると、面白いことが起きています。
 
 ```bash
 az provider show --namespace Microsoft.Web --query registrationState -o tsv
-# Registered
 ```
 
-つまり `az deployment` は、テンプレートが参照する未登録プロバイダーを自動で登録してから配置しています。普段この仕組みに気づかないのは、道具が黙って面倒を見てくれているからです。自動登録に頼れない場面（登録の権限を持たないサービスプリンシパルでの実行など）で、経路 1 の素のエラーに初めて出会うことになります。
+```text
+Registered
+```
+
+デプロイは失敗したのに、未登録だったプロバイダーが登録済みに変わっています。`az deployment` は、テンプレートが参照する未登録プロバイダーを自動で登録してから、リソースの作成に進んでいたのです。1 回のコマンドの裏で「登録」と「作成」の 2 段が動いていて、登録は成功し、作成はクォータで失敗した、というのがこの出力の読み方です。
+
+普段プロバイダー登録に気づかないのは、この自動登録が黙って面倒を見てくれているからです。自動登録に頼れない場面（登録の権限を持たないサービスプリンシパルでの実行など）で、経路 1 の素のエラーに初めて出会うことになります。
+
+もう 1 つ、クォータのエラーの外側のコードが Unauthorized だったことにも注意してください。中のメッセージを読めばクォータの話だと分かりますが、コードだけ見ると権限の問題に見えます。Azure のエラーは、コードではなく詳細メッセージまで読んで、権限・スコープ・登録・クォータのどの軸の話かを切り分けてください。
 
 登録は明示的にもできます。登録は非同期で、完了まで数分かかることがあります。
 
@@ -143,9 +175,17 @@ az provider register --namespace Microsoft.Web --wait
 
 なお、この演習を「登録済みのプロバイダーを `az provider unregister` で未登録に戻して」再現しようとしてはいけません。そのプロバイダーのリソースが 1 つでも残っていると unregister は失敗しますし、成功すると既存リソースの管理操作が壊れます。演習はもともと未登録のものだけで行ってください。
 
+演習が終わったら、リソースグループを片付けます。
+
+```bash
+az group delete --name azp-ch01-rg --yes
+```
+
 ### この演習で確認できたこと
 
-サブスクリプションは請求書の単位であるだけでなく、リソースを作れるかどうかを決める状態を持っています。この状態はテナントには存在しません。テナントとサブスクリプションが別の境界である、というのはこういうことです。
+サブスクリプションは請求書の単位であるだけでなく、リソースを作れるかどうかを決める状態を 2 種類持っています。プロバイダー登録（そもそもその種類を使えるか）とクォータ（どれだけ使えるか）です。どちらもテナントには存在しません。テナントとサブスクリプションが別の境界である、というのはこういうことです。
+
+また、同じ「作れない」でも、リソースグループ不在・登録不足・クォータ不足で別々のエラーが別々の順序で返ることを見ました。エラーの切り分けはこの先の章でも繰り返し使います。
 
 ## サブスクリプションを分ける動機
 
@@ -159,12 +199,12 @@ az provider register --namespace Microsoft.Web --wait
 
 ## 検証環境
 
-| 項目           | 値                                                                         |
-| -------------- | -------------------------------------------------------------------------- |
-| 検証状態       | verified                                                                   |
-| 検証日         | 2026-08-08                                                                 |
-| Azure CLI      | 2.77.0                                                                     |
-| Bicep CLI      | 0.37.4                                                                     |
+| 項目 | 値 |
+| --- | --- |
+| 検証状態 | verified |
+| 検証日 | 2026-08-08 |
+| Azure CLI | 2.77.0 |
+| Bicep CLI | 0.37.4 |
 | API バージョン | Microsoft.Web/serverfarms@2024-04-01, Microsoft.KeyVault/vaults@2024-11-01 |
 
 ## 理解チェック
