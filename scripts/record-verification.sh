@@ -47,6 +47,9 @@ if n == 0:
 open(path, 'w', encoding='utf-8').write(new)
 PY
 
+# 書き換えた原稿も prettier の書式に合わせる。CI の format 検査と食い違わせないため。
+(cd "$root" && npx --no-install prettier --write "$file" >/dev/null 2>&1) || true
+
 log "第${chapter}章の検証環境ブロックを更新した: ${state}"
 
 # 一覧表は原稿側を一次情報として作り直す

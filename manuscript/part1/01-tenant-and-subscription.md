@@ -199,12 +199,12 @@ az group delete --name azp-ch01-rg --yes
 
 ## 検証環境
 
-| 項目 | 値 |
-| --- | --- |
-| 検証状態 | verified |
-| 検証日 | 2026-08-08 |
-| Azure CLI | 2.77.0 |
-| Bicep CLI | 0.37.4 |
+| 項目           | 値                                                                         |
+| -------------- | -------------------------------------------------------------------------- |
+| 検証状態       | verified                                                                   |
+| 検証日         | 2026-08-08                                                                 |
+| Azure CLI      | 2.77.0                                                                     |
+| Bicep CLI      | 0.37.4                                                                     |
 | API バージョン | Microsoft.Web/serverfarms@2024-04-01, Microsoft.KeyVault/vaults@2024-11-01 |
 
 ## 理解チェック
