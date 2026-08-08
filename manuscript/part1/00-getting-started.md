@@ -145,6 +145,18 @@ az account show --query "{name:name, id:id, tenantId:tenantId, user:user.name}" 
 
 ここに表示される name / id / tenantId が、本章で作ったサブスクリプションとテナントです。以降のすべての章は、この状態から始まります。
 
+### az account list に知らないサブスクリプションが並ぶとき
+
+会社の Azure などで別のアカウントを使ったことがあるマシンでは、`az account list` に自分のサブスクリプション以外が並ぶことがあります。
+
+```bash
+az account list --query "[].{name:name, user:user.name, isDefault:isDefault}" -o table
+```
+
+user 列を見ると、行ごとに別のアカウントが表示されるはずです。`az login` は切り替えではなく追加であり、CLI はこのマシンでログインしたことのあるアカウントをすべてローカル（`~/.azure`）に記憶しています。テナントの分離が破れているのではなく、手元のキャッシュがまとめて表示されているだけです。
+
+既定のサブスクリプション（isDefault が true の行）だけが、指定なしのコマンドの向き先になります。意図しないサブスクリプションが既定になっていないかは、作業前に必ず確認してください。不要になったアカウントは `az logout --username <アカウント>` でキャッシュから消せます。
+
 ## 振り返り
 
 本章で生まれたものを整理します。
