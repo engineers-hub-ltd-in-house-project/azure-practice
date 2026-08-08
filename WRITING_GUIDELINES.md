@@ -116,7 +116,7 @@ flowchart TB
 | `scripts/verify/chNN-*.sh`   | 期待状態の read-only 検証。冪等。RBAC の伝播遅延を考慮しリトライする |
 | `scripts/teardown/chNN-*.sh` | 後始末。soft-delete されるリソースは purge まで行う                  |
 
-すべてのスクリプトは `set -euo pipefail` で始め、`scripts/lib/common.sh` を読み込む。shellcheck を通すこと。
+すべてのスクリプトは `set -euo pipefail` で始め、`scripts/lib/common.sh` を読み込む。shellcheck を通すこと。原稿や生成物を書き換えるスクリプトは、書き換えた対象の整形（prettier）まで済ませて終わること。整形前のファイルを残すと CI の format 検査と食い違う。
 
 ## 7. 踏み抜きやすい罠（既知）
 
