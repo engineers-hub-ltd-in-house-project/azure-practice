@@ -158,7 +158,7 @@ az group delete --name azp-ch11-rg --yes
 | Bicep CLI      | 0.46.1                                                                                                             |
 | API バージョン | Microsoft.Resources/deploymentStacks (az stack group), Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30 |
 
-## 理解チェック
+## 理解度チェック
 
 1. 通常のデプロイを使い続けているチームで「Bicep からは消したはずのリソースが課金され続けていた」事故が起きました。なぜテンプレートから消しても実体が残ったのか、ARM が何を覚えていて何を覚えていないかで説明してください
 2. あるスタックを `--action-on-unmanage deleteResources` で運用しています。テンプレートからリソースを 1 つ消して適用した場合と、スタックそのものを削除した場合（削除時にも actionOnUnmanage を指定します。deleteAll を選んだとします）、消えるものはそれぞれ何ですか

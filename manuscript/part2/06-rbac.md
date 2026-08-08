@@ -185,7 +185,7 @@ az group delete --name azp-ch06-b --yes
 | Bicep CLI      | 0.46.1                                                                                      |
 | API バージョン | Microsoft.Authorization/roleAssignments@2022-04-01, Microsoft.Authorization/roleDefinitions |
 
-## 理解チェック
+## 理解度チェック
 
 1. あるチームに「開発用リソースグループでは自由に作業でき、他のチームのリソースは見えもしない」状態を作りたいとします。ロールとスコープをどう組みますか。サブスクリプションスコープの Reader を足すと何が壊れますか
 2. Contributor を持つメンバーが「自分のリソースグループに新メンバーの権限を追加できない」と言っています。これは不具合でしょうか。エラーメッセージのどこを見れば設計どおりだと確認できますか

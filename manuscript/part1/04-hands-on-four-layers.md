@@ -180,7 +180,7 @@ main.bicep(35,10) : Error BCP134: Scope "resource" is not valid for this module.
 | Bicep CLI      | 0.37.4                                                                                                                                                                                                       |
 | API バージョン | Microsoft.Resources/resourceGroups@2025-04-01, Microsoft.Storage/storageAccounts@2025-01-01, Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30, Microsoft.Authorization/roleAssignments@2022-04-01 |
 
-## 理解チェック
+## 理解度チェック
 
 1. このハンズオンのロール割り当てのスコープを、ストレージアカウントからリソースグループに変えたとします。動作上は同じに見えますが、あとから何が困るでしょうか。第2章で見た RBAC の性質を使って答えてください
 2. `az deployment sub create` には `--location japaneast` が必要です。リソースグループのリージョンはパラメーターで別に渡しているのに、なぜコマンド側にもリージョンが要るのでしょうか。第3章の「リソースグループのリージョンは何のためにあるか」から考えてください

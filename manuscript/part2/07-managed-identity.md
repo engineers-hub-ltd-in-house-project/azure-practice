@@ -153,7 +153,7 @@ az group delete --name azp-ch07-rg --yes
 | Bicep CLI      | 0.46.1                                                                                                              |
 | API バージョン | Microsoft.ContainerInstance/containerGroups@2023-05-01, Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30 |
 
-## 理解チェック
+## 理解度チェック
 
 1. 第14章で扱う Flex Consumption の Function App をリソースグループごと削除すると、ユーザー割り当てマネージド ID も一緒に消えるでしょうか。同じリソースグループにある場合と、別のリソースグループにある場合で答えが変わるかも含めて説明してください
 2. システム割り当てだけを使う構成で IaC を組むと、初回デプロイで「リソース作成 → 権限割り当て」の 2 段階が必要になります。ユーザー割り当てだとこの制約がどう変わるか、principalId がいつ存在するかに着目して説明してください

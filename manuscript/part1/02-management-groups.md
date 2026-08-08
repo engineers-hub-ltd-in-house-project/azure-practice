@@ -181,7 +181,7 @@ az account management-group delete --name azp-ch02-mg
 | Bicep CLI      | 0.37.4                                             |
 | API バージョン | Microsoft.Authorization/roleAssignments@2022-04-01 |
 
-## 理解チェック
+## 理解度チェック
 
 1. ハンズオンでは、管理グループに割り当てた Reader が `az role assignment list --scope <サブスクリプション>` の結果に出てきませんでした。`--include-inherited` を付けると出てきます。この差は何を意味していますか。権限の調査でどちらを使うべきですか
 2. 「よくある構成パターン」のパターン 3 で、決済システムのサブスクリプションに効くルールは、どの管理グループへの割り当ての合算になりますか。経路を順に挙げてください

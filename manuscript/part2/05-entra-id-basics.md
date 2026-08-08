@@ -206,7 +206,7 @@ objects are not present.
 | Bicep CLI      | 0.46.1                                                                               |
 | API バージョン | Microsoft Graph (az ad), Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30 |
 
-## 理解チェック
+## 理解度チェック
 
 1. 同僚に「このテナントの管理者なのに、自分の upn が `#EXT#` 付きの見慣れない形式になっている。乗っ取られたのか」と相談されました。何が起きているのか説明してください
 2. `az ad sp create-for-rbac` で作った ID と、ユーザー割り当てマネージド ID は、テナントの台帳の上ではどちらもサービスプリンシパルです。運用上の最大の違いは何で、それはどちらを選ぶ判断にどう効きますか

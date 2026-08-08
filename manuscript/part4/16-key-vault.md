@@ -172,7 +172,7 @@ purge が済んで初めて、この章はもう一度最初から実行でき�
 | Bicep CLI      | 0.46.1                                                       |
 | API バージョン | Microsoft.KeyVault/vaults@2024-11-01 (RBAC default measured) |
 
-## 理解チェック
+## 理解度チェック
 
 1. 同じサブスクリプションに RBAC モデルと旧モデルの Vault が混在しています。あるユーザーが「Vault A ではシークレットを読めるのに Vault B では 403 になる」と報告してきました。調査の最初の 1 コマンドは何ですか
 2. 旧モデルの Vault を `--enable-rbac-authorization true` で移行する前に、必ずやるべき準備は何ですか。移行の瞬間に何が無視されるかから逆算してください

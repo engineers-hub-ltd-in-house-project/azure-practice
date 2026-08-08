@@ -186,7 +186,7 @@ Private Endpoint・DNS ゾーン・VNet・Functions・ストレージが 1 手�
 | Bicep CLI      | 0.46.1                                                                                               |
 | API バージョン | Microsoft.Network/privateEndpoints@2024-05-01, privateDnsZones, Microsoft.Web/sites vnet-integration |
 
-## 理解チェック
+## 理解度チェック
 
 1. Private Endpoint を作ったのに、VNet 内の VM からストレージへのアクセスがパブリック IP へ向かってしまいます。本章の構成要素のうち、何が欠けていると考えられますか
 2. 「ネットワークを閉じたのだから、データロールの管理はもう不要では」という提案に、本章のどの実測結果を使って反論しますか

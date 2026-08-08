@@ -138,13 +138,13 @@ for (const file of files) {
   }
 
   if (!isAppendix) {
-    if (h2[h2.length - 1] !== '理解チェック') {
-      errors.push(`${rel}: 章末が "## 理解チェック" でない (現在: ${h2[h2.length - 1] ?? 'なし'})`);
+    if (h2[h2.length - 1] !== '理解度チェック') {
+      errors.push(`${rel}: 章末が "## 理解度チェック" でない (現在: ${h2[h2.length - 1] ?? 'なし'})`);
     } else {
-      const body = sectionBody(text, 2, '理解チェック') ?? '';
+      const body = sectionBody(text, 2, '理解度チェック') ?? '';
       const questions = body.split('\n').filter((l) => /^\d+\.\s+\S/.test(l.trim())).length;
       if (questions !== 3) {
-        errors.push(`${rel}: 理解チェックの設問は 3 問でなければならない (現在 ${questions} 問)`);
+        errors.push(`${rel}: 理解度チェックの設問は 3 問でなければならない (現在 ${questions} 問)`);
       }
     }
   }

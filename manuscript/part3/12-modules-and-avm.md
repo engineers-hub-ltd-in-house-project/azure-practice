@@ -144,7 +144,7 @@ az group delete --name azp-ch12-rg --yes
 | Bicep CLI      | 0.46.1                                                                                              |
 | API バージョン | avm/res/managed-identity/user-assigned-identity:0.6.0, Microsoft.Storage/storageAccounts@2025-01-01 |
 
-## 理解チェック
+## 理解度チェック
 
 1. 自作モジュールの outputs に、ストレージのリソース ID ではなくアクセスキーを返す設計を選んだとします。第8章までの内容を踏まえて、この設計のどこが問題か指摘してください
 2. AVM モジュールのバージョンを固定せずに済ませる方法が提供されていないのは、IaC のどの性質を守るためだと考えられますか。第11章のスタックの考え方と合わせて説明してください

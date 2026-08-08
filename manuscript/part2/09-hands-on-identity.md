@@ -118,7 +118,7 @@ az role assignment create --assignee <自分のobjectId> \
 | Bicep CLI      | 0.46.1                                                                                                                                                        |
 | API バージョン | Microsoft.Storage/storageAccounts@2025-01-01, Microsoft.ManagedIdentity/userAssignedIdentities@2024-11-30, Microsoft.Authorization/roleAssignments@2022-04-01 |
 
-## 理解チェック
+## 理解度チェック
 
 1. 本章の構成に、あとからストレージアカウントを 1 つ追加しました。マネージド ID と運用者、それぞれ新しいアカウントの BLOB に触れるでしょうか。触れるなら理由を、触れないなら追加で必要な操作を答えてください
 2. 段 2 と段 4 を入れ替えて「ストレージを先に作り、アプリをデプロイしてから権限を配る」順序にした場合、システム割り当てマネージド ID を使うとどんな制約が生まれますか。第7章の表から説明してください

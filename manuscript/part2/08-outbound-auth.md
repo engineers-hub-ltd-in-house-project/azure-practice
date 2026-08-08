@@ -160,7 +160,7 @@ az group delete --name azp-ch08-rg --yes
 | Bicep CLI      | 0.46.1                                                                                     |
 | API バージョン | Microsoft.Storage/storageAccounts@2025-01-01, Microsoft Graph federatedIdentityCredentials |
 
-## 理解チェック
+## 理解度チェック
 
 1. サブスクリプションの Owner が「ストレージの中身が見られない、権限がおかしい」と主張しています。おかしくない理由を、actions と dataActions の違いから説明してください
 2. あるチームが GitHub Actions からのデプロイにサービスプリンシパルの password を使っています。フェデレーションへ移行すると、何がなくなり、何が新たに縛れるようになりますか。subject の形式を踏まえて答えてください

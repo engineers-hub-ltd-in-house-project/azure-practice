@@ -209,7 +209,7 @@ az group list --query "[?starts_with(name,'MC_') || starts_with(name,'azp-ch17')
 | Bicep CLI      | 0.46.1                                                                           |
 | API バージョン | Microsoft.ContainerService/managedClusters@2025-05-01 (K8s v1.35.6, Workload ID) |
 
-## 理解チェック
+## 理解度チェック
 
 1. クラスタの ID（その 1）とノードの ID（その 2）に必要なロールは、それぞれ何に対するものになるでしょうか。「コントロールプレーンがロードバランサーを作る」「ノードがコンテナーレジストリからイメージを取得する」という 2 つの操作を割り当て先に振り分けてください
 2. Workload ID の連合資格情報の subject を `system:serviceaccount:default:*` のようにワイルドカードにできたとしたら、何が危険ですか。第8章の GitHub の例と比べて説明してください

@@ -131,7 +131,7 @@ az group delete --name azp-ch10-rg --yes
 | Bicep CLI      | 0.46.1                                                 |
 | API バージョン | Microsoft.Storage/storageAccounts@2025-01-01 (what-if) |
 
-## 理解チェック
+## 理解度チェック
 
 1. 「Bicep はまだ新しいから、実績のある ARM JSON で書くほうが本番は安全だ」という主張を、本章の内容で検討してください。両者の間に実行時の差が生まれない理由はどこにありますか
 2. デプロイ履歴に残る templateHash が、手元の Bicep ファイルから生成した JSON のものと一致しません。考えられる原因は何ですか

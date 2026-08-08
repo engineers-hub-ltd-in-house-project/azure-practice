@@ -128,7 +128,7 @@ az group delete --name azp-ch20-rg --yes
 | Bicep CLI      | 0.46.1                                                                          |
 | API バージョン | Microsoft.Authorization/policyAssignments@2025-01-01, builtin 5450f5bd (v1.2.0) |
 
-## 理解チェック
+## 理解度チェック
 
 1. RBAC で Contributor を絞ることと、Policy で Deny を掛けることは、どちらも「作らせない」結果を生めます。2 つの仕組みが答えている問いの違いを、第6章と本章の言葉で説明してください
 2. 本番環境に新しい Deny ポリシーを入れる手順を、Audit → Deny の順序で計画してください。Audit の期間に何を観察し、何が終わったら Deny に進みますか

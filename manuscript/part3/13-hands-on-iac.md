@@ -129,7 +129,7 @@ CLI の操作で概念を理解し、理解した構成を宣言として固定�
 | Bicep CLI      | 0.46.1                                                                                                     |
 | API バージョン | Microsoft.Resources/deploymentStacks (az stack sub), avm/res/managed-identity/user-assigned-identity:0.6.0 |
 
-## 理解チェック
+## 理解度チェック
 
 1. 本章のスタックから includeStorage=false で再適用したとき、ストレージの中にデータが入っていたらどうなるでしょうか。この危険を減らす手立てを、actionOnUnmanage の選択（第11章）と、ストレージの論理削除（第3章）から 1 つずつ挙げてください
 2. 第4章の構成には管理グループが含まれていましたが、本章のスタックには含めていません。管理グループまでスタックで宣言する場合、targetScope とコマンドはどう変わりますか。第11章の表から答えてください

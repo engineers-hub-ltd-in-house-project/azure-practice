@@ -222,7 +222,7 @@ Please set it to one of the allowed values: 512,2048,4096.
 | Bicep CLI      | 0.46.1                                                                          |
 | API バージョン | Microsoft.Web/sites@2024-11-01 (flexconsumption), Microsoft.Web/serverfarms FC1 |
 
-## 理解チェック
+## 理解度チェック
 
 1. Flex Consumption の Function App をリソースグループごと削除すると、ユーザー割り当てマネージド ID も一緒に消えるでしょうか。消えない場合、どこに残るでしょうか（第7章の内容と合わせて）
 2. 「無料枠の範囲で運用したいので、関数アプリを 3 つのサブスクリプションに分散させた」という判断は、無料枠の観点で意味があるでしょうか。管理コストとの引き換えも含めて論じてください
