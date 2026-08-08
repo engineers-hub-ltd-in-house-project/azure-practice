@@ -147,6 +147,13 @@ for (const file of walk(ROOT)) {
       if (!PAREN.test(label)) continue;
       errors.push(`${rel}:${i + 1}: 括弧を含むラベルは "" で囲む -> ${id}${opener}${label}`);
     }
+
+    // ノード種類の前置形式（「リソースグループ: X」）は禁止。後置の「X リソースグループ」で書く。
+    // 規約: 図のノードは「名前 + 種類」で種類を明記する。
+    const prefixForm = trimmed.match(/"(管理グループ|サブスクリプション|リソースグループ|スタック|サブネット|テナント): /);
+    if (prefixForm) {
+      errors.push(`${rel}:${i + 1}: ノード種類は後置で書く（「X ${prefixForm[1]}」）-> ${trimmed.trim().slice(0, 60)}`);
+    }
   }
 
   if (inBlock) errors.push(`${rel}:${blockStart}: mermaid フェンスが閉じていない`);
