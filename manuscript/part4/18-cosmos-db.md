@@ -27,6 +27,16 @@ az cosmosdb create --name azp-ch18-cosmos -g azp-ch18-rg \
 
 ## 3. 横の繋がり ― 認証認可
 
+```mermaid
+flowchart TB
+  subgraph CP["コントロールプレーン (ARM 経由)"]
+    A1["az cosmosdb ... (作成・設定変更)"] --> G1["第6章の RBAC で判定"]
+  end
+  subgraph DP["データプレーン (アカウントのエンドポイント直)"]
+    A2["データの読み書き"] --> G2["キー (disableLocalAuth で停止可) または Cosmos 独自ロールで判定"]
+  end
+```
+
 ### 2 つの RBAC の分離を実測する
 
 まず、Cosmos DB が持つデータプレーンのロール定義を、専用コマンドで一覧します。

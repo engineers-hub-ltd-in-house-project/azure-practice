@@ -51,7 +51,8 @@
     "Cloud Adoption Framework": 21,
     "subscription vending": 22,
     "MCA": 22,
-    "Exports": 23
+    "Exports": 23,
+    "統制": 2
   },
   "capsAllowlist": [
     "ID",
@@ -121,5 +122,6 @@
     "REST",
     "GA",
     "ALZ"
-  ]
+  ],
+  "bannedPhrases": ["掛け先", "布石"]
 }

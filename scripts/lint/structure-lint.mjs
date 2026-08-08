@@ -124,6 +124,15 @@ for (const file of files) {
   // 付録は章の構造規約の対象外
   const isAppendix = rel.includes('/appendix/');
 
+  // 各章に図を最低 1 枚。図解不足は指摘で確認された執筆の癖であり、機械で縛る。
+  // 付録は対象外。
+  if (!isAppendix) {
+    const diagrams = (text.match(/```mermaid/g) || []).length;
+    if (diagrams === 0) {
+      errors.push(`${rel}: 図が 1 枚もない。主要概念の構造を Mermaid で図解する`);
+    }
+  }
+
   if (!h2.includes('検証環境')) {
     errors.push(`${rel}: "## 検証環境" ブロックがない`);
   }

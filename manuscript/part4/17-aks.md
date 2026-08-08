@@ -39,7 +39,22 @@ MC_azp-ch17-rg_azp-ch17-aks_japaneast
 
 ## 3. 横の繋がり ― 認証認可
 
-本章の核心です。5 つの ID を順に見ます。
+本章の核心です。5 つの ID を順に見ます。先に全体図を置きます。
+
+```mermaid
+flowchart TB
+  subgraph AZ["Azure 側"]
+    CP["1 クラスタ自身の ID (システム割り当て)"]
+    KB["2 ノードの ID (MC_ 内のユーザー割り当て)"]
+    WI["3 Pod 用の ID (ユーザー割り当て + フェデレーション)"]
+  end
+  subgraph K8S["クラスタの中 (Kubernetes 側)"]
+    SA["ServiceAccount"]
+    RB["5 クラスタ内の RBAC"]
+  end
+  YOU["4 クラスタへ入る人間"] --> K8S
+  SA -->|"トークン交換"| WI
+```
 
 ### その 1: クラスタ自身の ID
 

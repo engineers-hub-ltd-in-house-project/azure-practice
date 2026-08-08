@@ -66,6 +66,15 @@ curl -s https://mcr.microsoft.com/v2/bicep/avm/res/managed-identity/user-assigne
 
 バージョンは必ず固定してください。固定しない仕組みは提供されていませんが、「最新を使いたいから」と更新のたびに書き換えて回る運用は、デプロイのたびに結果が変わる IaC になってしまいます。上げるときは差分を確認して意図的に上げます。
 
+```mermaid
+flowchart LR
+  M["main.bicep (26 行)"] --> C["自作モジュール (このリポジトリの modules/)"]
+  M --> A["AVM モジュール (公開レジストリ br/public: から取得)"]
+  C --> J["bicep build で 1 つの ARM JSON (646 行) に合成"]
+  A --> J
+  J --> ARM["ARM へ送信"]
+```
+
 ### 取り込むと何が起きるか
 
 自作モジュールと AVM モジュールを 1 つずつ使う本章のテンプレート（`infra/bicep/chapters/ch12-modules/main.bicep`）は 26 行です。これをコンパイルすると、どうなるでしょうか。

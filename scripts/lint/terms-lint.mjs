@@ -56,6 +56,12 @@ for (const file of walk(join(ROOT, 'manuscript')).sort()) {
       }
     }
 
+    for (const banned of glossary.bannedPhrases || []) {
+      if (prose.includes(banned)) {
+        errors.push(`${rel}:${i + 1}: 禁止語 "${banned}"。平易な言葉で書き直す`);
+      }
+    }
+
     for (const m of prose.matchAll(/(?<![A-Za-z])([A-Z]{2,6})(?![a-z])/g)) {
       const token = m[1];
       if (CAPS_OK.has(token)) continue;
