@@ -173,6 +173,14 @@ Registered
 az provider register --namespace Microsoft.Web --wait
 ```
 
+登録と解除には Registering / Unregistering という遷移中の状態があり、その最中に同じプロバイダーへの操作をぶつけると、意味の取れないエラーになることがあります。本書の検証時に、Unregistering の最中へデプロイを重ねたときの実際の出力です。
+
+```text
+The content for this response was already consumed
+```
+
+エラーメッセージが壊れていて原因を何も語りません。プロバイダー絡みの操作で意味不明なエラーに出会ったら、まず `az provider show` で状態が遷移中でないかを確認してください。
+
 なお、この演習を「登録済みのプロバイダーを `az provider unregister` で未登録に戻して」再現しようとしてはいけません。そのプロバイダーのリソースが 1 つでも残っていると unregister は失敗しますし、成功すると既存リソースの管理操作が壊れます。演習はもともと未登録のものだけで行ってください。
 
 演習が終わったら、リソースグループを片付けます。
