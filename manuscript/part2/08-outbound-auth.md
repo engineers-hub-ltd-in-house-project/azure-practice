@@ -52,6 +52,8 @@ Depending on your operation, you may need to be assigned one of the following ro
 
 Owner なのに拒否されました。RBAC のロールには、リソースの管理操作（作る・消す・設定を変える）を許す actions と、データそのものの操作を許す dataActions という別の系統があり、Owner が持つ `*` は actions の系統です。管理の全権とデータへのアクセス権は別物として設計されています。ストレージを管理できる人が、中の個人情報を読めるとは限らない、という分離です。
 
+この 2 つの系統には名前が付いています。リソースの管理操作（作る・消す・設定を変える。actions の世界）の層をコントロールプレーン、データそのものの操作（dataActions の世界）の層をデータプレーンと呼びます。同じリソースに 2 枚の層があり、それぞれ別のロールで守られている、という絵で覚えてください。
+
 エラーメッセージが親切に挙げてくれた Storage Blob Data Contributor が、dataActions を持つデータプレーンのロールです。自分に割り当てます。
 
 ```bash
