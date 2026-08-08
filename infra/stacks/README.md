@@ -1,5 +1,8 @@
 # Deployment Stacks
 
-第11章「デプロイスコープと Deployment Stacks」および第13章の統合ハンズオンで使う、スタックの作成・更新・削除のラッパを置く。
+スタックを使う章の定義と操作の所在。
 
-`az stack sub` / `az stack group` は `--action-on-unmanage` の指定を誤ると、テンプレートから外れたリソースを意図せず削除する。指定を毎回手で打たせないため、章ごとのラッパをここに置いてスクリプト側で固定する。
+- スタックで宣言するテンプレートは `infra/bicep/chapters/ch11-stack/` と `infra/bicep/chapters/ch13-iac-rebuild/` にある
+- スタックの作成・検証・削除は、他の章と同じく `scripts/chapters/` `scripts/verify/` `scripts/teardown/` の章スクリプトが担う
+
+`az stack` は `--action-on-unmanage` の指定を誤ると、テンプレートから外れたリソースを意図せず削除する。指定は章スクリプト側で固定してあり、手で打つ場合は第11章を読んでから使うこと。

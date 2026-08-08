@@ -195,7 +195,7 @@ az provider register --namespace Microsoft.Web --wait
 The subscription must be registered to use namespace 'Microsoft.Web'. ..."}
 ```
 
-エラーコードは未登録のときと同じですが、メッセージが遷移中の状態まで教えてくれています。遷移中は `az deployment` の自動登録も助けてくれません。状態が落ち着くまで待ってから再実行してください。
+エラーコードは未登録のときと同じですが、メッセージが遷移中の状態まで教えてくれています。遷移中は `az deployment` の自動登録も助けてくれません。なお解除は登録よりはるかに時間がかかることがあり、本書の検証では Microsoft.Web の解除が 80 分を超えても完了しませんでした。待ちきれない場合は `az provider register --namespace <名前空間> --wait` を実行すると、登録済みの確定状態へ戻せます（実測済み）。
 
 なお、執筆時の検証で一度だけ、同じ状況で「The content for this response was already consumed」という、原因を何も語らない表示に出会いました。CLI がエラー応答の処理に失敗したときの表示で、再実行すれば本来のエラーが出ます。プロバイダー絡みで意味不明なエラーに出会ったら、まず `az provider show` で状態を確認し、それから再実行してください。
 
