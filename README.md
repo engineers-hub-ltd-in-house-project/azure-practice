@@ -107,7 +107,7 @@ Part 4 の各章は、以下の 6 ブロックで統一して書かれていま�
 | 20  | [Azure Policy ― 強制（Deny）と監査（Audit）の違い](manuscript/part5/20-azure-policy.md)   | 執筆済 |
 | 21  | [Cloud Adoption Framework と Landing Zone](manuscript/part5/21-caf-and-landing-zone.md)   | 執筆済 |
 | 22  | [マルチサブスクリプション設計の実践](manuscript/part5/22-multi-subscription.md)           | 執筆済 |
-| 23  | [コストの見方 ― タグとスコープで課金を切り分ける](manuscript/part5/23-cost-management.md) | 骨格   |
+| 23  | [コストの見方 ― タグとスコープで課金を切り分ける](manuscript/part5/23-cost-management.md) | 執筆済 |
 
 ### Part 6 総合演習
 
