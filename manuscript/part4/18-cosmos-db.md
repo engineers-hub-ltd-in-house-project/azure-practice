@@ -34,6 +34,9 @@
 
 ## 6. ハンズオン
 
+<!-- 検証対象: 第3章の soft-delete 表に書いた Cosmos DB の復元条件（継続的バックアップの有無で挙動が変わる）を、
+     この章の実機検証で確認して第3章の記述に反映すること。 -->
+
 手順の実体は `scripts/chapters/chNN-*.sh` と `infra/bicep/chapters/chNN-*/` にある。
 
 ### 構築

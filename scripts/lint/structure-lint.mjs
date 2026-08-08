@@ -2,7 +2,7 @@
 // 章構成の規約を機械検査する。WRITING_GUIDELINES.md の「2. Part 4 の 6 ブロックの型」と
 // 「3. 全章共通の構造」に対応する。規約を散文の申し合わせで終わらせないための CI ゲート。
 
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const ROOT = new URL('../../', import.meta.url).pathname;
@@ -65,12 +65,41 @@ function sectionBody(text, level, title) {
   return start === -1 ? null : lines.slice(start).join('\n');
 }
 
+
+// 本文が参照するリポジトリ内のパスが実在するかを検査する。
+// 本文と実ファイルの一致は本書の Operation as Code の前提そのものなので、
+// リネームで散文だけが古くなる事故を CI で止める。
+// chNN / NN はテンプレート上のプレースホルダなので対象外にする。
+const PLACEHOLDER = /(^|\/)(ch)?NN[-.]|\bNN\b/;
+
+function checkPathRefs(rel, text) {
+  // Markdown リンク: [表示](manuscript/... )
+  for (const m of text.matchAll(/\]\((?!https?:|#|mailto:)([^)\s]+)\)/g)) {
+    const target = m[1].split('#')[0];
+    if (!target || PLACEHOLDER.test(target)) continue;
+    const base = rel === 'README.md' || !rel.includes('/') ? ROOT : join(ROOT, rel, '..');
+    if (!existsSync(join(base, target))) {
+      errors.push(`${rel}: リンク先が存在しない -> ${target}`);
+    }
+  }
+  // インラインコード中のリポジトリ内パス: `scripts/...` `infra/...`
+  for (const m of text.matchAll(/`((?:scripts|infra|manuscript|templates|docs|proposal)\/[^`\s]+)`/g)) {
+    const target = m[1];
+    if (PLACEHOLDER.test(target) || target.includes('*')) continue;
+    if (!existsSync(join(ROOT, target))) {
+      errors.push(`${rel}: 参照先が存在しない -> ${target}`);
+    }
+  }
+}
+
 const files = walk(MANUSCRIPT).sort();
 if (files.length === 0) errors.push('manuscript/ に原稿が 1 つもない');
 
 for (const file of files) {
   const rel = relative(ROOT, file);
   const text = readFileSync(file, 'utf8');
+  checkPathRefs(rel, text);
+
   const h1 = headings(text, 1);
   const h2 = headings(text, 2);
 
@@ -107,6 +136,11 @@ for (const file of files) {
       errors.push(`${rel}: 6 ブロックの順序が規約と違う`);
     }
   }
+}
+
+for (const doc of ['README.md', 'WRITING_GUIDELINES.md']) {
+  const p = join(ROOT, doc);
+  if (existsSync(p)) checkPathRefs(doc, readFileSync(p, 'utf8'));
 }
 
 if (errors.length > 0) {

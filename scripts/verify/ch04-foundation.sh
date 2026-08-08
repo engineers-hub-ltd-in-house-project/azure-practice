@@ -10,7 +10,7 @@ chapter="ch04"
 rg="${prefix}-${chapter}-rg"
 mg="${prefix}-${chapter}-mg"
 
-require_cmd az jq
+require_cmd az
 failed=0
 
 check() {

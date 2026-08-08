@@ -3,9 +3,9 @@
 # shellcheck source=../lib/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"
 
-require_cmd az jq
+require_cmd az
 
-log "Azure CLI: $(az version --query '\"azure-cli\"' -o tsv)"
+log "Azure CLI: $(az version --query '"azure-cli"' -o tsv)"
 log "Bicep CLI: $(az bicep version 2>/dev/null | sed -n 's/.*version \([0-9.]*\).*/\1/p')"
 
 confirm_subscription
