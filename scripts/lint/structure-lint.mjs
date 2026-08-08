@@ -100,6 +100,20 @@ for (const file of files) {
   const text = readFileSync(file, 'utf8');
   checkPathRefs(rel, text);
 
+  // 本文の太字は禁止。どこが重要かは読者が決めるものであり、書き手が強調で固定しない。
+  // コードフェンス内は対象外にする。
+  {
+    let inFence = false;
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      if (/^\s*```/.test(lines[i])) { inFence = !inFence; continue; }
+      if (inFence) continue;
+      if (/\*\*[^*]+\*\*|__[^_]+__/.test(lines[i])) {
+        errors.push(`${rel}:${i + 1}: 本文で太字を使わない`);
+      }
+    }
+  }
+
   const h1 = headings(text, 1);
   const h2 = headings(text, 2);
 

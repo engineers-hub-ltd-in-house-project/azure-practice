@@ -4,7 +4,7 @@
 
 ## この章が果たすこと
 
-キー認証をポリシーで無効化していく現在の潮流（Key Vault の RBAC 既定化、Cosmos DB の disableLocalAuth）を、Zero Trust の文脈でまとめて予告する。
+キー認証をポリシーで無効化していく現在の潮流（Key Vault の RBAC 既定化、Cosmos DB の disableLocalAuth）を、Zero Trust の文脈でまとめて予告します。
 
 ## 検証環境
 

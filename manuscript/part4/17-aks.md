@@ -6,7 +6,7 @@
 
 ## この章が果たすこと
 
-クラスタ自身の ID、ノードの ID、Pod から外への ID（Workload ID = OIDC フェデレーション）、クラスタへのアクセス、クラスタ内 RBAC を分解する。Kubernetes の ServiceAccount と Entra ID のフェデレーションという二重構造が本章の山場。ノードプールの VM が時間課金されるため、章の冒頭に概算を明記する。
+クラスタ自身の ID、ノードの ID、Pod から外への ID（Workload ID = OIDC フェデレーション）、クラスタへのアクセス、クラスタ内 RBAC を分解します。Kubernetes の ServiceAccount と Entra ID のフェデレーションという二重構造が本章の山場です。ノードプールの VM が時間課金されるため、章の冒頭に概算を明記します。
 
 ## 1. このサービスは何のためにあるか
 

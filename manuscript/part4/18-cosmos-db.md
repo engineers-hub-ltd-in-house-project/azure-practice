@@ -6,7 +6,7 @@
 
 ## この章が果たすこと
 
-データプレーン RBAC がポータルの IAM 画面から設定できず、独自のロール定義・割り当てを持つ点、disableLocalAuth でキー認証を止める構成、Azure Policy で組織的に強制する繋がり（第 20 章への布石）。壊す演習として、disableLocalAuth 有効化後にキーでアクセスして失敗を観察する。Free Tier はサブスクリプションに 1 つだけなので serverless を使う。
+データプレーン RBAC がポータルの IAM 画面から設定できず、独自のロール定義・割り当てを持つ点、disableLocalAuth でキー認証を止める構成、Azure Policy で組織的に強制する繋がり（第 20 章への布石）を扱います。壊す演習では、disableLocalAuth 有効化後にキーでアクセスして失敗を観察します。Free Tier はサブスクリプションに 1 つだけなので serverless を使います。
 
 ## 1. このサービスは何のためにあるか
 

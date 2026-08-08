@@ -4,7 +4,7 @@
 
 ## この章が果たすこと
 
-第 4 章と第 9 章で az コマンドで作ったものを Deployment Stack 1 本に置き換え、actionOnUnmanage の挙動まで含めて同じ結果に到達させる。CLI で理解し IaC で固定するという本書の流れを閉じる章。
+第 4 章と第 9 章で az コマンドで作ったものを Deployment Stack 1 本に置き換え、actionOnUnmanage の挙動まで含めて同じ結果に到達させます。CLI で理解し IaC で固定するという本書の流れを閉じる章です。
 
 ## 検証環境
 

@@ -4,7 +4,7 @@
 
 ## この章が果たすこと
 
-プラットフォーム Landing Zone とアプリケーション Landing Zone の分離、サブスクリプションを管理単位とする思想。実装は AVM for Platform Landing Zone（Bicep）を読み解く形で扱い、全部をデプロイはしない。読む教材として使う章。
+プラットフォーム Landing Zone とアプリケーション Landing Zone の分離、サブスクリプションを管理単位とする思想を扱います。実装は AVM for Platform Landing Zone（Bicep）を読み解く形で扱い、全部をデプロイはしません。読む教材として使う章です。
 
 ## 検証環境
 
