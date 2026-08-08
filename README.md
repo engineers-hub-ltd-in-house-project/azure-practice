@@ -83,7 +83,7 @@ Part 4 の各章は、以下の 6 ブロックで統一して書かれていま�
 | 章  | タイトル                                                                                    | 状態   |
 | --- | ------------------------------------------------------------------------------------------- | ------ |
 | 10  | [ARM テンプレートと Bicep の関係](manuscript/part3/10-arm-and-bicep.md)                     | 執筆済 |
-| 11  | [デプロイスコープと Deployment Stacks](manuscript/part3/11-deployment-scopes-and-stacks.md) | 骨格   |
+| 11  | [デプロイスコープと Deployment Stacks](manuscript/part3/11-deployment-scopes-and-stacks.md) | 執筆済 |
 | 12  | [モジュール化と Azure Verified Modules](manuscript/part3/12-modules-and-avm.md)             | 骨格   |
 | 13  | [統合ハンズオン ― Part 1〜2 の構成を IaC で再現する](manuscript/part3/13-hands-on-iac.md)   | 骨格   |
 
