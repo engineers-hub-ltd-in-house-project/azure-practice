@@ -152,6 +152,22 @@ for (const file of files) {
   }
 }
 
+// 実在の顧客名・テナント/サブスクリプション識別子・個人ドメインを公開リポジトリに載せない。
+// 例示はダミー値を使う。ここに挙げる語は検証環境から漏れやすいものの拒否リスト。
+const FORBIDDEN_IDENTIFIERS = [
+  /syslea/i, /frictio/i, /medii/i,
+  /ba9d0cbe/, /8a7c850a/, /417dfc63/, /fe6c7ed6/,
+  /ff467136/, /76d5d76a/, /c5940261/, /yusukesatoengineershub/,
+];
+for (const file of [...walk(MANUSCRIPT), join(ROOT, 'README.md'), join(ROOT, 'WRITING_GUIDELINES.md')]) {
+  if (!existsSync(file)) continue;
+  const rel = relative(ROOT, file);
+  const body = readFileSync(file, 'utf8');
+  for (const pat of FORBIDDEN_IDENTIFIERS) {
+    if (pat.test(body)) errors.push(`${rel}: 実在の識別子・顧客名が含まれている -> ${pat}`);
+  }
+}
+
 for (const doc of ['README.md', 'WRITING_GUIDELINES.md']) {
   const p = join(ROOT, doc);
   if (existsSync(p)) checkPathRefs(doc, readFileSync(p, 'utf8'));
