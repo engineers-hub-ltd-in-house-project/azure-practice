@@ -1,23 +1,192 @@
 # 第6章 RBAC ― スコープとロールの掛け算で権限が決まる
 
-> 状態: 骨格。本文は未執筆。
+第5章で ID の登場人物が揃いました。本章では、その ID に「何をさせるか」を決める仕組み、RBAC（ロールベースのアクセス制御）を扱います。
 
-## この章が果たすこと
+RBAC の 1 回の設定は、3 つの要素の組です。誰に（ID）、何の役割を（ロール）、どの範囲で（スコープ）。この 3 つ目のスコープの選び方が本章の主題です。権限の強さはロールだけでは決まらず、ロールとスコープの掛け算で決まります。
 
-割り当てスコープ（管理グループ / サブスクリプション / リソースグループ / リソース）はガバナンス階層と独立に選べる点を強調します。壊す演習では、スコープを 1 段広く割り当てて権限が効きすぎる様子を確認し、最小権限に絞り直します。
+本章の出力はすべて本書の検証環境での実測です。ID の実値は伏せています。
+
+## ロールは操作の束
+
+ロールは、許可する操作をまとめたものです。組み込みロールの代表格を中から見てみます。
+
+```bash
+az role definition list --name Reader \
+  --query "[0].{name:roleName, actions:permissions[0].actions, notActions:permissions[0].notActions}" -o json
+```
+
+```text
+{
+  "actions": [
+    "*/read"
+  ],
+  "name": "Reader",
+  "notActions": []
+}
+```
+
+Reader の実体は「すべての read 操作」という 1 行です。よく使う組み込みロールは 4 つ覚えれば当面足ります。
+
+| ロール                    | できること                                             |
+| ------------------------- | ------------------------------------------------------ |
+| Reader                    | すべての読み取り                                       |
+| Contributor               | リソースの作成・変更・削除。ただし権限の操作はできない |
+| Owner                     | Contributor に加えて権限の操作もできる                 |
+| User Access Administrator | 権限の操作だけができる                                 |
+
+Contributor と Owner の境界が「権限の操作」であることは、後半の演習で実際に確かめます。
+
+## スコープは効き目の範囲
+
+ロールの割り当ては、Part 1 で見た階層のどこにでも掛けられます。管理グループ、サブスクリプション、リソースグループ、そして個々のリソースです。上に掛ければ配下すべてに継承され（第2章）、下位で打ち消すことはできません。
+
+ここで大事なのは、スコープの選択はガバナンス階層の設計と独立だということです。第4章のハンズオンでは、マネージド ID への割り当てをリソースグループでもサブスクリプションでもなく、ストレージアカウント 1 つに掛けました。組織の階層をどう切ったかとは無関係に、権限は必要な最小の範囲へ直接掛けられます。
+
+```mermaid
+flowchart TB
+  MG["管理グループ"] --> SUB["サブスクリプション"]
+  SUB --> RG["リソースグループ"]
+  RG --> RES["リソース"]
+  ID["ID (ユーザー / グループ / SP / マネージド ID)"]
+  ID -.->|"ロール × スコープ"| MG
+  ID -.->|"ロール × スコープ"| SUB
+  ID -.->|"ロール × スコープ"| RG
+  ID -.->|"ロール × スコープ"| RES
+```
+
+## 壊す演習 ― スコープを 1 段広く割り当ててみる
+
+「とりあえずサブスクリプション全体に付けておけば動く」という誘惑がどんな結果を生むかを、実際に見ます。
+
+準備として、リソースグループを 2 つと、検証用のサービスプリンシパルを 1 体作ります。この演習ではサービスプリンシパルとしてサインインし直して「その ID から世界がどう見えるか」を確かめるので、普段の自分のログインを壊さないよう、CLI のプロファイルを分離します。
+
+```bash
+az group create --name azp-ch06-a --location japaneast \
+  --tags azp-book=azure-practice azp-chapter=ch06 azp-lifecycle=ephemeral
+az group create --name azp-ch06-b --location japaneast \
+  --tags azp-book=azure-practice azp-chapter=ch06 azp-lifecycle=ephemeral
+az ad sp create-for-rbac --name azp-ch06-sp
+# 出力の appId / password / tenant を控えます。password の扱いは第5章の警告のとおりです
+```
+
+まず、広すぎる割り当てをします。サブスクリプション全体に Reader です。
+
+```bash
+sub=$(az account show --query id -o tsv)
+az role assignment create --assignee <appId> --role Reader --scope "/subscriptions/$sub"
+```
+
+サービスプリンシパルとしてサインインし直します。`AZURE_CONFIG_DIR` を指定すると、CLI は別のプロファイルを使うので、普段のログインと混ざりません。
+
+```bash
+export AZURE_CONFIG_DIR=/tmp/azp-sp-profile
+az login --service-principal --username <appId> --password <password> --tenant <tenantId>
+az group list --query "[].name" -o tsv
+```
+
+```text
+azp-ch01-rg
+azp-ch06-a
+azp-ch06-b
+```
+
+演習用に作った 2 つだけでなく、このサブスクリプションにあるすべてのリソースグループが見えています。読み取り専用とはいえ、構成・命名・タグはすべて閲覧できる状態です。必要なのは azp-ch06-a の読み取りだけだったとすれば、明確に広すぎます。
+
+なお、割り当ての直後はサインインや一覧が失敗することがあります。第2章で見た伝播遅延で、本書の検証でも数十秒待ってから成功しました。
+
+書き込みはどうでしょうか。
+
+```bash
+az group create --name azp-ch06-c --location japaneast
+```
+
+```text
+ERROR: (AuthorizationFailed) The client '<appId>' with object id '<objectId>' does not have
+authorization to perform action 'Microsoft.Resources/subscriptions/resourcegroups/write' over scope
+'/subscriptions/<サブスクリプションID>/resourcegroups/azp-ch06-c' or the scope is invalid.
+```
+
+Reader の actions は `*/read` だけなので、write は拒否されます。エラーには「どの操作（action）が」「どのスコープで」足りなかったかが正確に書かれています。RBAC のエラーはこの 2 点を読み取れば原因が特定できます。
+
+### 最小権限へ絞り直す
+
+管理者側のプロファイル（AZURE_CONFIG_DIR を外した通常のシェル）に戻り、割り当てを外して RG 単位に付け直します。
+
+```bash
+az role assignment delete --assignee <appId> --role Reader --scope "/subscriptions/$sub"
+az role assignment create --assignee <appId> --role Reader \
+  --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
+```
+
+サービスプリンシパル側で見え方を確認します。
+
+```bash
+az group list --query "[].name" -o tsv
+```
+
+```text
+azp-ch06-a
+```
+
+同じ Reader というロールでも、スコープが変わるだけで世界がここまで狭まります。権限の強さはロール × スコープの積である、というのが本章の主張です。
+
+## Contributor と Owner の境界を確かめる
+
+もう 1 つ、ロール側の境界も実測します。azp-ch06-a への割り当てを Reader から Contributor に差し替えます（管理者側で実行）。
+
+```bash
+az role assignment delete --assignee <appId> --role Reader \
+  --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
+az role assignment create --assignee <appId> --role Contributor \
+  --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
+```
+
+サービスプリンシパル側で、まずリソースの変更を試します。
+
+```bash
+az group update --name azp-ch06-a --set tags.azp-test=contributor
+```
+
+これは成功します。次に、権限の操作を試します。自分の持つスコープの中で、誰かにロールを割り当てようとしてみます。
+
+```bash
+az role assignment create --assignee <objectId> --role Reader \
+  --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
+```
+
+```text
+ERROR: (AuthorizationFailed) The client '<appId>' ... does not have authorization to perform action
+'Microsoft.Authorization/roleAssignments/write' over scope '.../resourceGroups/azp-ch06-a/providers/
+Microsoft.Authorization/roleAssignments/...'
+```
+
+リソースは触れるのに、権限は配れない。エラーの action 欄にある Microsoft.Authorization こそ、Contributor の定義から除外されている名前空間です。Contributor を配っても権限管理は渡らない、この一線が Owner との違いです。逆に言えば、Owner を配ることは権限を配る権限まで渡すことを意味します。
+
+## クリーンアップ演習
+
+```bash
+# 管理者側で実行します
+az role assignment delete --assignee <appId> \
+  --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
+az ad app delete --id <appId>
+az group delete --name azp-ch06-a --yes
+az group delete --name azp-ch06-b --yes
+```
+
+順序に注意してください。先にサービスプリンシパルを消すと、残った割り当てが第3章で見た「principalName が空の残骸」になります。割り当てを先に消し、それから ID を消すのが行儀の良い順序です。分離プロファイル（/tmp/azp-sp-profile）も忘れずに削除してください。password がその中に保存されています。
 
 ## 検証環境
 
-| 項目           | 値      |
-| -------------- | ------- |
-| 検証状態       | pending |
-| 検証日         | -       |
-| Azure CLI      | -       |
-| Bicep CLI      | -       |
-| API バージョン | -       |
+| 項目           | 値                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------- |
+| 検証状態       | verified                                                                                    |
+| 検証日         | 2026-08-08                                                                                  |
+| Azure CLI      | 2.77.0                                                                                      |
+| Bicep CLI      | 0.46.1                                                                                      |
+| API バージョン | Microsoft.Authorization/roleAssignments@2022-04-01, Microsoft.Authorization/roleDefinitions |
 
 ## 理解チェック
 
-1. TODO: 暗記ではなく繋がりの理解を問う設問
-2. TODO
-3. TODO
+1. あるチームに「開発用リソースグループでは自由に作業でき、他のチームのリソースは見えもしない」状態を作りたいとします。ロールとスコープをどう組みますか。サブスクリプションスコープの Reader を足すと何が壊れますか
+2. Contributor を持つメンバーが「自分のリソースグループに新メンバーの権限を追加できない」と言っています。これは不具合でしょうか。エラーメッセージのどこを見れば設計どおりだと確認できますか
+3. 本章の演習でサービスプリンシパルを先に削除してからロール割り当てを消そうとすると、何が起きるでしょうか。第3章の内容と合わせて説明してください
