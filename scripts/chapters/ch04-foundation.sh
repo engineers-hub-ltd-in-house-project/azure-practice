@@ -22,8 +22,13 @@ mg_name="${prefix}-${chapter}-mg"
 # --- 第1階層と第2階層: 管理グループ ---
 # 管理グループはテナントに属する。サブスクリプションの中にあるのではない。
 # ここで作った管理グループは、テナントルート管理グループの子になる。
+# 管理グループの作成は、直前に別の管理グループを操作した直後だと一時的に失敗することがある
+# （実機検証で確認済み）。権限エラーと区別するため、少し待って再試行する。
+create_mg() {
+  az account management-group create --name "$mg_name" --display-name "azure-practice 第4章" -o none 2>/dev/null
+}
 log "管理グループ ${mg_name} を作る"
-if az account management-group create --name "$mg_name" --display-name "azure-practice 第4章" -o none 2>/dev/null; then
+if retry 3 15 create_mg; then
   log "作成した"
 else
   warn "管理グループを作成できなかった。権限が不足している可能性がある"
