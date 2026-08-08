@@ -97,7 +97,7 @@ Part 4 の各章は、以下の 6 ブロックで統一して書かれていま�
 | 15  | [Storage ― Functions の隠れた依存関係から理解する](manuscript/part4/15-storage.md)                    | 執筆済 |
 | 16  | [Key Vault ― RBAC 既定化とアクセスポリシーの歴史](manuscript/part4/16-key-vault.md)                   | 執筆済 |
 | 17  | [AKS ― 5 つの ID scenario と Workload ID](manuscript/part4/17-aks.md)                                 | 執筆済 |
-| 18  | [Cosmos DB ― コントロールプレーンとデータプレーンの RBAC は別物](manuscript/part4/18-cosmos-db.md)    | 骨格   |
+| 18  | [Cosmos DB ― コントロールプレーンとデータプレーンの RBAC は別物](manuscript/part4/18-cosmos-db.md)    | 執筆済 |
 | 19  | [Networking ― VNet 統合と Private Endpoint が各層にどう効くか](manuscript/part4/19-networking.md)     | 骨格   |
 
 ### Part 5 大規模運用のための設計思想
