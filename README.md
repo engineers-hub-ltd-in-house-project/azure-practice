@@ -94,7 +94,7 @@ Part 4 の各章は、以下の 6 ブロックで統一して書かれていま�
 | 章  | タイトル                                                                                              | 状態   |
 | --- | ----------------------------------------------------------------------------------------------------- | ------ |
 | 14  | [Functions ― Flex Consumption を軸に課金とネットワークの関係を辿る](manuscript/part4/14-functions.md) | 執筆済 |
-| 15  | [Storage ― Functions の隠れた依存関係から理解する](manuscript/part4/15-storage.md)                    | 骨格   |
+| 15  | [Storage ― Functions の隠れた依存関係から理解する](manuscript/part4/15-storage.md)                    | 執筆済 |
 | 16  | [Key Vault ― RBAC 既定化とアクセスポリシーの歴史](manuscript/part4/16-key-vault.md)                   | 骨格   |
 | 17  | [AKS ― 5 つの ID scenario と Workload ID](manuscript/part4/17-aks.md)                                 | 骨格   |
 | 18  | [Cosmos DB ― コントロールプレーンとデータプレーンの RBAC は別物](manuscript/part4/18-cosmos-db.md)    | 骨格   |
