@@ -1,0 +1,13 @@
+node_modules/
+*.log
+.DS_Store
+
+# Bicep のビルド成果物。ARM JSON は第10章で一時的に生成して読むだけで、リポジトリには置かない
+infra/**/*.json
+!infra/**/*.parameters.json
+
+# 検証時のローカル変数（サブスクリプションID・テナントID など）
+.env
+.env.local
+scripts/.env
+.claude/

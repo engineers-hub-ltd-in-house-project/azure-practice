@@ -1,0 +1,3 @@
+# source 先を「そのスクリプトのあるディレクトリ」を基準に解決する。
+# scripts/*/ から ../lib/common.sh を読む構成のため必要。
+source-path=SCRIPTDIR

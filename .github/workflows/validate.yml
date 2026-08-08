@@ -1,0 +1,67 @@
+name: validate
+
+# 本リポジトリの CI は検証のみを行う。Azure へのデプロイジョブは意図的に置いていない。
+# 書籍リポジトリが push を契機に実サブスクリプションへリソースを作ることは、
+# 読者にとっても執筆者にとっても事故の原因にしかならない。
+# ハンズオンの実行は scripts/ を人が明示的に叩くことでのみ起きる。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  manuscript:
+    name: 原稿の書式と構成
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - run: npm install --no-audit --no-fund
+      - name: Markdown lint
+        run: npm run lint:md
+      - name: フォーマット確認
+        run: npm run lint:format
+      - name: 章構成の規約
+        run: npm run lint:structure
+      - name: Mermaid の記法
+        run: npm run lint:mermaid
+
+  bicep:
+    name: Bicep のビルドと lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Bicep CLI を入れる
+        run: |
+          curl -sSLo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64
+          chmod +x bicep
+          sudo mv bicep /usr/local/bin/bicep
+          bicep --version
+      - name: すべての .bicep をビルドする
+        run: |
+          # Azure 認証は不要。テンプレートの構文と型だけを検査する。
+          shopt -s globstar nullglob
+          status=0
+          for f in infra/**/*.bicep; do
+            echo "::group::$f"
+            bicep build "$f" --stdout > /dev/null || status=1
+            echo "::endgroup::"
+          done
+          exit $status
+
+  scripts:
+    name: シェルスクリプト
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: shellcheck
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          find scripts -name '*.sh' -print0 | xargs -0 shellcheck -x

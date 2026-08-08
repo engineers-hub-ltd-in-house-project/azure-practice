@@ -1,0 +1,17 @@
+pre-commit:
+  parallel: true
+  commands:
+    prettier:
+      glob: "*.{md,yml,yaml,json}"
+      run: npx prettier --write {staged_files} && git add {staged_files}
+    markdownlint:
+      glob: "*.md"
+      run: npx markdownlint --config .markdownlint.json {staged_files}
+
+pre-push:
+  parallel: true
+  commands:
+    structure-lint:
+      run: node scripts/lint/structure-lint.mjs
+    mermaid-lint:
+      run: node scripts/lint/mermaid-lint.mjs
