@@ -25,16 +25,16 @@ Landing Zone は 2 種類に分かれます。
 
 ```mermaid
 flowchart TB
-  R["管理グループ: 中間ルート (組織名)"]
-  R --> P["管理グループ: platform"]
-  R --> L["管理グループ: landingzones"]
-  R --> S["管理グループ: sandbox"]
-  R --> D["管理グループ: decommissioned"]
-  P --> PM["管理グループ: management"]
-  P --> PC["管理グループ: connectivity"]
-  P --> PI["管理グループ: identity"]
-  L --> LC["管理グループ: corp (社内向け)"]
-  L --> LO["管理グループ: online (公開向け)"]
+  R["中間ルート管理グループ (組織名)"]
+  R --> P["platform 管理グループ"]
+  R --> L["landingzones 管理グループ"]
+  R --> S["sandbox 管理グループ"]
+  R --> D["decommissioned 管理グループ"]
+  P --> PM["management 管理グループ"]
+  P --> PC["connectivity 管理グループ"]
+  P --> PI["identity 管理グループ"]
+  L --> LC["corp (社内向け) 管理グループ"]
+  L --> LO["online (公開向け) 管理グループ"]
 ```
 
 第2章で「階層は効かせたいものの単位で切る」と述べました。この推奨階層はその実例です。platform 配下は共有基盤ゆえの厳しい統制、landingzones 配下はワークロード向けの標準統制、sandbox は実験のための緩い統制、decommissioned は廃止済みサブスクリプションの隔離。組織図ではなく、統制の強度で切られています。
