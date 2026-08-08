@@ -134,7 +134,7 @@ ERROR: Not Found({"error":{"code":"ResourceGroupNotFound","message":"Resource gr
 
 ARM は前提を手前から順に検査します。リソースグループの存在確認が先、プロバイダー登録の確認はその後です。目的のエラーに出会うには、そこまでの前提をすべて満たしておく必要があります。エラーが想定と違うときは、まず「どの段階の検査で止まったのか」を疑ってください。
 
-経路 2: 同じことを `az deployment`（Bicep テンプレートのデプロイ）でやってみます。テンプレートは `infra/bicep/chapters/ch01-provider/app-plan.bicep` にあります。
+経路 2: 同じことを `az deployment` でやってみます。これは、作りたいリソースの構成を Bicep（Azure のリソース構成をコードで書くための言語。第10章で扱います）のファイルに書いておき、ARM へまとめて送るコマンドです。テンプレートは `infra/bicep/chapters/ch01-provider/app-plan.bicep` にあります。
 
 ```bash
 az deployment group create --resource-group azp-ch01-rg \
