@@ -108,9 +108,20 @@ CLI は「同名の削除済み Vault が自分のサブスクリプションに
 
 ```bash
 # 論理削除された Key Vault を一覧します
-az keyvault list-deleted --query "[].{name:name, purgeDate:properties.scheduledPurgeDate}" -o table
+az keyvault list-deleted --query "[].{name:name, deletionDate:properties.deletionDate, purgeDate:properties.scheduledPurgeDate}" -o table
+```
 
-# 完全に削除します（検証済み。これで名前が解放されます）
+本書の検証環境で、Vault を削除した直後の実際の出力です。
+
+```text
+Name            DeletionDate               PurgeDate
+--------------  -------------------------  -------------------------
+azpch01kv26696  2026-08-08T02:36:16+00:00  2026-11-06T02:36:16+00:00
+```
+
+PurgeDate が削除日のちょうど 90 日後になっています。この日まで、この名前は誰にも使えません。完全に削除して名前を解放するには purge します。
+
+```bash
 az keyvault purge --name <名前> --location <リージョン>
 ```
 

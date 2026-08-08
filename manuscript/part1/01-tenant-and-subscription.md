@@ -81,14 +81,29 @@ Azure のリソースは、種類ごとに「リソースプロバイダー」�
 
 各リソースプロバイダーは、サブスクリプションごとに登録済みか未登録かの状態を持ちます。未登録のプロバイダーのリソースは作れません。
 
-作りたてのサブスクリプションでこの状態を見ると、意外な光景になっています。
+作りたてのサブスクリプションでこの状態を見ると、意外な光景になっています。主要なサービスに絞って、作成直後のサブスクリプションで実際に確認した結果です。
 
 ```bash
-az provider list --query "[?registrationState=='Registered'].namespace" -o tsv | sort | head
+az provider list --query "[?namespace=='Microsoft.Storage'||namespace=='Microsoft.Web'||namespace=='Microsoft.KeyVault'||namespace=='Microsoft.DocumentDB'||namespace=='Microsoft.ManagedIdentity'].{ns:namespace,state:registrationState}" -o table
+```
+
+```text
+Ns                         State
+-------------------------  -------------
+Microsoft.ManagedIdentity  Registered
+Microsoft.Storage          Registered
+Microsoft.DocumentDB       NotRegistered
+Microsoft.KeyVault         NotRegistered
+Microsoft.Web              NotRegistered
+```
+
+Key Vault も App Service（Microsoft.Web）も Cosmos DB（Microsoft.DocumentDB）も未登録から始まります。未登録の総数を数えると、本書の検証環境では 295 でした。
+
+```bash
 az provider list --query "[?registrationState=='NotRegistered'].namespace" -o tsv | wc -l
 ```
 
-本書の検証時、新規サブスクリプションでは Microsoft.KeyVault も Microsoft.Web も未登録でした。登録済みはごく一部で、大半のプロバイダーは未登録から始まります。それでも普段この状態に気づかないのには理由があり、それを次の演習で確かめます。
+大半のプロバイダーは未登録から始まるのに、普段この状態に気づかないのには理由があり、それを次の演習で確かめます。
 
 ### 壊す演習 ― 未登録プロバイダーの素の挙動を観察する
 
@@ -141,7 +156,7 @@ az deployment group create --resource-group azp-ch01-rg \
   --template-file infra/bicep/chapters/ch01-provider/app-plan.bicep
 ```
 
-本書の検証環境では、このデプロイは失敗しました。ただし、経路 1 とはまったく別の理由でです。
+本書の検証環境では、このデプロイは失敗しました。ただし、理由は経路 1 とまったく別です。
 
 ```text
 ERROR: {"status":"Failed","error":{"code":"DeploymentFailed", ... "details":[{"code":"Unauthorized",
@@ -222,4 +237,4 @@ az group delete --name azp-ch01-rg --yes
 
 1. 同じユーザーが、同じテナントに属する 2 つのサブスクリプション A と B に対して、A では仮想マシンを作れるのに B では作れません。権限はどちらも同じロールが同じ範囲で割り当てられています。原因として考えられるものを 2 つ挙げてください
 2. `az account list` の結果に、確かにアクセス権を持っているはずのサブスクリプションが出てきません。何を確認すべきでしょうか
-3. CI/CD 用のサービスプリンシパルで Bicep のデプロイを実行したところ、手元では成功する同じテンプレートが MissingSubscriptionRegistration で失敗しました。手元の実行と何が違ったのか、この章で見た 2 つの経路の違いを踏まえて説明してください
+3. デプロイを自動化するためのサービスプリンシパル（第0章の表参照）で Bicep のデプロイを実行したところ、手元では成功する同じテンプレートが MissingSubscriptionRegistration で失敗しました。手元の実行と何が違ったのか、この章で見た 2 つの経路の違いを踏まえて説明してください

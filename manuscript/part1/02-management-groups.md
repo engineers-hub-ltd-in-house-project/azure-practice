@@ -91,10 +91,21 @@ az role assignment create --assignee "$me" --role Reader --scope "$mg_id"
 
 # サブスクリプション側から見ると、継承された割り当てとして現れます
 az role assignment list --scope "$sub_id" --include-inherited \
-  --query "[?roleDefinitionName=='Reader'].{scope:scope, role:roleDefinitionName}" -o table
+  --query "[].{role:roleDefinitionName, scope:scope}" -o table
 ```
 
-結果の scope 列は、サブスクリプションではなく管理グループを指しています。そして `--include-inherited` を外すと、この割り当ては一覧から消えます。サブスクリプション自体には何も割り当てていないからです。
+本書の検証環境での実際の出力です（サブスクリプション ID は伏せています）。割り当て直後は一覧に現れないことがあります。伝播には実測で数十秒かかったので、出てこないときは少し待って再実行してください。
+
+```text
+Role    Scope
+------  ------------------------------------------------------------
+Owner   /subscriptions/<サブスクリプションID>
+Owner   /subscriptions/<サブスクリプションID>
+Owner   /providers/Microsoft.Management/managementGroups/azp-ch02-mg
+Reader  /providers/Microsoft.Management/managementGroups/azp-ch02-mg
+```
+
+4 行それぞれに来歴があります。サブスクリプションの Owner は第0章のサインアップで自動付与されたもの（検証環境では 2 重に付いていました）、管理グループの Owner は先ほどの管理グループ作成で作成者に自動付与されたもの、Reader がいま割り当てたものです。下 2 行の scope 列は、サブスクリプションではなく管理グループを指しています。そして `--include-inherited` を外すと、この下 2 行は一覧から消えます。サブスクリプション自体には何も割り当てていないからです。
 
 権限が「見えない場所から効いている」ことがある。これが管理グループを導入したときに最初に戸惑う点です。権限の調査では常に `--include-inherited` を付ける習慣をつけてください。
 

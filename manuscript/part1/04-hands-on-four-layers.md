@@ -122,19 +122,22 @@ CLI で作ったものを、今度はポータルで縦に辿ります。同じ�
 
 targetScope の指定がスコープの制約そのものであることを、失敗させて確認します。
 
-`main.bicep` の 1 行目を次のように書き換えて（あるいはコピーを作って）、`az deployment group create` でデプロイしてみます。
+`main.bicep` の冒頭にある targetScope の行を次のように書き換えて（あるいはコピーを作って）、`az deployment group create` でデプロイしてみます。
 
 ```bicep
 targetScope = 'resourceGroup'
 ```
 
-リソースグループの定義がエラーになります。
+次のエラーで止まります。実際の出力です（ファイルパスの部分は環境によって変わります）。
 
 ```text
-Resource type 'Microsoft.Resources/resourceGroups' is not a valid resource type at scope 'ResourceGroup'.
+ERROR: main.bicep(20,63) : Error BCP135: Scope "resourceGroup" is not valid for this resource type. Permitted scopes: "subscription". [https://aka.ms/bicep/core-diagnostics#BCP135]
+main.bicep(35,10) : Error BCP134: Scope "resource" is not valid for this module. Permitted scopes: "resourceGroup". [https://aka.ms/bicep/core-diagnostics#BCP134]
 ```
 
-権限の問題ではありません。そのスコープでは、そもそもその種類のリソースを書けないのです。第1章の MissingSubscriptionRegistration と同じく、権限とは別の軸で失敗が起きています。Azure のエラーを読むときは、まず「これは権限の話か、スコープの話か、登録の話か」を切り分けると早く原因に辿り着けます。
+注目すべきは、このエラーが Azure から返ってきたものではないことです。`az deployment` はテンプレートを ARM へ送る前に Bicep のコンパイルを行い、スコープ違反はその型検査（BCP135）が止めます。リクエストは Azure に届いてすらいません。2 つ目の BCP134 は、リソースグループの定義だけでなく、その中身を書き込むモジュールのスコープ指定も連鎖して不正になったことを示しています。
+
+権限の問題ではありません。そのスコープでは、そもそもその種類のリソースを書けないのです。第1章で見た登録やクォータのエラーが ARM まで届いてから返されるのに対し、スコープ違反は手元のコンパイルで止まります。失敗には「どの軸か」だけでなく「どの層で起きたか」という切り分けもある、というのがこの演習の収穫です。
 
 確認したら targetScope を subscription に戻してください。
 
