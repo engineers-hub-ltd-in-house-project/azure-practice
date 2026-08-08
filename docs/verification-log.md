@@ -9,7 +9,7 @@
 | pending  | 未検証。本文の手順は公式ドキュメントに基づくが実行していない |
 | blocked  | 権限やクォータの都合で検証できなかった。理由を章内に記す     |
 
-集計: pending: 3 / verified: 24
+集計: pending: 2 / verified: 25
 
 | 章                                                                                                                           | 状態     | 検証日     | Azure CLI | Bicep CLI | API バージョン                                                                                                                                                                                               |
 | ---------------------------------------------------------------------------------------------------------------------------- | -------- | ---------- | --------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -39,4 +39,4 @@
 | [第21章 Cloud Adoption Framework と Landing Zone](../manuscript/part5/21-caf-and-landing-zone.md)                            | verified | 2026-08-08 | 2.77.0    | 0.46.1    | avm/ptn/alz/empty:0.3.6 (registry), 公式ドキュメント確認 2026-08-08                                                                                                                                          |
 | [第22章 マルチサブスクリプション設計の実践](../manuscript/part5/22-multi-subscription.md)                                    | verified | 2026-08-08 | 2.77.0    | 0.46.1    | az billing account list (MCA 実測), avm/ptn/lz/sub-vending:0.8.0 (registry)                                                                                                                                  |
 | [第23章 コストの見方 ― タグとスコープで課金を切り分ける](../manuscript/part5/23-cost-management.md)                          | verified | 2026-08-08 | 2.77.0    | 0.46.1    | Microsoft.CostManagement/query@2024-08-01 (NotFound 実測), Microsoft.Consumption/budgets@2024-08-01                                                                                                          |
-| [第24章 1 つのアプリケーションをゼロから設計し、全階層を貫通させる](../manuscript/part6/24-capstone.md)                      | pending  | -          | -         | -         | -                                                                                                                                                                                                            |
+| [第24章 1 つのアプリケーションをゼロから設計し、全階層を貫通させる](../manuscript/part6/24-capstone.md)                      | verified | 2026-08-08 | 2.77.0    | 0.46.1    | Microsoft.ServiceBus/namespaces@2024-01-01 (Basic, disableLocalAuth)                                                                                                                                         |
