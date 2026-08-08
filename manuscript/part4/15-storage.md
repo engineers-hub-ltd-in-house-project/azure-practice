@@ -88,13 +88,13 @@ Functions のデプロイパッケージ（コードの zip）の置き場です
 
 第14章で見たとおり、この関係は既定では接続文字列（キー）で結ばれています。スクリプトの後半はこれを 4 手で解体します。
 
-1. Function App にシステム割り当て ID を与える（第7章）
+手順 1: Function App にシステム割り当て ID を与えます（第7章）。
 
 ```bash
 az functionapp identity assign --name azp-ch15-func -g azp-ch15-rg
 ```
 
-2. その ID にデータプレーンのロールを割り当てる（第8章） ホストは BLOB・キュー・テーブルを使うため 3 つ。
+手順 2: その ID にデータプレーンのロールを割り当てます（第8章）。ホストは BLOB・キュー・テーブルを使うため 3 つです。
 
 ```bash
 az role assignment create --assignee <principalId> --role "Storage Blob Data Owner" --scope <ストレージ>
@@ -102,14 +102,14 @@ az role assignment create --assignee <principalId> --role "Storage Queue Data Co
 az role assignment create --assignee <principalId> --role "Storage Table Data Contributor" --scope <ストレージ>
 ```
 
-3. 接続文字列の設定を「アカウント名だけ」の設定に置き換える。
+手順 3: 接続文字列の設定を「アカウント名だけ」の設定に置き換えます。
 
 ```bash
 az functionapp config appsettings set --settings AzureWebJobsStorage__accountName=<ストレージ名> ...
 az functionapp config appsettings delete --setting-names AzureWebJobsStorage ...
 ```
 
-4. デプロイ側の認証も ID へ切り替え、最後にキーを止める。
+手順 4: デプロイ側の認証も ID へ切り替え、最後にキーを止めます。
 
 ```bash
 az functionapp deployment config set --deployment-storage-auth-type SystemAssignedIdentity ...
