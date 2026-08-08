@@ -50,7 +50,7 @@ DEPLOYMENT_STORAGE_CONNECTION_STRING
 APPLICATIONINSIGHTS_CONNECTION_STRING
 ```
 
-AzureWebJobsStorage と DEPLOYMENT_STORAGE_CONNECTION_STRING の中身は、相棒のストレージへの接続文字列、つまり第8章で葬ったはずのキーです。デプロイの認証設定にも同じことが書かれています。
+`AzureWebJobsStorage` と `DEPLOYMENT_STORAGE_CONNECTION_STRING` の中身は、相棒のストレージへの接続文字列、つまり第8章で葬ったはずのキーです。デプロイの認証設定にも同じことが書かれています。
 
 ```bash
 az functionapp deployment config show --name azp-ch14-func -g azp-ch14-rg \

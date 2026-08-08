@@ -4,13 +4,14 @@
   "private": true,
   "description": "ガバナンス階層から積み上げる Azure 自習書の原稿・IaC・検証スクリプト",
   "scripts": {
-    "lint": "npm run lint:md && npm run lint:format && npm run lint:structure && npm run lint:mermaid",
+    "lint": "npm run lint:md && npm run lint:format && npm run lint:structure && npm run lint:mermaid && npm run lint:terms",
     "lint:md": "markdownlint --config .markdownlint.json '**/*.md' --ignore node_modules",
     "lint:format": "prettier --check '**/*.{md,yml,yaml,json}'",
     "lint:structure": "node scripts/lint/structure-lint.mjs",
     "lint:mermaid": "node scripts/lint/mermaid-lint.mjs",
     "format": "prettier --write '**/*.{md,yml,yaml,json}'",
-    "prepare": "lefthook install || true"
+    "prepare": "lefthook install || true",
+    "lint:terms": "node scripts/lint/terms-lint.mjs"
   },
   "devDependencies": {
     "lefthook": "^1.13.0",

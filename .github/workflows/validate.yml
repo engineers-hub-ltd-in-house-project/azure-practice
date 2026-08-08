@@ -32,6 +32,8 @@ jobs:
         run: npm run lint:structure
       - name: Mermaid の記法
         run: npm run lint:mermaid
+      - name: 用語の規約
+        run: npm run lint:terms
 
   bicep:
     name: Bicep のビルドと lint

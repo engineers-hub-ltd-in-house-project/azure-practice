@@ -110,7 +110,7 @@ Reader の actions は `*/read` だけなので、write は拒否されます。
 
 ### 最小権限へ絞り直す
 
-管理者側のプロファイル（AZURE_CONFIG_DIR を外した通常のシェル）に戻り、割り当てを外して RG 単位に付け直します。
+管理者側のプロファイル（`AZURE_CONFIG_DIR` を外した通常のシェル）に戻り、割り当てを外して RG 単位に付け直します。
 
 ```bash
 az role assignment delete --assignee <appId> --role Reader --scope "/subscriptions/$sub"
