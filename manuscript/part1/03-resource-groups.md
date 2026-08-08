@@ -96,21 +96,31 @@ flowchart LR
 
 つまり 1 つのマネージド ID が、リソースの世界と ID の世界に 1 つずつ足を置いています。ここで本章の問いです。リソースグループを消せば、リソースの世界の顔は確実に消えます。では、台帳側の 1 行はどうなるでしょうか。
 
-以下は第4章の統合ハンズオンの後片付けで実際に観察する手順です（検証済み。本書では後片付けを teardown と呼び、スクリプト名もこれに合わせています）。
+実際にやってみます。以下は頭からコピペで実行できる列で、出力は本書の検証環境の実物です（なお、こうした後片付けを本書では teardown と呼び、スクリプト名もこれに合わせています）。
 
 ```bash
-# 削除前に ID の識別子を控えておきます
-principal_id=$(az identity show --name azp-ch04-id --resource-group azp-ch04-rg --query principalId -o tsv)
+# 器と、題材のマネージド ID を作ります
+az group create --name azp-ch03-rg --location japaneast \
+  --tags azp-book=azure-practice azp-chapter=ch03 azp-lifecycle=ephemeral
+az identity create --name azp-ch03-id --resource-group azp-ch03-rg
 
-# リソースグループごと削除します
-az group delete --name azp-ch04-rg --yes
-az group wait --name azp-ch04-rg --deleted
+# 削除の前に、台帳側の 1 行を指す識別子を控えておきます
+principal_id=$(az identity show --name azp-ch03-id --resource-group azp-ch03-rg --query principalId -o tsv)
+echo "$principal_id"
 
-# Entra ID 側にサービスプリンシパルが残っているかを確認します
+# リソースグループごと削除します（完了まで待ちます）
+az group delete --name azp-ch03-rg --yes
+
+# 台帳側の 1 行はどうなったかを確認します
 az ad sp show --id "$principal_id"
 ```
 
-マネージド ID に紐づくサービスプリンシパルは、リソースの削除に追随して削除される設計ですが、反映には時間差がありえます。本書の検証時は、リソースグループの削除完了を待った時点でサービスプリンシパル側も消えていました。
+```text
+ERROR: Resource '01712186-...' does not exist or one of its queried reference-property
+objects are not present.
+```
+
+台帳側の 1 行も消えていました。マネージド ID の台帳側は、リソース側の削除に追随して消される設計です。ただし反映には時間差がありえます。本書の検証では削除完了直後に消えていましたが、数分残ることもあります。「消えているはず」を確認するこの 1 手を、削除の習慣に含めてください。
 
 より確実に残るのは、ロール割り当ての残骸です。ID を先に消すと、その ID を指していたロール割り当てが対象不明のまま残ります。
 

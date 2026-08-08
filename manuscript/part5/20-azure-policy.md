@@ -42,6 +42,8 @@ az policy definition list \
 ポリシー定義をリソースグループのスコープへ、Deny の効果で割り当てます。
 
 ```bash
+az group create --name azp-ch20-rg --location japaneast \
+  --tags azp-book=azure-practice azp-chapter=ch20 azp-lifecycle=ephemeral
 az policy assignment create --name azp-ch20-deny-localauth \
   --display-name "Cosmos のローカル認証を禁止する" \
   --policy 5450f5bd-9c72-4390-a9c4-a7aba4edfdd2 \

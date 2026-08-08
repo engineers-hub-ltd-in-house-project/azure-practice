@@ -42,6 +42,8 @@ VNet とサブネット自体は無料です。課金されるのは Private End
 ### 閉域の骨組みを作る
 
 ```bash
+az group create --name azp-ch19-rg --location japaneast \
+  --tags azp-book=azure-practice azp-chapter=ch19 azp-lifecycle=ephemeral
 az network vnet create --name azp-ch19-vnet -g azp-ch19-rg --address-prefix 10.10.0.0/16 \
   --subnet-name pe-subnet --subnet-prefix 10.10.1.0/24
 az network vnet subnet create --name integration-subnet --vnet-name azp-ch19-vnet -g azp-ch19-rg \

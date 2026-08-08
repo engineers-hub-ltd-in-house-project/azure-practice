@@ -20,6 +20,9 @@ Cosmos DB は、世界中のリージョンへ複製でき、応答時間をミ�
 サブスクリプションの効き方で注意すべきは Free Tier です。Cosmos DB の Free Tier は 1 サブスクリプションに 1 アカウントしか適用できません。教材やチームの検証で「とりあえず Free Tier」を選ぶと、2 人目・2 回目が適用できずに構成が割れます。本書は再実行可能性を優先し、Free Tier ではなく serverless（使った分だけの課金。使わなければほぼゼロ）で通します。
 
 ```bash
+az provider register --namespace Microsoft.DocumentDB --wait   # 未登録なら（第1章）
+az group create --name azp-ch18-rg --location japaneast \
+  --tags azp-book=azure-practice azp-chapter=ch18 azp-lifecycle=ephemeral
 az cosmosdb create --name azp-ch18-cosmos -g azp-ch18-rg \
   --capabilities EnableServerless \
   --locations regionName=japaneast

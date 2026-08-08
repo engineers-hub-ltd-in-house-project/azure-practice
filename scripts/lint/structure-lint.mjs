@@ -20,6 +20,11 @@ const PART4_BLOCKS = [
 
 const errors = [];
 
+function basenameChapter(rel) {
+  const m = rel.match(/\/(\d{2})-[^/]+\.md$/);
+  return m ? parseInt(m[1], 10) : null;
+}
+
 function walk(dir) {
   const out = [];
   for (const entry of readdirSync(dir)) {
@@ -99,6 +104,37 @@ for (const file of files) {
   const rel = relative(ROOT, file);
   const text = readFileSync(file, 'utf8');
   checkPathRefs(rel, text);
+
+  // ハンズオンの自己完結性の検査。
+  // 1) 章の bash ブロック内で、別の章のリソース名 (azp-chNN-...) を参照しない
+  // 2) azp-chNN-rg を使う章は、章内で az group create するか、章スクリプトを参照する
+  {
+    const m = basenameChapter(rel);
+    if (m !== null) {
+      const lines2 = text.split('\n');
+      let inBash = false;
+      const bashText = [];
+      for (const line of lines2) {
+        if (/^\s*```bash/.test(line)) { inBash = true; continue; }
+        if (inBash && /^\s*```/.test(line)) { inBash = false; continue; }
+        if (inBash) bashText.push(line);
+      }
+      const bash = bashText.join('\n');
+      for (const ref of bash.matchAll(/azp-ch(\d+)/g)) {
+        if (parseInt(ref[1], 10) !== m) {
+          errors.push(`${rel}: 第${m}章のコマンドが別の章のリソース azp-ch${ref[1]}... を参照している。章の手順は章内で完結させる`);
+          break;
+        }
+      }
+      const rgName = `azp-ch${String(m).padStart(2, '0')}-rg`;
+      const usesRg = bash.includes(rgName);
+      const createsRg = new RegExp(`az group create[^\n]*${rgName}`).test(bash);
+      const usesScript = text.includes(`scripts/chapters/ch${String(m).padStart(2, '0')}`);
+      if (usesRg && !createsRg && !usesScript) {
+        errors.push(`${rel}: ${rgName} を参照しているが、章内に az group create も章スクリプトへの参照もない`);
+      }
+    }
+  }
 
   // 本文の太字は禁止。どこが重要かは読者が決めるものであり、書き手が強調で固定しない。
   // コードフェンス内は対象外にする。
