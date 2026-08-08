@@ -101,7 +101,7 @@ az provider show --namespace Microsoft.Web --query registrationState -o tsv
 # NotRegistered
 ```
 
-経路 1: ARM の API を直接叩く。`az rest` は Azure の管理 API（ARM）へ生のリクエストを送るコマンドです。
+経路 1: 管理の窓口へ直接リクエストを送ります。Azure のすべての管理操作は、Azure Resource Manager（以下 ARM）という共通の窓口が受け付けています。ポータルのボタンも az コマンドも、最終的にはこの ARM へ HTTP リクエストを送っているにすぎません。`az rest` は、その ARM へ生のリクエストを送るコマンドです。
 
 ```bash
 sub=$(az account show --query id -o tsv)

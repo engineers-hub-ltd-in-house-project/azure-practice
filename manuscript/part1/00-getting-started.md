@@ -127,7 +127,7 @@ The Azure free account is only available to new users and is limited to one per 
 az login
 ```
 
-ブラウザが開き、サインインを求められます。WSL などブラウザ連携が不安定な環境では、次のどちらかが確実です。
+ブラウザが開き、サインインを求められます。WSL（Windows Subsystem for Linux。Windows 上で Linux を動かす仕組み）などブラウザ連携が不安定な環境では、次のどちらかが確実です。
 
 ```bash
 # ブラウザを一切開かず、表示されたコードを任意の端末のブラウザで入力する
