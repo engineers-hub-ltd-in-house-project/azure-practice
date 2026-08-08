@@ -62,3 +62,8 @@ out.append('')
 (root / 'docs' / 'verification-log.md').write_text('\n'.join(out), encoding='utf-8')
 print(f'docs/verification-log.md を更新した ({len(rows)} 章)')
 PY
+
+# 生成物も prettier の書式に合わせる。CI の format 検査と食い違わせないため。
+if command -v npx >/dev/null 2>&1; then
+  (cd "$root" && npx --no-install prettier --write docs/verification-log.md >/dev/null 2>&1) || true
+fi
