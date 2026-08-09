@@ -245,6 +245,11 @@ const FORBIDDEN_IDENTIFIERS = [
   /ba9d0cbe/, /8a7c850a/, /417dfc63/, /fe6c7ed6/,
   /ff467136/, /76d5d76a/, /c5940261/, /yusukesatoengineershub/,
   /7a4fe343/, /azp-probe-\d/,
+  // 検証環境で実際に生まれたオブジェクトの識別子。個人と結び付きうるため本文には載せない。
+  // 組み込みロール・ポリシー定義の ID は公開値なのでここには入れない。
+  /3ff75678/, /2b138f7e/, /db41e908/, /94ff7b57/, /e5ac5bab/,
+  /e40d41ce/, /1c9aacfa/, /9602dd0b/, /01712186/, /f69bee16/,
+  /395b9a3f/, /5fd4637e/, /a35fe928/,
 ];
 for (const file of [...walk(MANUSCRIPT), join(ROOT, 'README.md'), join(ROOT, 'WRITING_GUIDELINES.md')]) {
   if (!existsSync(file)) continue;

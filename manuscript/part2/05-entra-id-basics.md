@@ -49,7 +49,7 @@ az ad group create --display-name azp-ch05-group --mail-nickname azp-ch05-group 
 
 ```text
 {
-  "id": "94ff7b57-6bfb-4252-b7dd-59e86a36a112",
+  "id": "44445555-6666-7777-8888-9999aaaabbbb",
   "name": "azp-ch05-group"
 }
 ```
@@ -101,7 +101,7 @@ az ad sp create-for-rbac --name azp-ch05-sp
 WARNING: The output includes credentials that you must protect. Be sure that you do not
 include these credentials in your code or check the credentials into your source control.
 {
-  "appId": "3ff75678-dd8a-4556-98d7-73101d6845a3",
+  "appId": "11112222-3333-4444-5555-666677778888",
   "displayName": "azp-ch05-sp",
   "password": "<シークレット。二度と表示されません>",
   "tenant": "<テナントID>"
@@ -113,26 +113,26 @@ include these credentials in your code or check the credentials into your source
 1 つ目、アプリケーションの側を見ます。
 
 ```bash
-az ad app show --id 3ff75678-dd8a-4556-98d7-73101d6845a3 --query "{id:id, appId:appId}" -o json
+az ad app show --id 11112222-3333-4444-5555-666677778888 --query "{id:id, appId:appId}" -o json
 ```
 
 ```text
 {
-  "appId": "3ff75678-dd8a-4556-98d7-73101d6845a3",
-  "id": "2b138f7e-e1f3-4847-80d1-792d202802e9"
+  "appId": "11112222-3333-4444-5555-666677778888",
+  "id": "22223333-4444-5555-6666-777788889999"
 }
 ```
 
 2 つ目、サービスプリンシパルの側を、同じ appId で引きます。
 
 ```bash
-az ad sp show --id 3ff75678-dd8a-4556-98d7-73101d6845a3 --query "{id:id, appId:appId}" -o json
+az ad sp show --id 11112222-3333-4444-5555-666677778888 --query "{id:id, appId:appId}" -o json
 ```
 
 ```text
 {
-  "appId": "3ff75678-dd8a-4556-98d7-73101d6845a3",
-  "id": "db41e908-6d86-457c-ab21-be584d342e2c"
+  "appId": "11112222-3333-4444-5555-666677778888",
+  "id": "33334444-5555-6666-7777-88889999aaaa"
 }
 ```
 
@@ -161,14 +161,14 @@ az identity create --name azp-ch05-id --resource-group azp-ch05-rg \
 ```text
 {
   "id": "/subscriptions/<サブスクリプションID>/resourcegroups/azp-ch05-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/azp-ch05-id",
-  "principalId": "e5ac5bab-b72f-45a1-8436-9cfdb736b96f"
+  "principalId": "55556666-7777-8888-9999-aaaabbbbcccc"
 }
 ```
 
 id はサブスクリプションの中のリソースのパスです。一方 principalId は、テナントの台帳に作られたサービスプリンシパルを指しています。台帳の側から見ます。
 
 ```bash
-az ad sp show --id e5ac5bab-b72f-45a1-8436-9cfdb736b96f \
+az ad sp show --id 55556666-7777-8888-9999-aaaabbbbcccc \
   --query "{displayName:displayName, servicePrincipalType:servicePrincipalType}" -o json
 ```
 
@@ -204,7 +204,7 @@ flowchart LR
 テナント側の掃除。アプリを消すとサービスプリンシパルも一緒に消えます。
 
 ```bash
-az ad app delete --id 3ff75678-dd8a-4556-98d7-73101d6845a3
+az ad app delete --id 11112222-3333-4444-5555-666677778888
 ```
 
 グループも台帳側のオブジェクトなので、同じくテナント側の操作で消します。
@@ -222,11 +222,11 @@ az group delete --name azp-ch05-rg --yes
 リソースグループの削除でマネージド ID のリソースが消えると、対になっていたテナント側のサービスプリンシパルも追随して消えます。削除完了後に確認した実際の出力です。
 
 ```bash
-az ad sp show --id e5ac5bab-b72f-45a1-8436-9cfdb736b96f
+az ad sp show --id 55556666-7777-8888-9999-aaaabbbbcccc
 ```
 
 ```text
-ERROR: Resource 'e5ac5bab-...' does not exist or one of its queried reference-property
+ERROR: Resource '55556666-...' does not exist or one of its queried reference-property
 objects are not present.
 ```
 

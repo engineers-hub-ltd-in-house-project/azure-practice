@@ -75,13 +75,13 @@ az container show --name azp-ch07-aci --resource-group azp-ch07-rg --query ident
 
 ```text
 {
-  "principalId": "e40d41ce-0bfe-4c8a-b906-278e771b686d",
+  "principalId": "66667777-8888-9999-aaaa-bbbbccccdddd",
   "tenantId": "<テナントID>",
   "type": "SystemAssigned, UserAssigned",
   "userAssignedIdentities": {
     "/subscriptions/<サブスクリプションID>/resourceGroups/azp-ch07-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/azp-ch07-uid": {
-      "clientId": "9602dd0b-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "principalId": "1c9aacfa-495d-4d56-b691-5f90e4ba49e5"
+      "clientId": "88889999-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "principalId": "77778888-9999-aaaa-bbbb-ccccddddeeee"
     }
   }
 }
@@ -92,7 +92,7 @@ az container show --name azp-ch07-aci --resource-group azp-ch07-rg --query ident
 テナントの台帳側を見ると、どちらもサービスプリンシパルとして存在しています。システム割り当ての displayName は宿主のリソース名そのものです。
 
 ```bash
-az ad sp show --id e40d41ce-0bfe-4c8a-b906-278e771b686d \
+az ad sp show --id 66667777-8888-9999-aaaa-bbbbccccdddd \
   --query "{displayName:displayName, servicePrincipalType:servicePrincipalType}" -o json
 ```
 
@@ -114,18 +114,18 @@ az container delete --name azp-ch07-aci --resource-group azp-ch07-rg --yes
 削除後、2 つの ID がどうなったかをテナント側から確認します。
 
 ```bash
-az ad sp show --id e40d41ce-0bfe-4c8a-b906-278e771b686d   # システム割り当てだったもの
+az ad sp show --id 66667777-8888-9999-aaaa-bbbbccccdddd   # システム割り当てだったもの
 ```
 
 ```text
-ERROR: Resource 'e40d41ce-...' does not exist or one of its queried reference-property
+ERROR: Resource '66667777-...' does not exist or one of its queried reference-property
 objects are not present.
 ```
 
 ユーザー割り当てのほうを、まずテナント側の台帳で引きます。
 
 ```bash
-az ad sp show --id 1c9aacfa-495d-4d56-b691-5f90e4ba49e5 --query displayName -o tsv
+az ad sp show --id 77778888-9999-aaaa-bbbb-ccccddddeeee --query displayName -o tsv
 ```
 
 同じものをリソース側からも引きます。

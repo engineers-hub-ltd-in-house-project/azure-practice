@@ -72,7 +72,7 @@ az stack sub create --name azp-ch13-stack --location japaneast \
 ```text
 {
   "deleted": [
-    ".../resourceGroups/azp-ch13-rg/providers/Microsoft.Authorization/roleAssignments/395b9a3f-...",
+    ".../resourceGroups/azp-ch13-rg/providers/Microsoft.Authorization/roleAssignments/bbbb1111-...",
     ".../resourceGroups/azp-ch13-rg/providers/Microsoft.Storage/storageAccounts/azpch134380"
   ],
   "state": "succeeded"

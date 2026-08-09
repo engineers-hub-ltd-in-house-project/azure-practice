@@ -133,7 +133,7 @@ az ad sp show --id "$principal_id"
 ```
 
 ```text
-ERROR: Resource '01712186-...' does not exist or one of its queried reference-property
+ERROR: Resource '99990000-...' does not exist or one of its queried reference-property
 objects are not present.
 ```
 

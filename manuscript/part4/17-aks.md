@@ -66,7 +66,7 @@ az aks show --name azp-ch17-aks -g azp-ch17-rg --query identity -o json
 
 ```text
 {
-  "principalId": "5fd4637e-xxxx-...",
+  "principalId": "cccc2222-xxxx-...",
   "type": "SystemAssigned"
 }
 ```
@@ -101,7 +101,7 @@ az aks show --name azp-ch17-aks -g azp-ch17-rg --query "oidcIssuerProfile.issuer
 ```
 
 ```text
-https://japaneast.oic.prod-aks.azure.com/<テナントID>/a35fe928-.../
+https://japaneast.oic.prod-aks.azure.com/<テナントID>/dddd3333-.../
 ```
 
 Azure 側には Pod 用のユーザー割り当てマネージド ID を用意し、「この発行者の、この ServiceAccount のトークンなら私として認めよ」という連合資格情報を登録します。
@@ -124,7 +124,7 @@ az identity federated-credential create --name aks-default-workload \
 
 ```text
 {
-  "issuer": "https://japaneast.oic.prod-aks.azure.com/<テナントID>/a35fe928-.../",
+  "issuer": "https://japaneast.oic.prod-aks.azure.com/<テナントID>/dddd3333-.../",
   "subject": "system:serviceaccount:default:workload-sa"
 }
 ```

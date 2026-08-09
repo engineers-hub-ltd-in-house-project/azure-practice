@@ -110,7 +110,7 @@ wc -l infra/bicep/chapters/ch12-modules/main.bicep built.json
 ```text
 {
   "outputs": {
-    "identityPrincipalId": { "value": "f69bee16-xxxx-..." },
+    "identityPrincipalId": { "value": "aaaa0000-xxxx-..." },
     "storageId": { "value": ".../storageAccounts/azpch122264" }
   },
   "state": "Succeeded"
