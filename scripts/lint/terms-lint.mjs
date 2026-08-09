@@ -61,6 +61,39 @@ function proseOf(lines, until = Infinity) {
   return out.join('\n');
 }
 
+// 理解度チェックで使う語は、その章の本文にも出ているか、設問が第N章の参照を添えていること。
+// 用語集にあるだけでは足りない。読者は前の章の括弧の中で一度見た語を覚えていない
+// （第 4 章の設問が、本文に一度も出てこない teardown を前提にしていた）。
+function checkQuizTerms(rel, text) {
+  const lines = text.split('\n');
+  const start = lines.findIndex((l) => l.startsWith('## 理解度チェック'));
+  if (start === -1) return;
+  // フェンスの中は本文ではない。scripts/teardown/... のようなパスに語が出ていても、
+  // 読者はそこで語の意味を知ることはない。インラインコードは本文の一部として数える。
+  const bodyLines = [];
+  let fenced = false;
+  for (const l of lines.slice(0, start)) {
+    if (/^\s*```/.test(l)) {
+      fenced = !fenced;
+      continue;
+    }
+    if (!fenced) bodyLines.push(l);
+  }
+  const body = bodyLines.join('\n');
+  for (let i = start; i < lines.length; i++) {
+    const q = lines[i];
+    if (!/^\d+\.\s/.test(q.trim())) continue;
+    if (/第\s*\d+\s*章/.test(q)) continue;
+    for (const term of Object.keys(TERMS)) {
+      if (q.includes(term) && !body.includes(term)) {
+        errors.push(
+          `${rel}:${i + 1}: 設問の "${term}" がこの章の本文に出てこない。本文で使うか、設問に第N章の参照を添える`,
+        );
+      }
+    }
+  }
+}
+
 const files = walk(join(ROOT, 'manuscript')).sort();
 
 // 章ごとの本文。前の章までに読者が目にした語を引くために使う。
@@ -76,6 +109,8 @@ for (const file of files) {
   const chapter = chapterOf(file);
   const lines = readFileSync(file, 'utf8').split('\n');
   let inFence = false;
+
+  checkQuizTerms(rel, lines.join('\n'));
 
   // 図のラベルの検査。読者は前の章を読んでいるものとし、
   // 「前の章の本文」「この図より前の同章本文」「用語集で初出章がこの章以前」のどれかを求める。

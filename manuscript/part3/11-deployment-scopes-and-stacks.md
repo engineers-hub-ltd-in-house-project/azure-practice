@@ -158,6 +158,8 @@ flowchart LR
   D -->|"actionOnUnmanage: detachAll"| K["app2 を放置 (管理外へ)"]
 ```
 
+図で `actionOnUnmanage` と書いたのが、この分かれ道を決める設定の名前です。CLI では `--action-on-unmanage` として渡し、テンプレートやドキュメントでは `actionOnUnmanage` と表記されます。管理から外れたものをどう扱うか、という 1 つの設定です。
+
 ## deleteResources と detachAll をどう選ぶか
 
 deleteResources は本章のような「コードが真実」の運用に向きます。一方、スタック管理をやめたいだけでリソースは残したい移行の場面では detachAll を選びます。誤ってスタックを消してもリソースが道連れにならない、という保険として detachAll を常用する流儀もありますが、それは消し忘れ問題の再発と引き換えです。本書のハンズオンは ephemeral な検証環境なので、一貫して deleteResources を使います。
