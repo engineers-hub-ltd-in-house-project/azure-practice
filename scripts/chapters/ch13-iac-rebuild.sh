@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 第13章 ハンズオン ― Part 1〜2 の構成を IaC で再現する
+# 第13章 ハンズオン ― 第1〜2部の構成を IaC で再現する
 
 # shellcheck source=../lib/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"

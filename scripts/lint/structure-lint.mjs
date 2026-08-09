@@ -257,6 +257,31 @@ for (const doc of ['README.md', 'WRITING_GUIDELINES.md']) {
   if (existsSync(p)) checkPathRefs(doc, readFileSync(p, 'utf8'));
 }
 
+// 章の区分は「第N部」で書く。英語の Part も漢数字も混ぜない。
+// 読者が本文で辿る単位を 章 と 部 の 2 つに揃えるため。ディレクトリ名は対象外。
+for (const file of [
+  ...walk(MANUSCRIPT),
+  join(ROOT, 'README.md'),
+  join(ROOT, 'WRITING_GUIDELINES.md'),
+  ...walk(join(ROOT, 'templates')),
+]) {
+  if (!existsSync(file)) continue;
+  const rel = relative(ROOT, file);
+  const lines = readFileSync(file, 'utf8').split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    // パスとして書かれた part1/ などと、規約が反例として引用する語は表記の対象外
+    const text = lines[i]
+      .replace(/`[^`]*`/g, '')
+      .replace(/[\w./-]*part\d[\w./-]*/gi, '');
+    if (/Part\s*\d/.test(text)) {
+      errors.push(`${rel}:${i + 1}: 章の区分は「第N部」と書く。Part N と英語で書かない`);
+    }
+    if (/第[一二三四五六七八九十]+部/.test(text)) {
+      errors.push(`${rel}:${i + 1}: 部の番号は算用数字で書く（第一部 ではなく 第1部）`);
+    }
+  }
+}
+
 if (errors.length > 0) {
   console.error('構成規約の違反:');
   for (const e of errors) console.error(`  - ${e}`);

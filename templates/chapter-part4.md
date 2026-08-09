@@ -2,7 +2,7 @@
 
 > 状態: 骨格。本文は未執筆。
 
-<!-- Part 4 の章はこの 6 ブロックの順序を崩さない。scripts/lint/structure-lint.mjs が検査する。 -->
+<!-- 第4部の章はこの 6 ブロックの順序を崩さない。scripts/lint/structure-lint.mjs が検査する。 -->
 
 ## 1. このサービスは何のためにあるか
 
