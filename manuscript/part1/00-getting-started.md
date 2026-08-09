@@ -129,18 +129,36 @@ The Azure free account is only available to new users and is limited to one per 
 az login
 ```
 
-ブラウザが開き、サインインを求められます。WSL（Windows Subsystem for Linux。Windows 上で Linux を動かす仕組み）などブラウザ連携が不安定な環境では、次のどちらかが確実です。
+ブラウザが開き、サインインを求められます。
 
-ブラウザを一切開かず、表示されたコードを任意の端末のブラウザで入力する。
+WSL（Windows Subsystem for Linux。Windows 上で Linux を動かす仕組み）では、この 1 行がうまく動かないことがあります。WSL の中に Linux 用のブラウザが入っていないためで、`az login` はブラウザを開けないまま待ち続けたり、エラーで止まったりします。手は 2 つあります。
+
+1 つ目は、Windows 側の既定ブラウザを開かせる方法です。`wslview` は WSL から Windows のプログラムを呼ぶための道具で、`wslu` というパッケージに入っています。まず入れます。
+
+```bash
+sudo apt install wslu
+```
+
+`BROWSER` に `wslview` を指定して `az login` を実行すると、Windows 側の既定ブラウザが開きます。ブラウザを既に起動していれば、その画面が使われます。
+
+```bash
+BROWSER=wslview az login
+```
+
+2 つ目は、ブラウザ連携そのものを使わない方法です。端末にコードが表示されるので、任意の端末のブラウザで `https://microsoft.com/devicelogin` を開いて入力します。Windows 側でも、手元のスマートフォンでも構いません。
 
 ```bash
 az login --use-device-code
 ```
 
-WSL から Windows 側の既定ブラウザを開かせる（wslu がインストール済みの場合）
+自分が WSL にいるかどうかは、カーネル名で判別できます。`microsoft` や `WSL` を含んでいれば WSL です。
 
 ```bash
-BROWSER=wslview az login
+uname -r
+```
+
+```text
+5.15.167.4-microsoft-standard-WSL2
 ```
 
 サインインに成功すると、アクセスできるサブスクリプションの一覧が表示されます。
