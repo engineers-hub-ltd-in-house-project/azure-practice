@@ -363,6 +363,34 @@ for (const file of walk(MANUSCRIPT)) {
   }
 }
 
+// 章の bash ブロックで、代入していない変数を使わない。読者は章の頭から順に貼るので、
+// 前のブロックに代入が無ければ空文字で実行され、そのことに気づけない。
+// スクリプト側にだけ代入がある状態は、本文がコピペで通らないことを意味する。
+const SHELL_BUILTIN = new Set([
+  'HOME', 'PATH', 'USER', 'PWD', 'SHELL', 'RANDOM', 'BASH_SOURCE', 'PS1', 'IFS',
+]);
+for (const file of walk(MANUSCRIPT)) {
+  const rel = relative(ROOT, file);
+  const lines = readFileSync(file, 'utf8').split('\n');
+  const assigned = new Set();
+  let inBash = false;
+  for (let i = 0; i < lines.length; i++) {
+    const fence = lines[i].match(/^\s*```(\w*)/);
+    if (fence) {
+      inBash = inBash ? false : fence[1] === 'bash';
+      continue;
+    }
+    if (!inBash) continue;
+    for (const m of lines[i].matchAll(/\$\{?([A-Za-z_]\w*)\}?/g)) {
+      const name = m[1];
+      if (SHELL_BUILTIN.has(name) || assigned.has(name)) continue;
+      errors.push(`${rel}:${i + 1}: 代入していない変数 "$${name}" を使っている。使う前のブロックで値を取る`);
+    }
+    const assign = lines[i].match(/^\s*(?:export\s+)?(\w+)=/);
+    if (assign) assigned.add(assign[1]);
+  }
+}
+
 // ASCII と日本語の境目には半角スペースを 1 つ置く。第 4 章・付録 B・404 のような
 // 数字や英字が地の文に埋もれると読点の位置が読めなくなるため。
 // 全角の約物との隣接は詰める。コマンドと実際の出力を貼ったブロックは記録なので触らない。

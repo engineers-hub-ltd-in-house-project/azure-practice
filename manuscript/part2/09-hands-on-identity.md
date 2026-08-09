@@ -52,6 +52,12 @@ az storage account create --name <ストレージ名> --resource-group azp-ch09-
 
 ### 段 4 ― 権限を、それぞれ適切なスコープで配る
 
+スコープの文字列にサブスクリプション ID が要るので、控えておきます。
+
+```bash
+sub=$(az account show --query id -o tsv)
+```
+
 マネージド ID には、リソースグループのスコープで割り当てます。
 
 ```bash

@@ -156,6 +156,14 @@ az account management-group list --query "[].name" -o tsv
 
 ### ステップ 2 ― サブスクリプションを管理グループの下へ移す
 
+移す対象のサブスクリプション ID を控えます。前提の確認で `az account set` を済ませてあるので、いま宛先になっているサブスクリプションが返ります。
+
+```bash
+sub_id=$(az account show --query id -o tsv)
+```
+
+そのサブスクリプションを管理グループの下へ移します。
+
 ```bash
 az account management-group subscription add --name azp-ch04-mg --subscription "$sub_id"
 ```
