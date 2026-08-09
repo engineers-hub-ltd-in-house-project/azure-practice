@@ -34,6 +34,8 @@ jobs:
         run: npm run lint:mermaid
       - name: 用語の規約
         run: npm run lint:terms
+      - name: 検出器の自己検査
+        run: npm run lint:self
 
   bicep:
     name: Bicep のビルドと lint

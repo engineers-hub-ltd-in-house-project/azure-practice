@@ -11,7 +11,8 @@
     "lint:mermaid": "node scripts/lint/mermaid-lint.mjs",
     "format": "prettier --write '**/*.{md,yml,yaml,json}'",
     "prepare": "lefthook install || true",
-    "lint:terms": "node scripts/lint/terms-lint.mjs"
+    "lint:terms": "node scripts/lint/terms-lint.mjs",
+    "lint:self": "./scripts/lint/self-check.sh"
   },
   "devDependencies": {
     "lefthook": "^1.13.0",
