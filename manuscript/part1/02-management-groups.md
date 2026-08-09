@@ -122,7 +122,7 @@ RBAC は加算的です。あるスコープで許可されたことを、下位
 az account management-group create --name azp-ch02-mg --display-name "継承の観察用"
 ```
 
-作られたことを確認します。ここで AuthorizationFailed が出ても、上に書いた 2 つの事実のとおり、作成自体は成功していることがあります。一覧ではなく名前で引くのが確実です。
+作られたことを確認します。ここで AuthorizationFailed が出ても、上に書いた 2 つの事実のとおり、作成自体は成功していることがあります。一覧ではなく名前を指定して取得するのが確実です。
 
 ```bash
 az account management-group show --name azp-ch02-mg --query name -o tsv

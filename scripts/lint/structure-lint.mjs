@@ -372,6 +372,27 @@ for (const file of walk(MANUSCRIPT)) {
   }
 }
 
+// 業界口語を使わない。「名前で引く」は、検索・取得・解決のどれを指すのかが読者に伝わらない。
+// 正確な動詞（取得する・解決する・問い合わせる・引用する）を使う。
+// 「差し引く」「線を引く」のような通常の語は落とさないよう、対象を絞る。
+const JARGON_VERB = /(名前|ID|appId|キー|値|一覧|台帳|そこ|ここ)(で|から|を)引(く|き|け|い)/;
+for (const file of walk(MANUSCRIPT)) {
+  const rel = relative(ROOT, file);
+  const lines = readFileSync(file, 'utf8').split('\n');
+  let inFence = false;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\s*```/.test(lines[i])) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    const m = lines[i].replace(/`[^`]*`/g, '').match(JARGON_VERB);
+    if (m) {
+      errors.push(`${rel}:${i + 1}: 業界口語を使わない。取得する・解決する・問い合わせる と書く -> ${m[0]}`);
+    }
+  }
+}
+
 // 地の文はですます調で書く。常体は読者への語りかけを切ってしまう。
 // 「〜と相談されました」のような引用の中は話し手の言葉なので対象外。
 const POLITE_END = /(です|ます|でした|ました|ません|ませんでした|ましょう|でしょう|ください|下さい|ませ)。$/;

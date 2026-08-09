@@ -66,6 +66,7 @@ probe "1 ステップ 1 ブロック" "$CH" "t = t.replace('az group show --name
 probe "未代入の変数の禁止" "$CH" "t = t.replace('az group show --name <名前>', 'az group show --name \"\$undefined_var\"')" structure-lint.mjs
 probe "理解の指示は肯定形" "$CH" "t = t.replace('必須であるがゆえに', '別物だと思わないでください。必須であるがゆえに')" structure-lint.mjs
 probe "ですます調" "$CH" "t = t.replace('必須であるがゆえに', 'これは必須である。必須であるがゆえに')" structure-lint.mjs
+probe "業界口語を使わない" "$CH" "t = t.replace('必須であるがゆえに', '名前で引くと分かります。必須であるがゆえに')" structure-lint.mjs
 probe "章に実出力が 1 つ以上" "$CH" "t = t.replace('\`\`\`text', '\`\`\`yaml')" structure-lint.mjs
 probe "別章リソースの参照の禁止" "$CH" "t = t.replace('azp-ch03-rg', 'azp-ch09-rg')" structure-lint.mjs
 probe "Part 4 の 6 ブロック" "$P4" "t = t.replace('## 2. 縦の依存関係', '## 2. たてのはなし')" structure-lint.mjs

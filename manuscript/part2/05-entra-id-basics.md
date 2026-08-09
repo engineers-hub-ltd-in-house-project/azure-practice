@@ -133,7 +133,7 @@ az ad app show --id 11112222-3333-4444-5555-666677778888 --query "{id:id, appId:
 }
 ```
 
-2 つ目、サービスプリンシパルの側を、同じ appId で引きます。
+2 つ目、サービスプリンシパルの側を、同じ appId を指定して取得します。
 
 ```bash
 az ad sp show --id 11112222-3333-4444-5555-666677778888 --query "{id:id, appId:appId}" -o json

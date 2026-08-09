@@ -122,13 +122,13 @@ ERROR: Resource '66667777-...' does not exist or one of its queried reference-pr
 objects are not present.
 ```
 
-ユーザー割り当てのほうを、まずテナント側の台帳で引きます。
+ユーザー割り当てのほうを、まずテナント側の台帳から取得します。
 
 ```bash
 az ad sp show --id 77778888-9999-aaaa-bbbb-ccccddddeeee --query displayName -o tsv
 ```
 
-同じものをリソース側からも引きます。
+同じものをリソース側からも取得します。
 
 ```bash
 az identity show --name azp-ch07-uid --resource-group azp-ch07-rg --query name -o tsv
