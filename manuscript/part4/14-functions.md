@@ -52,7 +52,7 @@ DEPLOYMENT_STORAGE_CONNECTION_STRING
 APPLICATIONINSIGHTS_CONNECTION_STRING
 ```
 
-`AzureWebJobsStorage` と `DEPLOYMENT_STORAGE_CONNECTION_STRING` の中身は、相棒のストレージへの接続文字列、つまり第 8 章で葬ったはずのキーです。デプロイの認証設定にも同じことが書かれています。
+`AzureWebJobsStorage` と `DEPLOYMENT_STORAGE_CONNECTION_STRING` の中身は、対になるストレージへの接続文字列、つまり第 8 章で葬ったはずのキーです。デプロイの認証設定にも同じことが書かれています。
 
 ```bash
 az functionapp deployment config show --name azp-ch14-func -g azp-ch14-rg \
@@ -67,7 +67,7 @@ az functionapp deployment config show --name azp-ch14-func -g azp-ch14-rg \
 }
 ```
 
-既定はいまもキー認証で生まれてくる。これをマネージド ID ベースの接続（`type` を UserAssignedIdentity にし、ストレージ側のキーを無効化する）へ置き換えるのが現在の推奨です。この置き換えは相棒のストレージの話そのものなので、第 15 章で正面から扱います。
+既定はいまもキー認証が有効な状態で作られる。これをマネージド ID ベースの接続（`type` を UserAssignedIdentity にし、ストレージ側のキーを無効化する）へ置き換えるのが現在の推奨です。この置き換えは依存先のストレージの話そのものなので、第 15 章で正面から扱います。
 
 ### 外向き
 
