@@ -210,6 +210,15 @@ for (const file of files) {
     }
   }
 
+  // 各章に実際の出力を最低 1 つ。コマンドだけを並べた章は、読者が成否を判断できない。
+  // 付録は対象外（手順ではなく型の適用シートであるため）。
+  if (!isAppendix) {
+    const outputs = (text.match(/```(text|json|console)\s*$/gm) || []).length;
+    if (outputs === 0) {
+      errors.push(`${rel}: 実際の出力を貼ったブロックが 1 つもない。確認の手とその出力を置く`);
+    }
+  }
+
   if (!h2.includes('検証環境')) {
     errors.push(`${rel}: "## 検証環境" ブロックがない`);
   }

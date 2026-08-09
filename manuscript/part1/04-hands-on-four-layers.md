@@ -168,6 +168,24 @@ sub_id=$(az account show --query id -o tsv)
 az account management-group subscription add --name azp-ch04-mg --subscription "$sub_id"
 ```
 
+移動の結果が返ります。本書の検証環境での実際の出力です（識別子と名前はダミーに置き換えています）。
+
+```text
+{
+  "displayName": "<サブスクリプション名>",
+  "id": "/providers/Microsoft.Management/managementGroups/azp-ch04-mg/subscriptions/<サブスクリプションID>",
+  "name": "<サブスクリプションID>",
+  "parent": {
+    "id": "/providers/Microsoft.Management/managementGroups/azp-ch04-mg"
+  },
+  "state": "Active",
+  "tenant": "<テナントID>",
+  "type": "Microsoft.Management/managementGroups/subscriptions"
+}
+```
+
+`parent` が azp-ch04-mg になっていれば移動できています。`type` が `managementGroups/subscriptions` であることにも注目してください。返ってきたのはサブスクリプションそのものではなく、管理グループとサブスクリプションの結び付きを表すものです。移したのは所属であって、サブスクリプションの中身ではない、ということがこの型に現れています。
+
 この操作で変わるのは継承の経路だけです。請求先も、クォータも、リソースプロバイダーの登録状態も変わりません。管理グループが束ねるのは統制であって契約ではない、という第 2 章の内容がここで確認できます。
 
 ### ステップ 3 ― リソースグループとリソースを Bicep でデプロイする
