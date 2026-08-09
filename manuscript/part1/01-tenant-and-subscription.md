@@ -65,7 +65,7 @@ flowchart TB
 
 テナントとサブスクリプションの関係は 1 対多です。サブスクリプションは必ず 1 つのテナントに紐づき、その紐づけが「誰がこのサブスクリプションを操作できるかの判定に、どのテナントの台帳を使うか」を決めています。
 
-ID は台帳（テナント側）にあり、課金とクォータは契約（サブスクリプション側）にある。この分かれ方が、認証（誰であるか）と認可（何ができるか）が別の層にあるという Azure 全体の構造の現れです。第 2 部で正面から扱います。
+ID は台帳（テナント側）にあり、課金とクォータは契約（サブスクリプション側）にあります。この分かれ方が、認証（誰であるか）と認可（何ができるか）が別の層にあるという Azure 全体の構造の現れです。第 2 部で正面から扱います。
 
 現在のアカウントから見えるサブスクリプションを一覧します。
 
@@ -139,7 +139,7 @@ az rest --method put \
 ERROR: Conflict({"error":{"code":"MissingSubscriptionRegistration","message":"The subscription is not registered to use namespace 'Microsoft.Web'. See https://aka.ms/rps-not-found for how to register subscriptions."}})
 ```
 
-エラーコードが権限（AuthorizationFailed）でもクォータでもなく、MissingSubscriptionRegistration であることを確認してください。権限は足りている、それでも作れない。サブスクリプションが課金とは別に「使えるリソースの種類」という状態を持っていることの現れです。
+エラーコードが権限（AuthorizationFailed）でもクォータでもなく、MissingSubscriptionRegistration であることを確認してください。権限は足りているのに作れません。サブスクリプションが課金とは別に「使えるリソースの種類」という状態を持っていることの現れです。
 
 なお、最初のリソースグループ作成を飛ばしてこのコマンドを打つと、別のエラーが先に返ります。
 

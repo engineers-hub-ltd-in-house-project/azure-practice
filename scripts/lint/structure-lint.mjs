@@ -372,6 +372,34 @@ for (const file of walk(MANUSCRIPT)) {
   }
 }
 
+// 地の文はですます調で書く。常体は読者への語りかけを切ってしまう。
+// 「〜と相談されました」のような引用の中は話し手の言葉なので対象外。
+const POLITE_END = /(です|ます|でした|ました|ません|ませんでした|ましょう|でしょう|ください|下さい|ませ)。$/;
+const PLAIN_END = /(である|だ|する|した|しない|ない|いる|ある|なる|なった|できる|できない)。$/;
+for (const file of walk(MANUSCRIPT)) {
+  const rel = relative(ROOT, file);
+  const lines = readFileSync(file, 'utf8').split('\n');
+  let inFence = false;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\s*```/.test(lines[i])) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    const line = lines[i];
+    if (!line.trim() || /^\s*[#|>]/.test(line)) continue;
+    // 鉤括弧の中は引用。地の文の調子とは別に扱う。
+    const prose = line.replace(/`[^`]*`/g, '').replace(/「[^」]*」/g, '');
+    for (const s of prose.match(/[^。]*。/g) ?? []) {
+      const t = s.trim();
+      if (POLITE_END.test(t)) continue;
+      if (PLAIN_END.test(t)) {
+        errors.push(`${rel}:${i + 1}: 地の文はですます調で書く -> ${t.slice(-24)}`);
+      }
+    }
+  }
+}
+
 // 読者の理解に向けた指示は肯定形で書く。「別物だと思わないでください」は、
 // 読者に一度そう思わせてから打ち消させる形で、余計な手数を掛ける。
 // 禁止（本番で実行しないでください）は否定形が正しいので、認知に関する動詞だけを見る。

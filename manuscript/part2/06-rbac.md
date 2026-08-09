@@ -192,7 +192,7 @@ ERROR: (AuthorizationFailed) The client '<appId>' ... does not have authorizatio
 Microsoft.Authorization/roleAssignments/...'
 ```
 
-リソースは触れるのに、権限は配れない。エラーの action 欄にある Microsoft.Authorization こそ、Contributor の定義から除外されている名前空間です。Contributor を配っても権限管理は渡らない、この一線が Owner との違いです。逆に言えば、Owner を配ることは権限を配る権限まで渡すことを意味します。
+リソースは触れるのに、権限は配れません。エラーの action 欄にある Microsoft.Authorization こそ、Contributor の定義から除外されている名前空間です。Contributor を配っても権限管理は渡らない、この一線が Owner との違いです。逆に言えば、Owner を配ることは権限を配る権限まで渡すことを意味します。
 
 ## クリーンアップ演習
 
