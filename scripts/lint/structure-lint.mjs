@@ -315,6 +315,14 @@ for (const file of [
     if (m) {
       errors.push(`${rel}:${i + 1}: ASCII と日本語の間に半角スペースを置く -> ${m[0]}`);
     }
+
+    // 日本語どうしの間に半角スペースを挟まない。一括置換の取りこぼしがここに出る
+    // （「第 2 部 までのハンズオン」）。見出しの番号とタイトルの区切りは除く。
+    const body = prose.replace(/^(#{1,6} )?(第 \d+(?:[〜・]\d+)* [章部]|付録 [A-Z]) /, '');
+    const gap = body.replace(/\|/g, '').match(new RegExp(`[${JA}] [${JA}]`));
+    if (gap && !prose.includes('|')) {
+      errors.push(`${rel}:${i + 1}: 日本語の間に半角スペースが入っている -> ${gap[0]}`);
+    }
   }
 }
 

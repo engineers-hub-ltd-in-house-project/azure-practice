@@ -94,7 +94,7 @@ Microsoft.ManagedIdentity/userAssignedIdentities/azp-ch17-aks-agentpool
 
 かつては Pod-managed identity という仕組みがありましたが廃止済みで、現在は Microsoft Entra Workload ID が正解です。構造は 2 つの世界の橋渡しです。
 
-Kubernetes には ServiceAccount という クラスタ内の ID の仕組みがあり、クラスタは OIDC 発行者としてその ServiceAccount のトークンに署名できます。発行者の URL を見てみます。
+Kubernetes には ServiceAccount というクラスタ内の ID の仕組みがあり、クラスタは OIDC 発行者としてその ServiceAccount のトークンに署名できます。発行者の URL を見てみます。
 
 ```bash
 az aks show --name azp-ch17-aks -g azp-ch17-rg --query "oidcIssuerProfile.issuerUrl" -o tsv
