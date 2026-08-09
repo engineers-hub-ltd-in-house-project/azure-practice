@@ -174,6 +174,31 @@ for (const file of files) {
   // 付録は章の構造規約の対象外
   const isAppendix = rel.includes('/appendix/');
 
+  // H1 の書式。角括弧ラベル（[統合ハンズオン] など）が規約のないまま
+  // 企画書から転写された実績があるため、型を機械で固定する。
+  if (h1.length === 1) {
+    const title = h1[0];
+    if (isAppendix) {
+      if (!/^付録[A-Z] .+$/.test(title)) {
+        errors.push(`${rel}: 付録の H1 は "付録X タイトル" の形にする (現在: ${title})`);
+      }
+    } else if (!/^第\d+章 .+$/.test(title)) {
+      errors.push(`${rel}: 章の H1 は "第N章 主題" または "第N章 主題 ― サブタイトル" の形にする (現在: ${title})`);
+    } else {
+      const declared = parseInt(title.match(/^第(\d+)章/)[1], 10);
+      const fromName = basenameChapter(rel);
+      if (fromName !== null && declared !== fromName) {
+        errors.push(`${rel}: H1 の章番号 ${declared} がファイル名の ${fromName} と一致しない`);
+      }
+      if (/\/\d{2}-hands-on-[^/]+\.md$/.test(rel) && !/^第\d+章 ハンズオン ― /.test(title)) {
+        errors.push(`${rel}: ハンズオン章の H1 は "第N章 ハンズオン ― …" の形にする (現在: ${title})`);
+      }
+    }
+    if (/[[\]]/.test(title)) {
+      errors.push(`${rel}: H1 に角括弧を使わない。主題の前にラベルを付けない (現在: ${title})`);
+    }
+  }
+
   // 各章に図を最低 1 枚。図解不足は指摘で確認された執筆の癖であり、機械で縛る。
   // 付録は対象外。
   if (!isAppendix) {

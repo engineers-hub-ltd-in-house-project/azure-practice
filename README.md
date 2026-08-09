@@ -66,7 +66,7 @@ Part 4 の各章は、以下の 6 ブロックで統一して書かれていま�
 | 1   | [テナントとサブスクリプション ― 契約と分離の境界](manuscript/part1/01-tenant-and-subscription.md)       | 執筆済 |
 | 2   | [管理グループ ― ポリシーと RBAC が上から下に伝わる仕組み](manuscript/part1/02-management-groups.md)     | 執筆済 |
 | 3   | [リソースグループ ― ライフサイクルをまとめる単位の設計](manuscript/part1/03-resource-groups.md)         | 執筆済 |
-| 4   | [統合ハンズオン ― 4 階層を 1 つのシナリオで通しで作る](manuscript/part1/04-hands-on-four-layers.md)     | 執筆済 |
+| 4   | [ハンズオン ― 4 階層を 1 つのシナリオで通しで作る](manuscript/part1/04-hands-on-four-layers.md)         | 執筆済 |
 
 ### Part 2 認証と認可を分離して理解する
 
@@ -76,7 +76,7 @@ Part 4 の各章は、以下の 6 ブロックで統一して書かれていま�
 | 6   | [RBAC ― スコープとロールの掛け算で権限が決まる](manuscript/part2/06-rbac.md)                                        | 執筆済 |
 | 7   | [マネージド ID ― リソース間の内向き認証](manuscript/part2/07-managed-identity.md)                                   | 執筆済 |
 | 8   | [外向き認証 ― アクセスキー・Entra ID 認証・フェデレーション](manuscript/part2/08-outbound-auth.md)                  | 執筆済 |
-| 9   | [統合ハンズオン ― ID と権限を 1 つのシナリオで通す](manuscript/part2/09-hands-on-identity.md)                       | 執筆済 |
+| 9   | [ハンズオン ― ID と権限を 1 つのシナリオで通す](manuscript/part2/09-hands-on-identity.md)                           | 執筆済 |
 
 ### Part 3 IaC でリソースを再現可能にする
 
@@ -85,7 +85,7 @@ Part 4 の各章は、以下の 6 ブロックで統一して書かれていま�
 | 10  | [ARM テンプレートと Bicep の関係](manuscript/part3/10-arm-and-bicep.md)                     | 執筆済 |
 | 11  | [デプロイスコープと Deployment Stacks](manuscript/part3/11-deployment-scopes-and-stacks.md) | 執筆済 |
 | 12  | [モジュール化と Azure Verified Modules](manuscript/part3/12-modules-and-avm.md)             | 執筆済 |
-| 13  | [統合ハンズオン ― Part 1〜2 の構成を IaC で再現する](manuscript/part3/13-hands-on-iac.md)   | 執筆済 |
+| 13  | [ハンズオン ― Part 1〜2 の構成を IaC で再現する](manuscript/part3/13-hands-on-iac.md)       | 執筆済 |
 
 ### Part 4 サービス別に縦と横の繋がりを辿る
 
