@@ -17,7 +17,7 @@ az ad signed-in-user show --query "{displayName:displayName, upn:userPrincipalNa
 ```text
 {
   "displayName": "<表示名>",
-  "id": "7a4fe343-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "id": "<あなたのオブジェクトID>",
   "upn": "taro.yamada_example.com#EXT#@<初期ドメイン>.onmicrosoft.com"
 }
 ```

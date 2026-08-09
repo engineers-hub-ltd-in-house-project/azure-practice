@@ -122,6 +122,16 @@ RBAC は加算的です。あるスコープで許可されたことを、下位
 az account management-group create --name azp-ch02-mg --display-name "継承の観察用"
 ```
 
+作られたことを確認します。ここで AuthorizationFailed が出ても、上に書いた 2 つの事実のとおり、作成自体は成功していることがあります。一覧ではなく名前で引くのが確実です。
+
+```bash
+az account management-group show --name azp-ch02-mg --query name -o tsv
+```
+
+```text
+azp-ch02-mg
+```
+
 サブスクリプションを配下に移します。課金の付け替えではなく、継承経路の付け替えです。
 
 ```bash

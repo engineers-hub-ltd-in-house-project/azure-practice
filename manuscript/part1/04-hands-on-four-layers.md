@@ -93,9 +93,66 @@ az account show --query "{name:name, id:id}" -o table
 az account management-group create --name azp-ch04-mg --display-name "azure-practice 第4章"
 ```
 
-親を指定していないため、テナントルート管理グループの子になります。管理グループはテナントに属し、どのサブスクリプションの中にも入っていません。作成コマンドにサブスクリプション ID を渡す引数が無いことがその証拠です。
+成功すると、作られた管理グループが返ります。本書の検証環境での実際の出力です（識別子はダミーに置き換えています）。
 
-第 2 章で述べたとおり、この作成は伝播の都合で一時的に失敗することがあります。スクリプトはリトライを入れてあり、本書の検証でも 1 回目が失敗して再試行で成功しています。リトライしても失敗が続く場合は権限の問題なので、スクリプトは警告を出して先へ進み、該当手順を blocked として記録する運びにしています。
+```text
+{
+  "details": {
+    "parent": {
+      "displayName": "Tenant Root Group",
+      "id": "/providers/Microsoft.Management/managementGroups/<テナントID>",
+      "name": "<テナントID>"
+    },
+    "updatedBy": "<あなたのオブジェクトID>",
+    "updatedTime": "2026-08-09T04:51:49.764616+00:00",
+    "version": 2
+  },
+  "displayName": "azure-practice 第4章",
+  "id": "/providers/Microsoft.Management/managementGroups/azp-ch04-mg",
+  "name": "azp-ch04-mg",
+  "tenantId": "<テナントID>",
+  "type": "Microsoft.Management/managementGroups"
+}
+```
+
+見どころは `parent` です。親を指定していないのに Tenant Root Group の子になっており、その名前がテナント ID と同じ値です（第 2 章で触れたとおりです）。管理グループはテナントに属し、どのサブスクリプションの中にも入っていません。作成コマンドにサブスクリプション ID を渡す引数が無いことがその証拠です。
+
+### ステップ 1 でつまずいたとき
+
+このコマンドは、権限に問題が無くても次のエラーで失敗することがあります。本書の検証環境で実際に出たものです。
+
+```text
+(AuthorizationFailed) The client '<あなたのUPN>' with object id '<あなたのオブジェクトID>' does not
+have authorization to perform action 'Microsoft.Management/managementGroups/read' over scope
+'/providers/Microsoft.Management/managementGroups/azp-ch04-mg' or the scope is invalid.
+If access was recently granted, please refresh your credentials.
+```
+
+読むべきは、失敗した操作が `read` であることと、末尾の「権限を与えたばかりなら資格情報を更新してください」です。管理グループを作ると、作った本人に対する所有者のロール割り当てが同時に作られます。作成そのものは受理されているのに、その割り当てがまだ行き渡っておらず、直後の読み取りが弾かれた、という状態です。第 2 章で見た伝播遅延が、作成の内側で起きています。
+
+まず、本当に作られていないのかを確かめてください。
+
+```bash
+az account management-group show --name azp-ch04-mg --query name -o tsv
+```
+
+名前が返るなら、作成は成功しています。エラーの見た目に反して、次のステップへ進んで構いません。
+
+```text
+azp-ch04-mg
+```
+
+ここで注意したいのが、一覧には出ないことがある点です。
+
+```bash
+az account management-group list --query "[].name" -o tsv
+```
+
+一覧はテナントルートに対する読み取りを使うため、いま作った管理グループが即座には現れないことがあります。本書の検証でも、`show` では見えるのに `list` には出ない状態を観測しました。見えないことを「作られていない」と読み違えないでください。
+
+`show` も失敗する場合は、少し待ってから作成コマンドをもう一度実行します。このコマンドは同じ名前なら何度実行しても同じ結果になるので、再実行で壊れるものはありません。`scripts/chapters/ch04-foundation.sh` はこのリトライを組み込んであり、本書の検証でも 1 回目が失敗して再試行で成功しています。
+
+再試行しても失敗が続く場合は、伝播ではなく権限の問題です。テナントの設定で管理グループの作成が制限されているか、テナントルートでの権限が要る状態です。組織のテナントではありうる制限で、個人で解消できるとは限りません。その場合は管理グループの手順を飛ばしてください。第 3 章までに作ったサブスクリプションとリソースグループだけでも、ステップ 3 以降は成立します。スクリプトは警告を出して先へ進み、該当手順を blocked として記録する運びにしています。
 
 ### ステップ 2 ― サブスクリプションを管理グループの下へ移す
 

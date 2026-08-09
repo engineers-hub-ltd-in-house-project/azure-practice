@@ -244,6 +244,7 @@ const FORBIDDEN_IDENTIFIERS = [
   /syslea/i, /frictio/i, /medii/i,
   /ba9d0cbe/, /8a7c850a/, /417dfc63/, /fe6c7ed6/,
   /ff467136/, /76d5d76a/, /c5940261/, /yusukesatoengineershub/,
+  /7a4fe343/, /azp-probe-\d/,
 ];
 for (const file of [...walk(MANUSCRIPT), join(ROOT, 'README.md'), join(ROOT, 'WRITING_GUIDELINES.md')]) {
   if (!existsSync(file)) continue;
