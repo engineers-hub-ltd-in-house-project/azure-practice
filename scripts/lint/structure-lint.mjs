@@ -372,6 +372,28 @@ for (const file of walk(MANUSCRIPT)) {
   }
 }
 
+// 読者の理解に向けた指示は肯定形で書く。「別物だと思わないでください」は、
+// 読者に一度そう思わせてから打ち消させる形で、余計な手数を掛ける。
+// 禁止（本番で実行しないでください）は否定形が正しいので、認知に関する動詞だけを見る。
+const NEGATIVE_INSTRUCTION =
+  /(思わ|考え|読み違え|読み違が|勘違いし|誤解し|混同し|取り違え|見落とさ|忘れ)ない(で|よう)/;
+for (const file of walk(MANUSCRIPT)) {
+  const rel = relative(ROOT, file);
+  const lines = readFileSync(file, 'utf8').split('\n');
+  let inFence = false;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\s*```/.test(lines[i])) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    const m = lines[i].match(NEGATIVE_INSTRUCTION);
+    if (m) {
+      errors.push(`${rel}:${i + 1}: 理解の指示は肯定形で書く -> ${m[0]}`);
+    }
+  }
+}
+
 // 章の bash ブロックで、代入していない変数を使わない。読者は章の頭から順に貼るので、
 // 前のブロックに代入が無ければ空文字で実行され、そのことに気づけない。
 // スクリプト側にだけ代入がある状態は、本文がコピペで通らないことを意味する。
