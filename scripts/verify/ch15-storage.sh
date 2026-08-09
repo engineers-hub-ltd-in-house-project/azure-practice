@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 第15章の期待状態を read-only で検証する。冪等。
+# 第 15 章の期待状態を read-only で検証する。冪等。
 
 # shellcheck source=../lib/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 第14章のクリーンアップ。Function App・暗黙に作られたプラン・Application Insights・
+# 第 14 章のクリーンアップ。Function App・暗黙に作られたプラン・Application Insights・
 # ストレージがまとめて消える。
 
 # shellcheck source=../lib/common.sh

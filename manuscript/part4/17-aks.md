@@ -1,4 +1,4 @@
-# 第17章 AKS ― 5 つの ID scenario と Workload ID
+# 第 17 章 AKS ― 5 つの ID scenario と Workload ID
 
 AKS（Azure Kubernetes Service）は、これまでの章のサービスと比べて登場人物が桁違いに多いサービスです。特に ID は、1 つのクラスタに 5 種類が同居します。本章はこの 5 つを 1 つずつ実物で確かめ、山場である Workload ID（Pod から Azure への認証）まで辿ります。
 
@@ -8,7 +8,7 @@ AKS（Azure Kubernetes Service）は、これまでの章のサービスと比�
 
 ## 1. このサービスは何のためにあるか
 
-AKS は、コンテナ群を宣言どおりに動かし続ける Kubernetes のクラスタを、コントロールプレーンの運用を Azure に任せる形で提供するサービスです。Functions（第14章）がコード 1 つを動かす道具なら、AKS は多数のコンテナからなるシステム全体を運転する道具です。
+AKS は、コンテナ群を宣言どおりに動かし続ける Kubernetes のクラスタを、コントロールプレーンの運用を Azure に任せる形で提供するサービスです。Functions（第 14 章）がコード 1 つを動かす道具なら、AKS は多数のコンテナからなるシステム全体を運転する道具です。
 
 ## 2. 縦の依存関係
 
@@ -35,7 +35,7 @@ az aks show --name azp-ch17-aks -g azp-ch17-rg --query "nodeResourceGroup" -o ts
 MC_azp-ch17-rg_azp-ch17-aks_japaneast
 ```
 
-ノードの VM やディスクなどの実体は、自分の RG ではなくこの `MC_` の中に置かれます。クラスタというリソース（自分の RG）と、その部品（`MC_`）でライフサイクルの層が分かれており、クラスタを消せば `MC_` も自動で消えます。第3章の「一緒に消えるべきもの」を AKS が自前で実装している、と読めます。
+ノードの VM やディスクなどの実体は、自分の RG ではなくこの `MC_` の中に置かれます。クラスタというリソース（自分の RG）と、その部品（`MC_`）でライフサイクルの層が分かれており、クラスタを消せば `MC_` も自動で消えます。第 3 章の「一緒に消えるべきもの」を AKS が自前で実装している、と読めます。
 
 ## 3. 横の繋がり ― 認証認可
 
@@ -71,7 +71,7 @@ az aks show --name azp-ch17-aks -g azp-ch17-rg --query identity -o json
 }
 ```
 
-既定でシステム割り当て（第7章）です。クラスタと運命を共にします。
+既定でシステム割り当て（第 7 章）です。クラスタと運命を共にします。
 
 ### その 2: ノード（kubelet）の ID
 
@@ -90,7 +90,7 @@ Microsoft.ManagedIdentity/userAssignedIdentities/azp-ch17-aks-agentpool
 
 ### その 3: Pod から Azure への ID ― Workload ID
 
-アプリ（Pod）が Key Vault や Storage へアクセスするときの ID です。ここが本章の山場で、第8章のフェデレーションがそのまま再登場します。
+アプリ（Pod）が Key Vault や Storage へアクセスするときの ID です。ここが本章の山場で、第 8 章のフェデレーションがそのまま再登場します。
 
 かつては Pod-managed identity という仕組みがありましたが廃止済みで、現在は Microsoft Entra Workload ID が正解です。構造は 2 つの世界の橋渡しです。
 
@@ -122,11 +122,11 @@ az identity federated-credential create --name aks-default-workload \
 }
 ```
 
-subject の形式が Kubernetes の語彙（namespace が default、ServiceAccount 名が workload-sa）になっています。GitHub Actions のときはリポジトリとブランチでしたが（第8章）、今回はクラスタ内の ID です。同じフェデレーションの型に、違う世界の素性を差し込んでいるだけだと分かれば、この二重構造は怖くありません。あとはこのマネージド ID にロールを割り当てれば（第6章）、Pod はシークレットなしで Azure に届きます。
+subject の形式が Kubernetes の語彙（namespace が default、ServiceAccount 名が workload-sa）になっています。GitHub Actions のときはリポジトリとブランチでしたが（第 8 章）、今回はクラスタ内の ID です。同じフェデレーションの型に、違う世界の素性を差し込んでいるだけだと分かれば、この二重構造は怖くありません。あとはこのマネージド ID にロールを割り当てれば（第 6 章）、Pod はシークレットなしで Azure に届きます。
 
 ### その 4: クラスタへのアクセス（人間の認証）
 
-`az aks get-credentials` で取得する接続情報です。既定ではクラスタローカルの資格情報ですが、Entra ID 統合を有効にすれば、クラスタへの入場も第5章の世界で管理できます。本書の検証では、ローカルに kubectl を入れずにクラスタ内でコマンドを実行できる `az aks command invoke` を使いました。
+`az aks get-credentials` で取得する接続情報です。既定ではクラスタローカルの資格情報ですが、Entra ID 統合を有効にすれば、クラスタへの入場も第 5 章の世界で管理できます。本書の検証では、ローカルに kubectl を入れずにクラスタ内でコマンドを実行できる `az aks command invoke` を使いました。
 
 ```bash
 az aks command invoke --name azp-ch17-aks -g azp-ch17-rg --command "kubectl get nodes"
@@ -176,7 +176,7 @@ ERROR: (BadRequest) The VM size of Standard_B2s is not allowed in your subscript
 in location 'japaneast'. The available VM sizes are 'standard_b2als_v2,...'
 ```
 
-権限でもクォータでもなく、サブスクリプションに許可された VM サイズの一覧という、もう 1 つの制約です。エラーが許可リストを返してくれるので、そこからクォータのあるファミリ（`az vm list-usage`）と突き合わせて選び直します。第1章から数えて、失敗の軸がまた 1 つ増えました。
+権限でもクォータでもなく、サブスクリプションに許可された VM サイズの一覧という、もう 1 つの制約です。エラーが許可リストを返してくれるので、そこからクォータのあるファミリ（`az vm list-usage`）と突き合わせて選び直します。第 1 章から数えて、失敗の軸がまた 1 つ増えました。
 
 ### クリーンアップ演習
 
@@ -212,5 +212,5 @@ az group list --query "[?starts_with(name,'MC_') || starts_with(name,'azp-ch17')
 ## 理解度チェック
 
 1. クラスタの ID（その 1）とノードの ID（その 2）に必要なロールは、それぞれ何に対するものになるでしょうか。「コントロールプレーンがロードバランサーを作る」「ノードがコンテナーレジストリからイメージを取得する」という 2 つの操作を割り当て先に振り分けてください
-2. Workload ID の連合資格情報の subject を `system:serviceaccount:default:*` のようにワイルドカードにできたとしたら、何が危険ですか。第8章の GitHub の例と比べて説明してください
+2. Workload ID の連合資格情報の subject を `system:serviceaccount:default:*` のようにワイルドカードにできたとしたら、何が危険ですか。第 8 章の GitHub の例と比べて説明してください
 3. クラスタを消したのに課金が続いている、という報告がありました。本章の内容から、疑うべき消し残しはどこですか

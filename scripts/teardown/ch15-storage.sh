@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 第15章のクリーンアップ。
+# 第 15 章のクリーンアップ。
 
 # shellcheck source=../lib/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"

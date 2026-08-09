@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 第16章 Key Vault ― RBAC 既定化とアクセスポリシーの歴史
+# 第 16 章 Key Vault ― RBAC 既定化とアクセスポリシーの歴史
 # 新旧 2 つの認可モデルの Vault を並べて作り、挙動の差を観察する。
 
 # shellcheck source=../lib/common.sh

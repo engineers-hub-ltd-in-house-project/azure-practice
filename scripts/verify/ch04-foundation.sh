@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 第4章の期待状態を read-only で検証する。冪等。
+# 第 4 章の期待状態を read-only で検証する。冪等。
 # RBAC の割り当ては即座には伝播しないため、該当箇所はリトライする。
 
 # shellcheck source=../lib/common.sh

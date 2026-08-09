@@ -1,4 +1,4 @@
-// 第12章 自作モジュールと AVM モジュールを並べて使う。
+// 第 12 章 自作モジュールと AVM モジュールを並べて使う。
 // 前者は本リポジトリの modules/、後者は公式レジストリ（br/public:）から取得される。
 
 param location string = resourceGroup().location

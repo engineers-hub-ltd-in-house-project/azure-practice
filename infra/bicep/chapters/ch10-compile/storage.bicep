@@ -1,4 +1,4 @@
-// 第10章 コンパイルの観察に使う最小のテンプレート。
+// 第 10 章 コンパイルの観察に使う最小のテンプレート。
 // bicep build でこのファイルが ARM JSON に何行で変換されるかを見る。
 
 param location string = resourceGroup().location

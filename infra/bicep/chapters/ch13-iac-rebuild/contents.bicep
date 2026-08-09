@@ -1,5 +1,5 @@
-// 第13章 リソースグループの中身。
-// ストレージは第12章で切り出した自作モジュールを使う。ID は AVM を使う。
+// 第 13 章 リソースグループの中身。
+// ストレージは第 12 章で切り出した自作モジュールを使う。ID は AVM を使う。
 // 「検証済みモジュールを組み合わせ、足りない部分（ロール割り当て）だけ書く」形。
 
 param location string
@@ -22,7 +22,7 @@ module storage '../../modules/keyless-storage.bicep' = if (includeStorage) {
   }
 }
 
-// 第9章と同じく、アプリの ID には RG スコープでデータロールを配る。
+// 第 9 章と同じく、アプリの ID には RG スコープでデータロールを配る。
 var storageBlobDataContributor = subscriptionResourceId(
   'Microsoft.Authorization/roleDefinitions',
   'ba92f5b4-2d11-453d-a403-e96b0029c9fe'

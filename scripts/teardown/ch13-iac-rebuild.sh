@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 第13章のクリーンアップ。スタックの削除 1 操作で、リソースグループごと消える。
+# 第 13 章のクリーンアップ。スタックの削除 1 操作で、リソースグループごと消える。
 # actionOnUnmanage を deleteAll にしてあるため、管理下のリソースが道連れになる。
 
 # shellcheck source=../lib/common.sh
