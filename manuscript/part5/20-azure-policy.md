@@ -41,9 +41,16 @@ az policy definition list \
 
 ポリシー定義をリソースグループのスコープへ、Deny の効果で割り当てます。
 
+この章の器を作ります。
+
 ```bash
 az group create --name azp-ch20-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch20 azp-lifecycle=ephemeral
+```
+
+そのリソースグループのスコープに、Deny の効果で割り当てます。
+
+```bash
 az policy assignment create --name azp-ch20-deny-localauth \
   --display-name "Cosmos のローカル認証を禁止する" \
   --policy 5450f5bd-9c72-4390-a9c4-a7aba4edfdd2 \
@@ -111,9 +118,21 @@ azp-ch20-mg-audit
 
 割り当て、違反リソース、管理グループの順で片付けます。
 
+管理グループスコープの割り当てを消します。ここが残ると組織全体に効き続けます。
+
 ```bash
 az policy assignment delete --name azp-ch20-mg-audit --scope <管理グループ>
+```
+
+リソースグループスコープの割り当ても消します。
+
+```bash
 az policy assignment delete --name azp-ch20-audit-localauth --scope <リソースグループ>
+```
+
+違反リソースごとリソースグループを消します。
+
+```bash
 az group delete --name azp-ch20-rg --yes
 ```
 

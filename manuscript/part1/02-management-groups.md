@@ -172,10 +172,17 @@ Reader  /providers/Microsoft.Management/managementGroups/azp-ch02-mg
 
 管理グループは中身が空でないと削除できません。サブスクリプションを先にテナントルートへ戻します。
 
+テナントルート管理グループの名前はテナント ID と同じです。それを控えて、サブスクリプションをそこへ戻します。
+
 ```bash
 tenant_id=$(az account show --query tenantId -o tsv)
 az account management-group subscription add --name "$tenant_id" \
   --subscription "$(az account show --query id -o tsv)"
+```
+
+中身が空になったので、管理グループを削除できます。
+
+```bash
 az account management-group delete --name azp-ch02-mg
 ```
 

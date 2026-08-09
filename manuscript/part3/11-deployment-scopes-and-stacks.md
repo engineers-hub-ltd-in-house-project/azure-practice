@@ -27,11 +27,23 @@
 
 ### 通常のデプロイで v1 から v2 へ
 
+この章の器を作ります。
+
 ```bash
 az group create --name azp-ch11-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch11 azp-lifecycle=ephemeral
+```
+
+ID が 2 つある v1 をデプロイします。
+
+```bash
 az deployment group create -g azp-ch11-rg \
   --template-file infra/bicep/chapters/ch11-stack/v1.bicep
+```
+
+何ができたかを確認します。
+
+```bash
 az identity list -g azp-ch11-rg --query "[].name" -o tsv
 ```
 
@@ -45,6 +57,11 @@ azp-ch11-app1
 ```bash
 az deployment group create -g azp-ch11-rg \
   --template-file infra/bicep/chapters/ch11-stack/v2.bicep
+```
+
+宣言から消えた app2 が、実世界でどうなったかを確認します。
+
+```bash
 az identity list -g azp-ch11-rg --query "[].name" -o tsv
 ```
 
@@ -116,6 +133,11 @@ az stack group show --name azp-ch11-stack -g azp-ch11-rg --query "resources[].id
 ```bash
 az stack group delete --name azp-ch11-stack -g azp-ch11-rg \
   --action-on-unmanage deleteAll --yes
+```
+
+管理下にあったものが残っていないかを数えます。
+
+```bash
 az identity list -g azp-ch11-rg --query "length(@)" -o tsv
 ```
 

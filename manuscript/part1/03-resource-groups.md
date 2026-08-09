@@ -100,11 +100,16 @@ flowchart LR
 
 実際にやってみます。以下は頭からコピペで実行できる列で、出力は本書の検証環境の実物です（なお、こうした後片付けを本書では teardown と呼び、スクリプト名もこれに合わせています）。
 
-器と、題材のマネージド ID を作ります。
+まず器になるリソースグループを作ります。タグは第 23 章のコスト照会と、後片付けの対象を見分けるために付けています。
 
 ```bash
 az group create --name azp-ch03-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch03 azp-lifecycle=ephemeral
+```
+
+その中に、題材のマネージド ID を作ります。
+
+```bash
 az identity create --name azp-ch03-id --resource-group azp-ch03-rg
 ```
 

@@ -59,6 +59,11 @@ Storage は純粋な従量課金で、保管容量（GB 月）と操作回数（
 
 ```bash
 ./scripts/chapters/ch15-storage.sh
+```
+
+作った状態が期待どおりかを、読み取り専用のスクリプトで検査します。
+
+```bash
 ./scripts/verify/ch15-storage.sh
 ```
 
@@ -96,23 +101,49 @@ az functionapp identity assign --name azp-ch15-func -g azp-ch15-rg
 
 手順 2: その ID にデータプレーンのロールを割り当てます（第 8 章）。ホストは BLOB・キュー・テーブルを使うため 3 つです。
 
+BLOB 用です。コードの置き場を読み書きするため、この 1 つだけ Owner です。
+
 ```bash
 az role assignment create --assignee <principalId> --role "Storage Blob Data Owner" --scope <ストレージ>
+```
+
+キュー用です。
+
+```bash
 az role assignment create --assignee <principalId> --role "Storage Queue Data Contributor" --scope <ストレージ>
+```
+
+テーブル用です。
+
+```bash
 az role assignment create --assignee <principalId> --role "Storage Table Data Contributor" --scope <ストレージ>
 ```
 
 手順 3: 接続文字列の設定を「アカウント名だけ」の設定に置き換えます。
 
+アカウント名だけを渡す設定を足します。
+
 ```bash
 az functionapp config appsettings set --settings AzureWebJobsStorage__accountName=<ストレージ名> ...
+```
+
+古い接続文字列の設定を消します。残したままだとそちらが使われ続けます。
+
+```bash
 az functionapp config appsettings delete --setting-names AzureWebJobsStorage ...
 ```
 
 手順 4: デプロイ側の認証も ID へ切り替え、最後にキーを止めます。
 
+デプロイの経路の認証方式を ID に変えます。
+
 ```bash
 az functionapp deployment config set --deployment-storage-auth-type SystemAssignedIdentity ...
+```
+
+すべての経路が ID になってから、キーを止めます。順序を逆にするとアプリが動かなくなります。
+
+```bash
 az storage account update --allow-shared-key-access false ...
 ```
 

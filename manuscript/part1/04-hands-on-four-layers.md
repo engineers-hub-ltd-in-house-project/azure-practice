@@ -33,9 +33,33 @@ flowchart TB
 
 顧客環境や本番サブスクリプションでは実行しないでください。第 0 章で作った検証用サブスクリプションを使います。
 
+まず Azure にサインインします。ブラウザーが開き、サインインが済むと使えるサブスクリプションの一覧が表示されます。
+
 ```bash
 az login
+```
+
+サブスクリプション ID を覚えておく必要はありません。次のコマンドで一覧が出ます。`IsDefault` が `True` の行が、いまコマンドの宛先になっているサブスクリプションです。
+
+```bash
+az account list --output table
+```
+
+一覧から検証用のものを選び、`SubscriptionId` 列の値を次のコマンドに渡します。この指定以降、`az` コマンドはすべてこのサブスクリプションに向かいます。
+
+```bash
 az account set --subscription <検証用サブスクリプションID>
+```
+
+宛先が意図したものになったかを確認します。名前と ID が表示されます。
+
+```bash
+az account show --query "{name:name, id:id}" -o table
+```
+
+前提が揃っているかを検査するスクリプトを実行します。
+
+```bash
 ./scripts/bootstrap/check-env.sh
 ```
 

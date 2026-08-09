@@ -284,6 +284,79 @@ for (const file of [
   }
 }
 
+// bash ブロックは 1 ステップ 1 ブロック。コピペの単位を小さく保つため。
+// 変数に取ってすぐ使う形（sub=$(az account show ...) → az rest ... "$sub"）は 1 ステップと数える。
+// 引用符とヒアドキュメントを跨ぐ 1 コマンドを複数と誤らないよう、状態を持って読む。
+function bashSteps(body) {
+  const steps = [];
+  let pending = '';
+  let quote = null;
+  let heredoc = null;
+  for (const raw of body) {
+    const line = raw.trimEnd();
+    if (heredoc) {
+      if (line.trim() === heredoc) heredoc = null;
+      continue;
+    }
+    if (!quote && !pending) {
+      if (!line.trim() || line.trim().startsWith('#')) continue;
+    }
+    let text = line;
+    if (!quote) {
+      const hd = line.match(/<<-?'?(\w+)'?/);
+      if (hd) heredoc = hd[1];
+    }
+    for (const ch of text) {
+      if (quote) {
+        if (ch === quote) quote = null;
+      } else if (ch === '"' || ch === "'") {
+        quote = ch;
+      }
+    }
+    pending += (pending ? '\n' : '') + line;
+    const continues = quote !== null || heredoc !== null || line.endsWith('\\') || line.endsWith('|');
+    if (!continues) {
+      steps.push(pending);
+      pending = '';
+    }
+  }
+  if (pending) steps.push(pending);
+
+  // 変数の用意は Azure への操作ではない。続く代入どうし、および
+  // 直前で代入した変数を次で使う形は、まとめて 1 ステップと数える。
+  const isAssign = (s) => /^\s*(?:export\s+)?\w+=/.test(s);
+  const merged = [];
+  for (const s of steps) {
+    const prev = merged[merged.length - 1];
+    if (prev !== undefined && isAssign(prev)) {
+      const name = prev.match(/^\s*(?:export\s+)?(\w+)=/)[1];
+      // export は後続のコマンドに暗黙に効くので、次の 1 手と同じステップとみなす
+      if (isAssign(s) || /^\s*export\s/.test(prev) || new RegExp(`\\$\\{?${name}\\b`).test(s)) {
+        merged[merged.length - 1] = `${prev}\n${s}`;
+        continue;
+      }
+    }
+    merged.push(s);
+  }
+  return merged;
+}
+
+for (const file of walk(MANUSCRIPT)) {
+  const rel = relative(ROOT, file);
+  const lines = readFileSync(file, 'utf8').split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    if (!/^\s*```bash\s*$/.test(lines[i])) continue;
+    let end = i + 1;
+    while (end < lines.length && !/^\s*```\s*$/.test(lines[end])) end++;
+    const steps = bashSteps(lines.slice(i + 1, end));
+    if (steps.length > 1) {
+      const head = steps.map((s) => s.split('\n')[0].slice(0, 40)).join(' / ');
+      errors.push(`${rel}:${i + 1}: bash ブロックは 1 ステップ 1 ブロック (${steps.length} ステップ) -> ${head}`);
+    }
+    i = end;
+  }
+}
+
 // ASCII と日本語の境目には半角スペースを 1 つ置く。第 4 章・付録 B・404 のような
 // 数字や英字が地の文に埋もれると読点の位置が読めなくなるため。
 // 全角の約物との隣接は詰める。コマンドと実際の出力を貼ったブロックは記録なので触らない。

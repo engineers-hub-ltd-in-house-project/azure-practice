@@ -91,6 +91,11 @@ SKU は standard と premium の 2 つで、違いは premium が HSM（ハー�
 
 ```bash
 ./scripts/chapters/ch16-key-vault.sh
+```
+
+作った状態が期待どおりかを、読み取り専用のスクリプトで検査します。
+
+```bash
 ./scripts/verify/ch16-key-vault.sh
 ```
 
@@ -144,6 +149,11 @@ az role assignment create --assignee <自分のobjectId> --role "Key Vault Secre
 
 ```bash
 az keyvault purge --name <Vault名> --location japaneast
+```
+
+論理削除の一覧が空になったかを数えます。
+
+```bash
 az keyvault list-deleted --query "length(@)" -o tsv
 ```
 

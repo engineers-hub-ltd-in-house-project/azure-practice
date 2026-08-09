@@ -60,11 +60,23 @@ flowchart TB
 
 準備として、リソースグループを 2 つと、検証用のサービスプリンシパルを 1 体作ります。この演習ではサービスプリンシパルとしてサインインし直して「その ID から世界がどう見えるか」を確かめるので、普段の自分のログインを壊さないよう、CLI のプロファイルを分離します。
 
+1 つ目のリソースグループを作ります。
+
 ```bash
 az group create --name azp-ch06-a --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch06 azp-lifecycle=ephemeral
+```
+
+2 つ目も作ります。スコープを絞ったときに、片方だけが見える状態を作るためです。
+
+```bash
 az group create --name azp-ch06-b --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch06 azp-lifecycle=ephemeral
+```
+
+権限を与える相手になるサービスプリンシパルを作ります。
+
+```bash
 az ad sp create-for-rbac --name azp-ch06-sp
 ```
 
@@ -82,6 +94,11 @@ az role assignment create --assignee <appId> --role Reader --scope "/subscriptio
 ```bash
 export AZURE_CONFIG_DIR=/tmp/azp-sp-profile
 az login --service-principal --username <appId> --password <password> --tenant <tenantId>
+```
+
+この ID から何が見えるかを確かめます。
+
+```bash
 az group list --query "[].name" -o tsv
 ```
 
@@ -113,8 +130,15 @@ Reader の actions は `*/read` だけなので、write は拒否されます。
 
 管理者側のプロファイル（`AZURE_CONFIG_DIR` を外した通常のシェル）に戻り、割り当てを外して RG 単位に付け直します。
 
+まず広い方を外します。
+
 ```bash
 az role assignment delete --assignee <appId> --role Reader --scope "/subscriptions/$sub"
+```
+
+同じ Reader を、リソースグループ 1 つのスコープで付け直します。
+
+```bash
 az role assignment create --assignee <appId> --role Reader \
   --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
 ```
@@ -135,9 +159,16 @@ azp-ch06-a
 
 もう 1 つ、ロール側の境界も実測します。azp-ch06-a への割り当てを Reader から Contributor に差し替えます（管理者側で実行）。
 
+Reader の割り当てを外します。
+
 ```bash
 az role assignment delete --assignee <appId> --role Reader \
   --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
+```
+
+スコープは変えずに、ロールだけ Contributor にして付け直します。
+
+```bash
 az role assignment create --assignee <appId> --role Contributor \
   --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
 ```
@@ -165,13 +196,30 @@ Microsoft.Authorization/roleAssignments/...'
 
 ## クリーンアップ演習
 
-管理者側で実行します。
+管理者側で実行します。順序に意味があるので、1 手ずつ確認しながら進めてください。
+
+最初にロール割り当てを消します。
 
 ```bash
 az role assignment delete --assignee <appId> \
   --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
+```
+
+割り当てが無くなってから、ID 側を消します。
+
+```bash
 az ad app delete --id <appId>
+```
+
+リソースグループを 2 つとも消します。まず 1 つ目。
+
+```bash
 az group delete --name azp-ch06-a --yes
+```
+
+2 つ目も消します。
+
+```bash
 az group delete --name azp-ch06-b --yes
 ```
 

@@ -79,10 +79,22 @@ flowchart LR
 
 自作モジュールと AVM モジュールを 1 つずつ使う本章のテンプレート（`infra/bicep/chapters/ch12-modules/main.bicep`）は 26 行です。これをコンパイルすると、どうなるでしょうか。
 
+この章の器を作ります。
+
 ```bash
 az group create --name azp-ch12-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch12 azp-lifecycle=ephemeral
+```
+
+モジュールを取り込んだ状態でコンパイルします。
+
+```bash
 az bicep build --file infra/bicep/chapters/ch12-modules/main.bicep --outfile built.json
+```
+
+書いた行数と、できあがった行数を比べます。
+
+```bash
 wc -l infra/bicep/chapters/ch12-modules/main.bicep built.json
 ```
 

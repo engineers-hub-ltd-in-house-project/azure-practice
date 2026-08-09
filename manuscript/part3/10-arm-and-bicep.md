@@ -19,6 +19,11 @@
 ```bash
 az bicep build --file infra/bicep/chapters/ch10-compile/storage.bicep \
   --outfile storage.json
+```
+
+変換の前後で行数を比べます。
+
+```bash
 wc -l infra/bicep/chapters/ch10-compile/storage.bicep storage.json
 ```
 
@@ -92,9 +97,16 @@ flowchart LR
 
 テンプレートを ARM が解釈する側だと分かると、便利な道具が使えるようになります。what-if は、テンプレートを適用したら何が起きるかを、適用せずに ARM に計算させる操作です。
 
+この章の器を作ります。
+
 ```bash
 az group create --name azp-ch10-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch10 azp-lifecycle=ephemeral
+```
+
+作らずに、作った場合の結果だけを ARM に計算させます。
+
+```bash
 az deployment group what-if --resource-group azp-ch10-rg \
   --template-file infra/bicep/chapters/ch10-compile/storage.bicep \
   --parameters name=azpch10whatif001

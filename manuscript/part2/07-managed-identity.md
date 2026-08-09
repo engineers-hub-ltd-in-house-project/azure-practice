@@ -34,18 +34,31 @@ Azure のリソースから Azure のリソースへ、という Azure の内側
 
 まず、独立した ID であるユーザー割り当てマネージド ID を先に作ります。
 
+この章の器を作ります。
+
 ```bash
 az group create --name azp-ch07-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch07 azp-lifecycle=ephemeral
+```
+
+宿主より先に、ユーザー割り当てマネージド ID だけを作ります。先に作れること自体が、この種類の性質です。
+
+```bash
 az identity create --name azp-ch07-uid --resource-group azp-ch07-rg
 ```
 
 次に、コンテナーを作ります。システム割り当てを有効にし（`[system]`）、いま作ったユーザー割り当ても同時に載せます。
 
+まず、いま作った ID を指す識別子を組み立てます。
+
 ```bash
 sub=$(az account show --query id -o tsv)
 uid_id="/subscriptions/$sub/resourceGroups/azp-ch07-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/azp-ch07-uid"
+```
 
+その識別子を渡してコンテナーを作ります。
+
+```bash
 az container create --name azp-ch07-aci --resource-group azp-ch07-rg \
   --image mcr.microsoft.com/azuredocs/aci-helloworld \
   --assign-identity "[system]" "$uid_id" \
@@ -109,8 +122,15 @@ ERROR: Resource 'e40d41ce-...' does not exist or one of its queried reference-pr
 objects are not present.
 ```
 
+ユーザー割り当てのほうを、まずテナント側の台帳で引きます。
+
 ```bash
 az ad sp show --id 1c9aacfa-495d-4d56-b691-5f90e4ba49e5 --query displayName -o tsv
+```
+
+同じものをリソース側からも引きます。
+
+```bash
 az identity show --name azp-ch07-uid --resource-group azp-ch07-rg --query name -o tsv
 ```
 

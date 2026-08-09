@@ -41,11 +41,23 @@ VNet とサブネット自体は無料です。課金されるのは Private End
 
 ### 閉域の骨組みを作る
 
+この章の器を作ります。
+
 ```bash
 az group create --name azp-ch19-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch19 azp-lifecycle=ephemeral
+```
+
+VNet を、入口用のサブネット 1 つと一緒に作ります。
+
+```bash
 az network vnet create --name azp-ch19-vnet -g azp-ch19-rg --address-prefix 10.10.0.0/16 \
   --subnet-name pe-subnet --subnet-prefix 10.10.1.0/24
+```
+
+出口用のサブネットを足します。
+
+```bash
 az network vnet subnet create --name integration-subnet --vnet-name azp-ch19-vnet -g azp-ch19-rg \
   --address-prefix 10.10.2.0/24 --delegations Microsoft.App/environments
 ```
@@ -81,8 +93,18 @@ IP ができても、アプリはストレージへ名前（`<アカウント名
 
 ```bash
 az network private-dns zone create -g azp-ch19-rg --name privatelink.blob.core.windows.net
+```
+
+そのゾーンを VNet に結び付けます。これで VNet の中からの問い合わせがゾーンを見るようになります。
+
+```bash
 az network private-dns link vnet create -g azp-ch19-rg --zone-name privatelink.blob.core.windows.net \
   --name azp-ch19-dnslink --virtual-network azp-ch19-vnet --registration-enabled false
+```
+
+Private Endpoint とゾーンを結び付けます。これでレコードが自動で登録されます。
+
+```bash
 az network private-endpoint dns-zone-group create -g azp-ch19-rg --endpoint-name azp-ch19-pe \
   --name default --private-dns-zone privatelink.blob.core.windows.net --zone-name blob
 ```
@@ -137,6 +159,11 @@ using 'az storage account show -n accountname --query networkRuleSet'.
 ```bash
 az functionapp vnet-integration add --name azp-ch19-func -g azp-ch19-rg \
   --vnet azp-ch19-vnet --subnet integration-subnet
+```
+
+どのサブネットに繋がったかを確認します。
+
+```bash
 az functionapp vnet-integration list --name azp-ch19-func -g azp-ch19-rg --query "[].vnetResourceId" -o tsv
 ```
 

@@ -61,10 +61,22 @@ Service Bus は本書のどの章でも扱っていません。6 ブロックの
 
 ブロック 3（認証認可）。作成直後を観察すると、見覚えのある形が出てきます。
 
+Service Bus のリソースプロバイダーが未登録なら登録します（第 1 章）。
+
 ```bash
-az provider register --namespace Microsoft.ServiceBus --wait   # 未登録なら（第1章）
+az provider register --namespace Microsoft.ServiceBus --wait
+```
+
+この章の器を作ります。
+
+```bash
 az group create --name azp-ch24-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch24 azp-lifecycle=ephemeral
+```
+
+名前空間を作り、作成直後の認証まわりの既定値を表示させます。
+
+```bash
 az servicebus namespace create --name <名前空間> -g azp-ch24-rg --sku Basic \
   --query "{sku:sku.name, disableLocalAuth:disableLocalAuth}"
 ```

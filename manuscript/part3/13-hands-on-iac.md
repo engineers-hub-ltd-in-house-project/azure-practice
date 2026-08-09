@@ -99,6 +99,11 @@ azp-ch13-id
 
 ```bash
 az stack sub delete --name azp-ch13-stack --action-on-unmanage deleteAll --yes
+```
+
+リソースグループごと消えたかを確認します。
+
+```bash
 az group exists --name azp-ch13-rg
 ```
 

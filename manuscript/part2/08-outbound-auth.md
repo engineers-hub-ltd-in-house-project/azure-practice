@@ -17,11 +17,23 @@ flowchart LR
 
 多くの Azure サービスは、作成した瞬間からアクセスキーを持っています。キーを知っていれば誰でも、どこからでも、そのリソースのデータを全部操作できます。
 
+この章の器を作ります。
+
 ```bash
 az group create --name azp-ch08-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch08 azp-lifecycle=ephemeral
+```
+
+観察の題材になるストレージアカウントを、既定のまま作ります。この時点でキーは有効です。
+
+```bash
 az storage account create --name <ストレージ名> --resource-group azp-ch08-rg \
   --location japaneast --sku Standard_LRS
+```
+
+データを入れる箱をキー認証で作ります。`--auth-mode key` が、いま使っている手段を明示しています。
+
+```bash
 az storage container create --name demo --account-name <ストレージ名> --auth-mode key
 ```
 
@@ -65,10 +77,22 @@ az role assignment create --assignee "$me" --role "Storage Blob Data Contributor
 
 伝播（第 6 章）を待ってから再試行すると、今度は通ります。本書の検証では約 1 分後の 3 回目の試行で成功しました。
 
+送るファイルを手元に用意します。
+
 ```bash
 echo "hello" > hello.txt
+```
+
+キーではなく自分の ID で書き込みます。`--auth-mode login` がその指定です。
+
+```bash
 az storage blob upload --container-name demo --account-name <ストレージ名> --auth-mode login \
   --name hello.txt --file hello.txt
+```
+
+同じく ID の経路で、入ったことを確認します。
+
+```bash
 az storage blob list --container-name demo --account-name <ストレージ名> --auth-mode login \
   --query "[].name" -o tsv
 ```
@@ -145,8 +169,15 @@ subject に注目してください。リポジトリ名とブランチ名まで
 
 ## クリーンアップ演習
 
+テナント側で作ったアプリを消します。連合資格情報もこれに付いているので一緒に消えます。
+
 ```bash
 az ad app delete --id "$appid"
+```
+
+リソース側は、リソースグループごと消します。
+
+```bash
 az group delete --name azp-ch08-rg --yes
 ```
 

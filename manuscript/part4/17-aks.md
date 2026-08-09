@@ -106,8 +106,15 @@ https://japaneast.oic.prod-aks.azure.com/<テナントID>/a35fe928-.../
 
 Azure 側には Pod 用のユーザー割り当てマネージド ID を用意し、「この発行者の、この ServiceAccount のトークンなら私として認めよ」という連合資格情報を登録します。
 
+Pod 用のユーザー割り当てマネージド ID を作ります。
+
 ```bash
 az identity create --name azp-ch17-workload-id -g azp-ch17-rg
+```
+
+その ID に、クラスタの発行者と ServiceAccount を信用する条件を登録します。
+
+```bash
 az identity federated-credential create --name aks-default-workload \
   --identity-name azp-ch17-workload-id -g azp-ch17-rg \
   --issuer <上の発行者URL> \
@@ -154,9 +161,16 @@ AKS の課金は「コントロールプレーン + ノード VM + 付随リソ�
 
 本章のハンズオンは、ここまで引用してきたコマンド列そのものです。作成は 1 コマンドですが 5 分前後かかります。
 
+この章の器を作ります。
+
 ```bash
 az group create --name azp-ch17-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch17 azp-lifecycle=ephemeral
+```
+
+クラスタを作ります。ここから時間課金が始まります。
+
+```bash
 az aks create --name azp-ch17-aks -g azp-ch17-rg \
   --node-count 1 --node-vm-size <利用可能なサイズ> \
   --enable-oidc-issuer --enable-workload-identity \

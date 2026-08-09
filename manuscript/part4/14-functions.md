@@ -129,6 +129,11 @@ Always Ready は、コールドスタートを避けたい関数グループに�
 
 ```bash
 az functionapp scale config always-ready set --name azp-ch14-func -g azp-ch14-rg --settings http=1
+```
+
+設定が入ったかを確認します。
+
+```bash
 az functionapp scale config show --name azp-ch14-func -g azp-ch14-rg --query alwaysReady -o json
 ```
 
@@ -166,6 +171,11 @@ az rest --method post \
 
 ```bash
 ./scripts/chapters/ch14-functions.sh
+```
+
+作った状態が期待どおりかを、読み取り専用のスクリプトで検査します。
+
+```bash
 ./scripts/verify/ch14-functions.sh
 ```
 

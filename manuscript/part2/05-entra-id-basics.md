@@ -62,13 +62,23 @@ az ad group create --display-name azp-ch05-group --mail-nickname azp-ch05-group 
 
 実は、作りたてのテナントにも既に大量のサービスプリンシパルがいます。
 
+まず数を数えます。
+
 ```bash
 az ad sp list --all --query "length(@)" -o tsv
-az ad sp list --all --query "[0:6].displayName" -o tsv
 ```
 
 ```text
 47
+```
+
+顔ぶれを先頭から 6 体だけ見ます。
+
+```bash
+az ad sp list --all --query "[0:6].displayName" -o tsv
+```
+
+```text
 Windows Azure Active Directory
 Microsoft Graph
 Azure Key Vault
@@ -100,9 +110,10 @@ include these credentials in your code or check the credentials into your source
 
 このコマンドの裏では 2 つのオブジェクトが作られています。見比べます。
 
+1 つ目、アプリケーションの側を見ます。
+
 ```bash
 az ad app show --id 3ff75678-dd8a-4556-98d7-73101d6845a3 --query "{id:id, appId:appId}" -o json
-az ad sp show --id 3ff75678-dd8a-4556-98d7-73101d6845a3 --query "{id:id, appId:appId}" -o json
 ```
 
 ```text
@@ -110,6 +121,15 @@ az ad sp show --id 3ff75678-dd8a-4556-98d7-73101d6845a3 --query "{id:id, appId:a
   "appId": "3ff75678-dd8a-4556-98d7-73101d6845a3",
   "id": "2b138f7e-e1f3-4847-80d1-792d202802e9"
 }
+```
+
+2 つ目、サービスプリンシパルの側を、同じ appId で引きます。
+
+```bash
+az ad sp show --id 3ff75678-dd8a-4556-98d7-73101d6845a3 --query "{id:id, appId:appId}" -o json
+```
+
+```text
 {
   "appId": "3ff75678-dd8a-4556-98d7-73101d6845a3",
   "id": "db41e908-6d86-457c-ab21-be584d342e2c"
@@ -124,9 +144,16 @@ appId は同じなのに、id が違います。前者がアプリケーショ�
 
 マネージド ID は、Azure がシークレットの発行と更新を肩代わりしてくれるサービスプリンシパルです。ユーザー割り当てマネージド ID を作って、2 つの世界にまたがる構造を見ます。
 
+この章の器になるリソースグループを作ります。
+
 ```bash
 az group create --name azp-ch05-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch05 azp-lifecycle=ephemeral
+```
+
+その中にユーザー割り当てマネージド ID を作り、2 つの ID を表示させます。
+
+```bash
 az identity create --name azp-ch05-id --resource-group azp-ch05-rg \
   --query "{id:id, principalId:principalId}" -o json
 ```
@@ -178,6 +205,11 @@ flowchart LR
 
 ```bash
 az ad app delete --id 3ff75678-dd8a-4556-98d7-73101d6845a3
+```
+
+グループも台帳側のオブジェクトなので、同じくテナント側の操作で消します。
+
+```bash
 az ad group delete --group azp-ch05-group
 ```
 
