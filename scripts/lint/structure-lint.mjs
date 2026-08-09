@@ -179,19 +179,21 @@ for (const file of files) {
   if (h1.length === 1) {
     const title = h1[0];
     if (isAppendix) {
-      if (!/^付録[A-Z] .+$/.test(title)) {
-        errors.push(`${rel}: 付録の H1 は "付録X タイトル" の形にする (現在: ${title})`);
+      if (!/^付録 [A-Z] .+$/.test(title)) {
+        errors.push(`${rel}: 付録の H1 は "付録 X タイトル" の形にする (現在: ${title})`);
       }
-    } else if (!/^第\d+章 .+$/.test(title)) {
-      errors.push(`${rel}: 章の H1 は "第N章 主題" または "第N章 主題 ― サブタイトル" の形にする (現在: ${title})`);
+    } else if (!/^第 \d+ 章 .+$/.test(title)) {
+      errors.push(
+        `${rel}: 章の H1 は "第 N 章 主題" または "第 N 章 主題 ― サブタイトル" の形にする (現在: ${title})`,
+      );
     } else {
-      const declared = parseInt(title.match(/^第(\d+)章/)[1], 10);
+      const declared = parseInt(title.match(/^第 (\d+) 章/)[1], 10);
       const fromName = basenameChapter(rel);
       if (fromName !== null && declared !== fromName) {
         errors.push(`${rel}: H1 の章番号 ${declared} がファイル名の ${fromName} と一致しない`);
       }
-      if (/\/\d{2}-hands-on-[^/]+\.md$/.test(rel) && !/^第\d+章 ハンズオン ― /.test(title)) {
-        errors.push(`${rel}: ハンズオン章の H1 は "第N章 ハンズオン ― …" の形にする (現在: ${title})`);
+      if (/\/\d{2}-hands-on-[^/]+\.md$/.test(rel) && !/^第 \d+ 章 ハンズオン ― /.test(title)) {
+        errors.push(`${rel}: ハンズオン章の H1 は "第 N 章 ハンズオン ― …" の形にする (現在: ${title})`);
       }
     }
     if (/[[\]]/.test(title)) {
@@ -277,7 +279,41 @@ for (const file of [
       errors.push(`${rel}:${i + 1}: 章の区分は「第N部」と書く。Part N と英語で書かない`);
     }
     if (/第[一二三四五六七八九十]+部/.test(text)) {
-      errors.push(`${rel}:${i + 1}: 部の番号は算用数字で書く（第一部 ではなく 第1部）`);
+      errors.push(`${rel}:${i + 1}: 部の番号は算用数字で書く（第一部 ではなく 第 1 部）`);
+    }
+  }
+}
+
+// ASCII と日本語の境目には半角スペースを 1 つ置く。第 4 章・付録 B・404 のような
+// 数字や英字が地の文に埋もれると読点の位置が読めなくなるため。
+// 全角の約物との隣接は詰める。コマンドと実際の出力を貼ったブロックは記録なので触らない。
+const JA = 'ぁ-んァ-ヶ一-鿿々ー';
+const KEEP_FENCE = new Set(['bash', 'text', 'bicep', 'json', 'sh', 'console', 'yaml', 'markdown']);
+for (const file of [
+  ...walk(MANUSCRIPT),
+  join(ROOT, 'README.md'),
+  join(ROOT, 'WRITING_GUIDELINES.md'),
+]) {
+  if (!existsSync(file)) continue;
+  const rel = relative(ROOT, file);
+  const lines = readFileSync(file, 'utf8').split('\n');
+  let fence = null;
+  for (let i = 0; i < lines.length; i++) {
+    const open = lines[i].match(/^\s*```(\w*)/);
+    if (open) {
+      fence = fence === null ? open[1] || 'text' : null;
+      continue;
+    }
+    if (fence !== null && KEEP_FENCE.has(fence)) continue;
+    const prose = lines[i]
+      .replace(/`[^`]*`/g, '')
+      .replace(/\]\([^)]*\)/g, ']')
+      .replace(/<[^>]*>/g, '')
+      .replace(/https?:\/\/\S+/g, '');
+    const m =
+      prose.match(new RegExp(`[${JA}][A-Za-z0-9]`)) ?? prose.match(new RegExp(`[A-Za-z0-9][${JA}]`));
+    if (m) {
+      errors.push(`${rel}:${i + 1}: ASCII と日本語の間に半角スペースを置く -> ${m[0]}`);
     }
   }
 }

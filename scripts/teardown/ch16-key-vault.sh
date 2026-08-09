@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# 第16章のクリーンアップ。Key Vault は論理削除されるため、purge まで行わないと
-# 名前が 90 日間予約されたままになり、章を再実行できなくなる（第3章）。
+# 第 16 章のクリーンアップ。Key Vault は論理削除されるため、purge まで行わないと
+# 名前が 90 日間予約されたままになり、章を再実行できなくなる（第 3 章）。
 
 # shellcheck source=../lib/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"

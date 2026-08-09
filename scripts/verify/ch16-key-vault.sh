@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 第16章の期待状態を検証する。シークレットの書き込みを行う（読み書きのみ）。
+# 第 16 章の期待状態を検証する。シークレットの書き込みを行う（読み書きのみ）。
 
 # shellcheck source=../lib/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"

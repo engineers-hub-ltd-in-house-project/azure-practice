@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 第14章 Functions ― Flex Consumption を軸に課金とネットワークの関係を辿る
+# 第 14 章 Functions ― Flex Consumption を軸に課金とネットワークの関係を辿る
 
 # shellcheck source=../lib/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"
@@ -23,7 +23,7 @@ az storage account create --name "$sa" -g "$rg" --location "$location" \
   --sku Standard_LRS --allow-blob-public-access false -o none
 
 log "Flex Consumption の Function App を作る"
-# Functions は Storage を必須の相棒として要求する（第15章の主題）。
+# Functions は Storage を必須の相棒として要求する（第 15 章の主題）。
 # 未登録のプロバイダー (OperationalInsights / insights) があれば CLI が自動登録する。
 az functionapp create --name azp-ch14-func -g "$rg" \
   --storage-account "$sa" \

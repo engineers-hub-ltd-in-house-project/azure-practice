@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 第15章 Storage ― Functions の隠れた依存関係から理解する
+# 第 15 章 Storage ― Functions の隠れた依存関係から理解する
 # Function App を作り、その相棒ストレージを完全キーレス化するまで。
 
 # shellcheck source=../lib/common.sh
