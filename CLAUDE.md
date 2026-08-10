@@ -19,6 +19,10 @@ az bicep build --file <対象>.bicep --stdout > /dev/null
 - 本文にコマンド列を直接埋め込まず、scripts/ と infra/ の実ファイルを参照させる
 - ハンズオンは検証用サンドボックスでのみ実行する。顧客・本番サブスクリプションでは実行しない
 
+## Git の運用
+
+@.claude/rules/git-workflow.md
+
 ## 過去の指摘
 
 @.claude/rules/lessons.md
