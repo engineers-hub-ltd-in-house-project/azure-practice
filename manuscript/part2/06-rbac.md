@@ -80,20 +80,32 @@ az group create --name azp-ch06-b --location japaneast \
 az ad sp create-for-rbac --name azp-ch06-sp
 ```
 
-出力の appId / password / tenant を控えます。password の扱いは第 5 章の警告のとおりです。
+出力の appId / password / tenant は以降のコマンドで何度も使うので、変数に入れます。password の扱いは第 5 章の警告のとおりです。
+
+```bash
+appId=<出力の appId>
+password=<出力の password>
+tenant=<出力の tenant>
+```
 
 まず、広すぎる割り当てをします。サブスクリプション全体に Reader です。
 
 ```bash
 sub=$(az account show --query id -o tsv)
-az role assignment create --assignee <appId> --role Reader --scope "/subscriptions/$sub"
+az role assignment create --assignee "$appId" --role Reader --scope "/subscriptions/$sub"
 ```
 
-サービスプリンシパルとしてサインインし直します。`AZURE_CONFIG_DIR` を指定すると、CLI は別のプロファイルを使うので、普段のログインと混ざりません。
+サービスプリンシパルとしてサインインし直します。`AZURE_CONFIG_DIR` を指定すると、CLI は別のプロファイルを使うので、普段のログインと混ざりません。password は `~` などシェルが解釈する文字を含むことがあるため、変数を二重引用符で囲んで渡します。
 
 ```bash
 export AZURE_CONFIG_DIR=/tmp/azp-sp-profile
-az login --service-principal --username <appId> --password <password> --tenant <tenantId>
+az login --service-principal --username "$appId" --password "$password" --tenant "$tenant"
+```
+
+ここから先、このシェルでの `az` はサービスプリンシパルとして動きます。いまどちらとして動いているかは、次で確かめられます。サービスプリンシパルなら appId が、自分なら自分の UPN が出ます。
+
+```bash
+az account show --query user.name -o tsv
 ```
 
 この ID から何が見えるかを確かめます。
@@ -137,18 +149,30 @@ Reader の actions は `*/read` だけなので、write は拒否されます。
 
 ### 最小権限へ絞り直す
 
-管理者側のプロファイル（`AZURE_CONFIG_DIR` を外した通常のシェル）に戻り、割り当てを外して RG 単位に付け直します。
+ここからは管理者側、つまり自分の ID での操作に戻ります。同じシェルを使っているなら、`AZURE_CONFIG_DIR` を解除するのが戻り方です。
+
+```bash
+unset AZURE_CONFIG_DIR
+```
+
+戻れたかを確かめます。自分の UPN が出れば管理者側です。appId が出るならまだサービスプリンシパルのプロファイルのままです。
+
+```bash
+az account show --query user.name -o tsv
+```
+
+この確認を飛ばすと、次の削除が `AuthorizationFailed` で失敗します。Reader の actions は `*/read` だけなので、サービスプリンシパル自身には自分への割り当てを消す権限もないからです。権限不足のエラーに見えますが、原因は「誰として実行しているか」の取り違えです。
 
 まず広い方を外します。
 
 ```bash
-az role assignment delete --assignee <appId> --role Reader --scope "/subscriptions/$sub"
+az role assignment delete --assignee "$appId" --role Reader --scope "/subscriptions/$sub"
 ```
 
 同じ Reader を、リソースグループ 1 つのスコープで付け直します。
 
 ```bash
-az role assignment create --assignee <appId> --role Reader \
+az role assignment create --assignee "$appId" --role Reader \
   --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
 ```
 
@@ -171,27 +195,33 @@ azp-ch06-a
 Reader の割り当てを外します。
 
 ```bash
-az role assignment delete --assignee <appId> --role Reader \
+az role assignment delete --assignee "$appId" --role Reader \
   --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
 ```
 
 スコープは変えずに、ロールだけ Contributor にして付け直します。
 
 ```bash
-az role assignment create --assignee <appId> --role Contributor \
+az role assignment create --assignee "$appId" --role Contributor \
   --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
 ```
 
-サービスプリンシパル側で、まずリソースの変更を試します。
+ここからはサービスプリンシパル側の操作です。先ほど作ったプロファイルを指定し直します。サインインの情報はそのプロファイルに残っているので、`az login` は要りません。
+
+```bash
+export AZURE_CONFIG_DIR=/tmp/azp-sp-profile
+```
+
+まずリソースの変更を試します。
 
 ```bash
 az group update --name azp-ch06-a --set tags.azp-test=contributor
 ```
 
-これは成功します。次に、権限の操作を試します。自分の持つスコープの中で、誰かにロールを割り当てようとしてみます。
+これは成功します。次に、権限の操作を試します。自分の持つスコープの中で、自分自身にもう 1 つロールを割り当てようとしてみます。
 
 ```bash
-az role assignment create --assignee <objectId> --role Reader \
+az role assignment create --assignee "$appId" --role Reader \
   --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
 ```
 
@@ -207,17 +237,23 @@ Microsoft.Authorization/roleAssignments/...'
 
 管理者側で実行します。順序に意味があるので、1 手ずつ確認しながら進めてください。
 
+まず管理者側のプロファイルに戻ります。
+
+```bash
+unset AZURE_CONFIG_DIR
+```
+
 最初にロール割り当てを消します。
 
 ```bash
-az role assignment delete --assignee <appId> \
+az role assignment delete --assignee "$appId" \
   --scope "/subscriptions/$sub/resourceGroups/azp-ch06-a"
 ```
 
 割り当てが無くなってから、ID 側を消します。
 
 ```bash
-az ad app delete --id <appId>
+az ad app delete --id "$appId"
 ```
 
 リソースグループを 2 つとも消します。まず 1 つ目。
