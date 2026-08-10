@@ -12,7 +12,8 @@
     "format": "prettier --write '**/*.{md,yml,yaml,json}'",
     "prepare": "lefthook install || true",
     "lint:terms": "node scripts/lint/terms-lint.mjs",
-    "lint:self": "./scripts/lint/self-check.sh"
+    "lint:self": "./scripts/lint/self-check.sh",
+    "lint:review": "node scripts/lint/review-lint.mjs"
   },
   "devDependencies": {
     "lefthook": "^1.13.0",
