@@ -7,7 +7,7 @@
 ```mermaid
 flowchart LR
   subgraph SA["システム割り当て"]
-    H1["宿主リソース"] ---|"一心同体"| I1["ID"]
+    H1["宿主リソース"] ---|"同時に作られ、同時に消える"| I1["ID"]
   end
   subgraph UA["ユーザー割り当て"]
     I2["ID (独立したリソース)"]

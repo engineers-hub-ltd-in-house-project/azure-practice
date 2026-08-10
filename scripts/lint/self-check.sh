@@ -79,6 +79,8 @@ probe "ノード種類の後置" "$CH" "t = t.replace('S[\"サブスクリプシ
 echo "== terms-lint =="
 probe "初出章より前で使わない" "$CH" "t = t.replace('入れ物です。', '入れ物です。Workload ID の話です。')" terms-lint.mjs
 probe "禁止語" "$CH" "t = t.replace('入れ物です。', '入れ物です。これは布石です。')" terms-lint.mjs
+probe "禁止語（比喩の造語）" "$CH" "t = t.replace('入れ物です。', '入れ物です。台帳へ投影されます。')" terms-lint.mjs
+probe "禁止語（擬人化）" "$CH" "t = t.replace('入れ物です。', '入れ物です。宿主と一心同体です。')" terms-lint.mjs
 probe "未定義の略語" "$CH" "t = t.replace('入れ物です。', '入れ物です。ZZQ を使います。')" terms-lint.mjs
 probe "図の初見の固有名" "$CH" "t = t.replace('ST[\"ストレージ (japaneast を選択)\"]', 'ST[\"Cosmos Table Storage\"]')" terms-lint.mjs
 probe "設問の語が本文にある" "$CH" "t = t.rstrip()[:-1] + chr(10) + '4. Workload ID について述べてください' + chr(10)" terms-lint.mjs
