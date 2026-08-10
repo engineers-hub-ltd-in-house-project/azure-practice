@@ -75,7 +75,7 @@ az network private-endpoint create --name azp-ch19-pe -g azp-ch19-rg \
   --group-id blob --connection-name azp-ch19-pe-conn
 ```
 
-何ができたかを見ます。Private Endpoint の実体は、サブネットに刺さったネットワークインターフェイスです。
+何ができたかを見ます。Private Endpoint の実体は、サブネットの中に作られるネットワークインターフェイスです。
 
 ```bash
 az network nic show --ids <PEのNIC> --query "ipConfigurations[0].privateIPAddress" -o tsv

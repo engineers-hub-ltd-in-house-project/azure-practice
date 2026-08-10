@@ -44,7 +44,7 @@ flowchart TB
 ### 横の設計 ― ネットワークと課金
 
 - dev 環境は閉域化を見送り、キー無効 + 最小 RBAC を守りの主軸にします。prod へ昇格するとき、第 19 章の型（Private Endpoint + プライベート DNS）を Storage と Key Vault に適用します
-- 課金は Flex の従量 + Storage 容量 + Service Bus Basic（操作課金）で、無風なら月数十円。サブスクリプションに予算アラートを最初に仕掛けます（第 23 章）
+- 課金は Flex の従量 + Storage 容量 + Service Bus Basic（操作課金）で、無風なら月数十円。サブスクリプションに予算アラートを最初に作ります（第 23 章）
 - 全リソースに azp 系のタグを付け、タグ軸のコスト照会に備えます（第 23 章・付録 B）
 
 ### 実装の形

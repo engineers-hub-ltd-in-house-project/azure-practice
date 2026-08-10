@@ -376,6 +376,15 @@ for (const file of walk(MANUSCRIPT)) {
 // 正確な動詞（取得する・解決する・問い合わせる・引用する）を使う。
 // 「差し引く」「線を引く」のような通常の語は落とさないよう、対象を絞る。
 const JARGON_VERB = /(名前|ID|appId|キー|値|一覧|台帳|そこ|ここ)(で|から|を)引(く|き|け|い)/;
+
+// 「権限をスコープに掛ける」「予算を仕掛ける」も同じ理由で落とす。何をする操作なのかが
+// 語から分からず、読者はロール割り当てなのか設定なのか作成なのかを推し量ることになる。
+// 費用が「掛かる」は通常の日本語なので対象にしない（他動詞の掛け・掛け算・掛け方だけを見る）。
+const JARGON_KAKERU = /掛け(る|られ|ま|た|て|な|れ|方|算)/;
+
+// リソースは生き物ではないので「生まれる」と書かない。作られる・できる・出る と書く。
+// 擬人化の禁止語は glossary にもあるが、この語は活用が多く、語幹で見るほうが漏れない。
+const PERSONIFY_BIRTH = /生まれ(る|た|ま|て|な)/;
 for (const file of walk(MANUSCRIPT)) {
   const rel = relative(ROOT, file);
   const lines = readFileSync(file, 'utf8').split('\n');
@@ -386,9 +395,20 @@ for (const file of walk(MANUSCRIPT)) {
       continue;
     }
     if (inFence) continue;
-    const m = lines[i].replace(/`[^`]*`/g, '').match(JARGON_VERB);
+    const prose = lines[i].replace(/`[^`]*`/g, '');
+    const m = prose.match(JARGON_VERB);
     if (m) {
       errors.push(`${rel}:${i + 1}: 業界口語を使わない。取得する・解決する・問い合わせる と書く -> ${m[0]}`);
+    }
+    const k = prose.match(JARGON_KAKERU);
+    if (k) {
+      errors.push(
+        `${rel}:${i + 1}: 業界口語を使わない。割り当てる・適用する・設定する・作成する と書く -> ${k[0]}`,
+      );
+    }
+    const b = prose.match(PERSONIFY_BIRTH);
+    if (b) {
+      errors.push(`${rel}:${i + 1}: 擬人化しない。作られる・できる・出る と書く -> ${b[0]}`);
     }
   }
 }
