@@ -38,12 +38,21 @@ flowchart TB
 az identity create --name azp-ch09-id --resource-group azp-ch09-rg
 ```
 
-宿主になるアプリケーションはまだ存在しませんが、ユーザー割り当てマネージド ID は先に作れます（第 7 章）。ID が先にあるから、権限も先に配れる。アプリの実体ができる前に、セキュリティの枠組みだけが先に完成する順序です。
+ID を載せるアプリケーションはまだ存在しませんが、ユーザー割り当てマネージド ID は先に作れます（第 7 章）。ID が先にあるので、権限も先に配れます。アプリの実体ができる前に、セキュリティの枠組みだけが先に完成する順序です。
 
 ### 段 3 ― 保管場所を、作成時からキー無効で作る
 
+ストレージアカウントの名前は世界で一意である必要があります。スクリプトと同じ作り方で組み立てます。
+
 ```bash
-az storage account create --name <ストレージ名> --resource-group azp-ch09-rg \
+sub=$(az account show --query id -o tsv)
+storage="azpch09$(echo "$sub" | tr -d - | cut -c1-8)"
+```
+
+その名前で作ります。
+
+```bash
+az storage account create --name "$storage" --resource-group azp-ch09-rg \
   --sku Standard_LRS --allow-shared-key-access false \
   --min-tls-version TLS1_2 --allow-blob-public-access false
 ```
@@ -52,16 +61,17 @@ az storage account create --name <ストレージ名> --resource-group azp-ch09-
 
 ### 段 4 ― 権限を、それぞれ適切なスコープで配る
 
-スコープの文字列にサブスクリプション ID が要るので、控えておきます。
+割り当てる相手を 2 つとも取得しておきます。段 2 で作ったマネージド ID の台帳側と、いまサインインしている自分自身です。
 
 ```bash
-sub=$(az account show --query id -o tsv)
+principal_id=$(az identity show --name azp-ch09-id --resource-group azp-ch09-rg --query principalId -o tsv)
+me=$(az ad signed-in-user show --query id -o tsv)
 ```
 
 マネージド ID には、リソースグループのスコープで割り当てます。
 
 ```bash
-az role assignment create --assignee <principalId> \
+az role assignment create --assignee "$principal_id" \
   --role "Storage Blob Data Contributor" \
   --scope "/subscriptions/$sub/resourceGroups/azp-ch09-rg"
 ```
@@ -69,12 +79,12 @@ az role assignment create --assignee <principalId> \
 自分（運用者）には、ストレージアカウント単体のスコープで割り当てます。
 
 ```bash
-az role assignment create --assignee <自分のobjectId> \
+az role assignment create --assignee "$me" \
   --role "Storage Blob Data Contributor" \
-  --scope ".../resourceGroups/azp-ch09-rg/providers/Microsoft.Storage/storageAccounts/<ストレージ名>"
+  --scope "/subscriptions/$sub/resourceGroups/azp-ch09-rg/providers/Microsoft.Storage/storageAccounts/$storage"
 ```
 
-なぜ差をつけたのか。アプリはこのリソースグループの保管場所全体を使う想定なので、あとからアカウントが増えても割り当てを増やさずに済む RG スコープを選びました。一方、運用者のアクセスは調査のための最小限であるべきなので、対象のアカウント 1 つに絞りました。どちらが正しいという話ではなく、ロール × スコープを要件から逆算して選ぶ（第 6 章）、その判断を 2 通り並べています。
+なぜ差をつけたのか。アプリはこのリソースグループの保管場所全体を使う想定なので、あとからアカウントが増えても割り当てを増やさずに済む RG スコープを選びました。一方、運用者のアクセスは調査のための最小限であるべきなので、対象のアカウント 1 つに絞りました。どちらが正しいという話ではなく、ロールとスコープを要件から逆算して選ぶ（第 6 章）、その判断を 2 通り並べています。
 
 ## 検証
 
@@ -98,9 +108,9 @@ az role assignment create --assignee <自分のobjectId> \
 | キー認証が無効            | 段 3 の構成が効いている                                         |
 | キー経路の拒否            | 第 8 章の KeyBasedAuthenticationNotPermitted が実際に働いている |
 | Entra ID 認証での書き込み | 運用者のデータロール（アカウントスコープ）が機能している        |
-| マネージド ID のロール    | アプリ用の権限が宿主の誕生前に配り終わっている                  |
+| マネージド ID のロール    | アプリ用の権限が、載せ先ができる前に配り終わっている            |
 
-2 番目と 3 番目が対になっています。同じストレージが、キーには閉じ、ID には開いています。第 2 部で組み立てた世界の完成形です。
+2 番目と 3 番目が対になっています。同じストレージが、キーには閉じ、ID には開いています。第 2 部で組み立てた構成の完成形です。
 
 なお、verify スクリプトのデータ書き込み確認にはリトライが入っています。割り当ての伝播（第 6 章）のため、本書の検証でも初回は拒否され、しばらく待ってから成功しています。
 

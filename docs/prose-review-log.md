@@ -8,16 +8,16 @@
 
 | 章                                                                                                                             | 規約版 | レビュー日 | 備考 |
 | ------------------------------------------------------------------------------------------------------------------------------ | ------ | ---------- | ---- |
-| [第 0 章 Azure を使い始める ― アカウント作成からサブスクリプションまで](../manuscript/part1/00-getting-started.md)             | 0      | -          | -    |
-| [第 1 章 テナントとサブスクリプション ― 契約と分離の境界](../manuscript/part1/01-tenant-and-subscription.md)                   | 0      | -          | -    |
-| [第 2 章 管理グループ ― ポリシーと RBAC が上から下に伝わる仕組み](../manuscript/part1/02-management-groups.md)                 | 0      | -          | -    |
-| [第 3 章 リソースグループ ― ライフサイクルをまとめる単位の設計](../manuscript/part1/03-resource-groups.md)                     | 0      | -          | -    |
-| [第 4 章 ハンズオン ― 4 階層を 1 つのシナリオで通しで作る](../manuscript/part1/04-hands-on-four-layers.md)                     | 0      | -          | -    |
-| [第 5 章 Entra ID の基本 ― ユーザー・グループ・サービスプリンシパル・マネージド ID](../manuscript/part2/05-entra-id-basics.md) | 0      | -          | -    |
-| [第 6 章 RBAC ― スコープとロールの組み合わせで権限が決まる](../manuscript/part2/06-rbac.md)                                    | 0      | -          | -    |
-| [第 7 章 マネージド ID ― リソース間の内向き認証](../manuscript/part2/07-managed-identity.md)                                   | 0      | -          | -    |
-| [第 8 章 外向き認証 ― アクセスキー・Entra ID 認証・フェデレーションの使い分け](../manuscript/part2/08-outbound-auth.md)        | 0      | -          | -    |
-| [第 9 章 ハンズオン ― ID と権限を 1 つのシナリオで通す](../manuscript/part2/09-hands-on-identity.md)                           | 0      | -          | -    |
+| [第 0 章 Azure を使い始める ― アカウント作成からサブスクリプションまで](../manuscript/part1/00-getting-started.md)             | 1      | 2026-08-10 | -    |
+| [第 1 章 テナントとサブスクリプション ― 契約と分離の境界](../manuscript/part1/01-tenant-and-subscription.md)                   | 1      | 2026-08-10 | -    |
+| [第 2 章 管理グループ ― ポリシーと RBAC が上から下に伝わる仕組み](../manuscript/part1/02-management-groups.md)                 | 1      | 2026-08-10 | -    |
+| [第 3 章 リソースグループ ― ライフサイクルをまとめる単位の設計](../manuscript/part1/03-resource-groups.md)                     | 1      | 2026-08-10 | -    |
+| [第 4 章 ハンズオン ― 4 階層を 1 つのシナリオで通しで作る](../manuscript/part1/04-hands-on-four-layers.md)                     | 1      | 2026-08-10 | -    |
+| [第 5 章 Entra ID の基本 ― ユーザー・グループ・サービスプリンシパル・マネージド ID](../manuscript/part2/05-entra-id-basics.md) | 1      | 2026-08-10 | -    |
+| [第 6 章 RBAC ― スコープとロールの組み合わせで権限が決まる](../manuscript/part2/06-rbac.md)                                    | 1      | 2026-08-10 | -    |
+| [第 7 章 マネージド ID ― リソース間の内向き認証](../manuscript/part2/07-managed-identity.md)                                   | 1      | 2026-08-10 | -    |
+| [第 8 章 外向き認証 ― アクセスキー・Entra ID 認証・フェデレーションの使い分け](../manuscript/part2/08-outbound-auth.md)        | 1      | 2026-08-10 | -    |
+| [第 9 章 ハンズオン ― ID と権限を 1 つのシナリオで通す](../manuscript/part2/09-hands-on-identity.md)                           | 1      | 2026-08-10 | -    |
 | [第 10 章 ARM テンプレートと Bicep の関係](../manuscript/part3/10-arm-and-bicep.md)                                            | 0      | -          | -    |
 | [第 11 章 デプロイスコープと Deployment Stacks](../manuscript/part3/11-deployment-scopes-and-stacks.md)                        | 0      | -          | -    |
 | [第 12 章 モジュール化と Azure Verified Modules](../manuscript/part3/12-modules-and-avm.md)                                    | 0      | -          | -    |

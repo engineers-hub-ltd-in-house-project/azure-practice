@@ -24,17 +24,24 @@ az group create --name azp-ch08-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch08 azp-lifecycle=ephemeral
 ```
 
-観察の題材になるストレージアカウントを、既定のまま作ります。この時点でキーは有効です。
+観察の題材になるストレージアカウントを作ります。名前は世界で一意である必要があるので、サブスクリプション ID から組み立てます。
 
 ```bash
-az storage account create --name <ストレージ名> --resource-group azp-ch08-rg \
+sub=$(az account show --query id -o tsv)
+storage="azpch08$(echo "$sub" | tr -d - | cut -c1-8)"
+```
+
+その名前で、既定のまま作ります。この時点でキーは有効です。
+
+```bash
+az storage account create --name "$storage" --resource-group azp-ch08-rg \
   --location japaneast --sku Standard_LRS
 ```
 
-データを入れる箱をキー認証で作ります。`--auth-mode key` が、いま使っている手段を明示しています。
+データを入れるコンテナーをキー認証で作ります。`--auth-mode key` が、いま使っている手段を明示しています。
 
 ```bash
-az storage container create --name demo --account-name <ストレージ名> --auth-mode key
+az storage container create --name demo --account-name "$storage" --auth-mode key
 ```
 
 ```text
@@ -47,10 +54,10 @@ true
 
 もう 1 つの経路は、第 6 章までに組み立てた仕組みをそのまま使います。サインインした ID と RBAC で、データへのアクセスを判定します。
 
-ここで多くの人が引っかかる事実を、実際に踏んでみます。いまの自分はサブスクリプションの Owner です。その自分で、BLOB の一覧を Entra ID 認証で取ってみます。
+先に結論を書きます。サブスクリプションの Owner であっても、BLOB の中身は読めません。実際に踏んでみます。
 
 ```bash
-az storage blob list --container-name demo --account-name <ストレージ名> --auth-mode login
+az storage blob list --container-name demo --account-name "$storage" --auth-mode login
 ```
 
 ```text
@@ -64,15 +71,14 @@ Depending on your operation, you may need to be assigned one of the following ro
 
 Owner なのに拒否されました。RBAC のロールには、リソースの管理操作（作る・消す・設定を変える）を許す actions と、データそのものの操作を許す dataActions という別の系統があり、Owner が持つ `*` は actions の系統です。管理の全権とデータへのアクセス権は別物として設計されています。ストレージを管理できる人が、中の個人情報を読めるとは限らない、という分離です。
 
-この 2 つの系統には名前が付いています。リソースの管理操作（作る・消す・設定を変える。actions の世界）の層をコントロールプレーン、データそのものの操作（dataActions の世界）の層をデータプレーンと呼びます。同じリソースに 2 枚の層があり、それぞれ別のロールで守られている、という絵で覚えてください。
+この 2 つの系統には名前が付いています。リソースの管理操作（作る・消す・設定を変える。actions の系統）の層をコントロールプレーン、データそのものの操作（dataActions の系統）の層をデータプレーンと呼びます。同じリソースに 2 枚の層があり、それぞれ別のロールで守られている、という絵で覚えてください。
 
-エラーメッセージが親切に挙げてくれた Storage Blob Data Contributor が、dataActions を持つデータプレーンのロールです。自分に割り当てます。
+エラーメッセージに挙がっている Storage Blob Data Contributor が、dataActions を持つデータプレーンのロールです。自分に割り当てます。
 
 ```bash
-sub=$(az account show --query id -o tsv)
 me=$(az ad signed-in-user show --query id -o tsv)
 az role assignment create --assignee "$me" --role "Storage Blob Data Contributor" \
-  --scope "/subscriptions/$sub/resourceGroups/azp-ch08-rg/providers/Microsoft.Storage/storageAccounts/<ストレージ名>"
+  --scope "/subscriptions/$sub/resourceGroups/azp-ch08-rg/providers/Microsoft.Storage/storageAccounts/$storage"
 ```
 
 伝播（第 6 章）を待ってから再試行すると、今度は通ります。本書の検証では約 1 分後の 3 回目の試行で成功しました。
@@ -86,14 +92,14 @@ echo "hello" > hello.txt
 キーではなく自分の ID で書き込みます。`--auth-mode login` がその指定です。
 
 ```bash
-az storage blob upload --container-name demo --account-name <ストレージ名> --auth-mode login \
+az storage blob upload --container-name demo --account-name "$storage" --auth-mode login \
   --name hello.txt --file hello.txt
 ```
 
 同じく ID の経路で、入ったことを確認します。
 
 ```bash
-az storage blob list --container-name demo --account-name <ストレージ名> --auth-mode login \
+az storage blob list --container-name demo --account-name "$storage" --auth-mode login \
   --query "[].name" -o tsv
 ```
 
@@ -108,14 +114,14 @@ hello.txt
 Entra ID 認証が通るようになった今、キーはもう要りません。止めます。
 
 ```bash
-az storage account update --name <ストレージ名> --resource-group azp-ch08-rg \
+az storage account update --name "$storage" --resource-group azp-ch08-rg \
   --allow-shared-key-access false
 ```
 
 キー経路を再試行した実際の結果です。
 
 ```bash
-az storage container create --name demo2 --account-name <ストレージ名> --auth-mode key
+az storage container create --name demo2 --account-name "$storage" --auth-mode key
 ```
 
 ```text
@@ -125,7 +131,7 @@ KeyBasedAuthenticationNotPermitted
 一方、Entra ID 経路は生きています。
 
 ```bash
-az storage blob list --container-name demo --account-name <ストレージ名> --auth-mode login \
+az storage blob list --container-name demo --account-name "$storage" --auth-mode login \
   --query "[].name" -o tsv
 ```
 
