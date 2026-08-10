@@ -37,13 +37,15 @@ Entra ID は Microsoft が運営する 1 つの巨大なサービスですが、
 az account show --query "{tenantId:tenantId, tenantDomain:tenantDefaultDomain, user:user.name}" -o table
 ```
 
+表示される tenantId が、第 0 章で自動作成されたテナントの識別子です。tenantDomain が `xxx.onmicrosoft.com` の形になっていることも確かめてください。
+
 ここで大事なことが 1 つあります。テナントには課金の概念がありません。テナントは「誰が」を管理する場所であって、「いくら払うか」を管理する場所ではないのです。料金の話は次のサブスクリプションから始まります。
 
 ## サブスクリプションとは何か
 
 サブスクリプションは、リソースを置くための契約の単位です。第 0 章で従量課金制のサインアップをして作ったものがこれです。
 
-サブスクリプションは 3 つの異なるものを同時に区切っています。この 3 つが 1 つの単位にまとまっていることが、Azure の設計を理解する鍵になります。
+サブスクリプションは 3 つの異なるものを同時に区切っています。課金、クォータ、リソースプロバイダー登録です。この 3 つが 1 つの単位にまとまっていることが、本章の要点です。
 
 | 区切っているもの         | 意味                                                                                       |
 | ------------------------ | ------------------------------------------------------------------------------------------ |
@@ -81,7 +83,7 @@ Azure のリソースは、種類ごとに「リソースプロバイダー」�
 
 各リソースプロバイダーは、サブスクリプションごとに登録済みか未登録かの状態を持ちます。未登録のプロバイダーのリソースは作れません。
 
-作りたてのサブスクリプションでこの状態を見ると、意外な光景になっています。主要なサービスに絞って、作成直後のサブスクリプションで実際に確認した結果です。
+作りたてのサブスクリプションでは、主要なサービスの多くが未登録です。作成直後のサブスクリプションで実際に確認した結果です。
 
 ```bash
 az provider list --query "[?namespace=='Microsoft.Storage'||namespace=='Microsoft.Web'||namespace=='Microsoft.KeyVault'||namespace=='Microsoft.DocumentDB'||namespace=='Microsoft.ManagedIdentity'].{ns:namespace,state:registrationState}" -o table
@@ -97,19 +99,23 @@ Microsoft.KeyVault         NotRegistered
 Microsoft.Web              NotRegistered
 ```
 
-Key Vault も App Service（Microsoft.Web）も Cosmos DB（Microsoft.DocumentDB）も未登録から始まります。未登録の総数を数えると、本書の検証環境では 295 でした。
+Key Vault も App Service（Microsoft.Web）も Cosmos DB（Microsoft.DocumentDB）も未登録から始まります。未登録の総数も数えます。
 
 ```bash
 az provider list --query "[?registrationState=='NotRegistered'].namespace" -o tsv | wc -l
 ```
 
-大半のプロバイダーは未登録から始まるのに、普段この状態に気づかないのには理由があり、それを次の演習で確かめます。
+```text
+295
+```
+
+大半のプロバイダーが未登録なのに普段この状態に気づかないのは、デプロイのコマンドが未登録のプロバイダーを自動で登録しているからです。次の演習では、自動登録が働く経路と働かない経路を並べて、同じ操作が別のエラーで止まることを確かめます。
 
 ### 壊す演習 ― 未登録プロバイダーの素の挙動を観察する
 
 未登録のプロバイダーのリソースを作ろうとすると何が起きるかを、2 つの経路で試します。結果が違います。以下のコマンドと出力は、すべて本書の検証環境（作りたての従量課金サブスクリプション）で実際に実行した結果です。
 
-まず、演習で使うリソースグループを作ります。リソースグループの意味は第 3 章で扱うので、ここでは「リソースを入れる箱を先に用意した」とだけ理解してください。
+まず、演習で使うリソースグループを作ります。リソースグループの意味は第 3 章で扱うので、ここでは「リソースをまとめて置く単位を先に用意した」とだけ理解してください。
 
 ```bash
 az group create --name azp-ch01-rg --location japaneast \
@@ -166,7 +172,7 @@ Additional details - Current Limit (Total VMs): 0 ... Amount required for this d
 
 MissingSubscriptionRegistration はどこにも出ていません。代わりにクォータ不足で落ちています。作りたての従量課金サブスクリプションでは、App Service の仮想マシン枠の上限が 0 のことがあり、無料の F1 プランですら 1 枠を要求するため作れないのです（上限の引き上げはポータルから申請できます）。
 
-ここでプロバイダーの状態をもう一度見ると、面白いことが起きています。
+ここでプロバイダーの状態をもう一度見ると、登録済みに変わっています。
 
 ```bash
 az provider show --namespace Microsoft.Web --query registrationState -o tsv
