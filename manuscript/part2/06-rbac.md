@@ -147,7 +147,7 @@ authorization to perform action 'Microsoft.Resources/subscriptions/resourcegroup
 
 Reader の actions は `*/read` だけなので、write は拒否されます。エラーには「どの操作（action）が」「どのスコープで」足りなかったかが正確に書かれています。RBAC のエラーはこの 2 点を読み取れば原因が特定できます。
 
-### 最小権限へ絞り直す
+### スコープを狭めて付け直す
 
 ここからは管理者側、つまり自分の ID での操作に戻ります。同じシェルを使っているなら、`AZURE_CONFIG_DIR` を解除するのが戻り方です。
 
