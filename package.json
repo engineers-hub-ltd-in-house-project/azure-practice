@@ -4,7 +4,7 @@
   "private": true,
   "description": "ガバナンス階層から積み上げる Azure 自習書の原稿・IaC・検証スクリプト",
   "scripts": {
-    "lint": "npm run lint:md && npm run lint:format && npm run lint:structure && npm run lint:mermaid && npm run lint:terms",
+    "lint": "npm run lint:md && npm run lint:format && npm run lint:structure && npm run lint:mermaid && npm run lint:terms && npm run lint:review",
     "lint:md": "markdownlint --config .markdownlint.json '**/*.md' --ignore node_modules",
     "lint:format": "prettier --check '**/*.{md,yml,yaml,json}'",
     "lint:structure": "node scripts/lint/structure-lint.mjs",

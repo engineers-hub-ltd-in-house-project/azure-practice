@@ -48,19 +48,32 @@ az group create --name azp-ch20-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch20 azp-lifecycle=ephemeral
 ```
 
-そのリソースグループのスコープに、Deny の効果で割り当てます。
+割り当てのスコープになるリソースグループの ID を組み立てます。
+
+```bash
+sub=$(az account show --query id -o tsv)
+rg_id="/subscriptions/$sub/resourceGroups/azp-ch20-rg"
+```
+
+そのスコープに、Deny の効果で割り当てます。
 
 ```bash
 az policy assignment create --name azp-ch20-deny-localauth \
   --display-name "Cosmos のローカル認証を禁止する" \
   --policy 5450f5bd-9c72-4390-a9c4-a7aba4edfdd2 \
-  --scope <リソースグループのID> \
+  --scope "$rg_id" \
   --params '{"effect":{"value":"Deny"}}'
 ```
 
 ### 壊す演習 ― ルール違反の作成を試みる
 
-第 18 章の既定の作成コマンド（disableLocalAuth を指定しない = キー認証が有効）を、この場所で実行します。
+第 18 章と同じ作成コマンドを、この場所で実行します。disableLocalAuth を指定していないので、キー認証が有効なアカウントを作ろうとしていることになります。
+
+```bash
+az cosmosdb create --name azp-ch20-cosmos -g azp-ch20-rg \
+  --capabilities EnableServerless \
+  --locations regionName=japaneast
+```
 
 ```text
 ERROR: (RequestDisallowedByPolicy) Resource 'azp-ch20-cosmos' was disallowed by policy.
@@ -75,7 +88,23 @@ methods disabled", ... "version":"1.2.0"}}]'
 
 ## Audit ― 記録するが止めない
 
-同じ定義を、効果だけ Audit に変えて割り当て直します（割り当てを削除し、`--params` の effect を Audit にして再作成します）。そして、まったく同じ違反の作成を再試行します。
+同じ定義を、効果だけ Audit に変えて割り当て直します。まず Deny の割り当てを消します。
+
+```bash
+az policy assignment delete --name azp-ch20-deny-localauth --scope "$rg_id"
+```
+
+effect を Audit にして、別の名前で作り直します。
+
+```bash
+az policy assignment create --name azp-ch20-audit-localauth \
+  --display-name "Cosmos のローカル認証を監査する" \
+  --policy 5450f5bd-9c72-4390-a9c4-a7aba4edfdd2 \
+  --scope "$rg_id" \
+  --params '{"effect":{"value":"Audit"}}'
+```
+
+まったく同じ違反の作成を再試行します。
 
 ```text
 {
@@ -91,6 +120,14 @@ Deny と Audit の使い分けは、導入の順序の問題です。いきな�
 ## 管理グループスコープへ ― 組織全体のルールにする
 
 リソースグループへの割り当ては練習です。実務でこのルールは「全社の Cosmos はキー認証禁止」のような形を取り、置き場所は第 2 章の管理グループになります。
+
+観察用の管理グループを 1 つ作ります。作成直後は一時的に AuthorizationFailed になることがあるので、失敗したら少し待って再実行してください（第 2 章）。
+
+```bash
+az account management-group create --name azp-ch20-mg --display-name "ポリシーの観察用"
+```
+
+そこへ、同じ定義を Audit で割り当てます。
 
 ```bash
 az policy assignment create --name azp-ch20-mg-audit \
@@ -121,13 +158,14 @@ azp-ch20-mg-audit
 管理グループスコープの割り当てを消します。ここが残ると組織全体に効き続けます。
 
 ```bash
-az policy assignment delete --name azp-ch20-mg-audit --scope <管理グループ>
+az policy assignment delete --name azp-ch20-mg-audit \
+  --scope "/providers/Microsoft.Management/managementGroups/azp-ch20-mg"
 ```
 
 リソースグループスコープの割り当ても消します。
 
 ```bash
-az policy assignment delete --name azp-ch20-audit-localauth --scope <リソースグループ>
+az policy assignment delete --name azp-ch20-audit-localauth --scope "$rg_id"
 ```
 
 違反リソースごとリソースグループを消します。
@@ -136,7 +174,11 @@ az policy assignment delete --name azp-ch20-audit-localauth --scope <リソー�
 az group delete --name azp-ch20-rg --yes
 ```
 
-サブスクリプションをルートへ戻してから管理グループを削除（第 2 章の順序）
+最後に管理グループを削除します。本章ではサブスクリプションを配下へ移していないので、そのまま消せます。移していた場合は、第 2 章の順序でルートへ戻してから消します。
+
+```bash
+az account management-group delete --name azp-ch20-mg
+```
 
 ポリシーの割り当ては、対象のリソースが消えても残ります。リソースグループスコープの割り当てはリソースグループと共に消えますが、管理グループスコープのものは明示的に消すまで組織全体に効き続けます。teardown の順序に割り当てを含める習慣は、この章から先の運用でも重要です。
 

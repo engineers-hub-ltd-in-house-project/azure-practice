@@ -28,10 +28,10 @@
 | [第 17 章 AKS ― 5 種類の ID と Workload ID](../manuscript/part4/17-aks.md)                                                     | 1      | 2026-08-10 | -    |
 | [第 18 章 Cosmos DB ― コントロールプレーンとデータプレーンの RBAC は別物](../manuscript/part4/18-cosmos-db.md)                 | 1      | 2026-08-10 | -    |
 | [第 19 章 Networking ― VNet 統合と Private Endpoint が各層にどう効くか](../manuscript/part4/19-networking.md)                  | 1      | 2026-08-10 | -    |
-| [第 20 章 Azure Policy ― 強制（Deny）と監査（Audit）の違い](../manuscript/part5/20-azure-policy.md)                            | 0      | -          | -    |
-| [第 21 章 Cloud Adoption Framework と Landing Zone](../manuscript/part5/21-caf-and-landing-zone.md)                            | 0      | -          | -    |
-| [第 22 章 マルチサブスクリプション設計の実践](../manuscript/part5/22-multi-subscription.md)                                    | 0      | -          | -    |
-| [第 23 章 コストの見方 ― タグとスコープで課金を切り分ける](../manuscript/part5/23-cost-management.md)                          | 0      | -          | -    |
-| [第 24 章 1 つのアプリケーションをゼロから設計し、全階層を貫通させる](../manuscript/part6/24-capstone.md)                      | 0      | -          | -    |
-| [付録 A 型の適用シート](../manuscript/appendix/a-worksheet.md)                                                                 | 0      | -          | -    |
-| [付録 B 命名規約とタグ設計](../manuscript/appendix/b-naming-and-tags.md)                                                       | 0      | -          | -    |
+| [第 20 章 Azure Policy ― 強制（Deny）と監査（Audit）の違い](../manuscript/part5/20-azure-policy.md)                            | 1      | 2026-08-10 | -    |
+| [第 21 章 Cloud Adoption Framework と Landing Zone](../manuscript/part5/21-caf-and-landing-zone.md)                            | 1      | 2026-08-10 | -    |
+| [第 22 章 マルチサブスクリプション設計の実践](../manuscript/part5/22-multi-subscription.md)                                    | 1      | 2026-08-10 | -    |
+| [第 23 章 コストの見方 ― タグとスコープで課金を切り分ける](../manuscript/part5/23-cost-management.md)                          | 1      | 2026-08-10 | -    |
+| [第 24 章 1 つのアプリケーションをゼロから設計し、全階層を貫通させる](../manuscript/part6/24-capstone.md)                      | 1      | 2026-08-10 | -    |
+| [付録 A 型の適用シート](../manuscript/appendix/a-worksheet.md)                                                                 | 1      | 2026-08-10 | -    |
+| [付録 B 命名規約とタグ設計](../manuscript/appendix/b-naming-and-tags.md)                                                       | 1      | 2026-08-10 | -    |

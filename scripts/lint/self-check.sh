@@ -60,7 +60,7 @@ probe "リンク先の実在" "$CH" "t = t.replace('## 検証環境', '[壊れ�
 probe "Part N の英語表記の禁止" "$CH" "t = t.replace('第 1 章で', 'Part 1 で')" structure-lint.mjs
 probe "部の番号は算用数字" "$CH" "t = t.replace('第 1 章で', '第一部で')" structure-lint.mjs
 probe "ASCII と日本語の間隔" "$CH" "t = t.replace('第 0 章の', '第0章の', 1)" structure-lint.mjs
-probe "日本語の間の余分な空白" "$CH" "t = t.replace('入れ物です。', '入れ 物です。')" structure-lint.mjs
+probe "日本語の間の余分な空白" "$CH" "t = t.replace('置く単位です。', '置く 単位です。')" structure-lint.mjs
 probe "bash の行頭コメントの禁止" "$CH" "t = t.replace('az group show', '# 説明' + chr(10) + 'az group show')" structure-lint.mjs
 probe "1 ステップ 1 ブロック" "$CH" "t = t.replace('az group show --name <名前>', 'az group list' + chr(10) + 'az group show --name <名前>')" structure-lint.mjs
 probe "未代入の変数の禁止" "$CH" "t = t.replace('az group show --name <名前>', 'az group show --name \"\$undefined_var\"')" structure-lint.mjs
@@ -79,11 +79,11 @@ probe "括弧を含むラベルの引用" "$CH" "t = t.replace('VM[\"仮想マ�
 probe "ノード種類の後置" "$CH" "t = t.replace('S[\"サブスクリプション\"]', 'S[\"サブスクリプション: 例\"]')" mermaid-lint.mjs
 
 echo "== terms-lint =="
-probe "初出章より前で使わない" "$CH" "t = t.replace('入れ物です。', '入れ物です。Workload ID の話です。')" terms-lint.mjs
-probe "禁止語" "$CH" "t = t.replace('入れ物です。', '入れ物です。これは布石です。')" terms-lint.mjs
-probe "禁止語（比喩の造語）" "$CH" "t = t.replace('入れ物です。', '入れ物です。台帳へ投影されます。')" terms-lint.mjs
-probe "禁止語（擬人化）" "$CH" "t = t.replace('入れ物です。', '入れ物です。宿主と一心同体です。')" terms-lint.mjs
-probe "未定義の略語" "$CH" "t = t.replace('入れ物です。', '入れ物です。ZZQ を使います。')" terms-lint.mjs
+probe "初出章より前で使わない" "$CH" "t = t.replace('置く単位です。', '置く単位です。Workload ID の話です。')" terms-lint.mjs
+probe "禁止語" "$CH" "t = t.replace('置く単位です。', '置く単位です。これは布石です。')" terms-lint.mjs
+probe "禁止語（比喩の造語）" "$CH" "t = t.replace('置く単位です。', '置く単位です。台帳へ投影されます。')" terms-lint.mjs
+probe "禁止語（擬人化）" "$CH" "t = t.replace('置く単位です。', '置く単位です。宿主と一心同体です。')" terms-lint.mjs
+probe "未定義の略語" "$CH" "t = t.replace('置く単位です。', '置く単位です。ZZQ を使います。')" terms-lint.mjs
 probe "図の初見の固有名" "$CH" "t = t.replace('ST[\"ストレージ (japaneast を選択)\"]', 'ST[\"Cosmos Table Storage\"]')" terms-lint.mjs
 probe "設問の語が本文にある" "$CH" "t = t.rstrip()[:-1] + chr(10) + '4. Workload ID について述べてください' + chr(10)" terms-lint.mjs
 

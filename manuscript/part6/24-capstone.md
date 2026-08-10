@@ -49,13 +49,13 @@ flowchart TB
 
 ### 実装の形
 
-第 13 章の型をそのまま使います。AVM モジュール + 自作モジュールを束ねた Bicep を、Deployment Stack として `actionOnUnmanage: deleteResources` で運用します。構成から消えたものは実世界からも消える。このアプリの畳み方は、スタックの削除 1 手です（第 11 章）。
+第 13 章の型をそのまま使います。AVM モジュール + 自作モジュールを束ねた Bicep を、Deployment Stack として `actionOnUnmanage: deleteResources` で運用します。構成から消えたものは実世界からも消えます。このアプリを畳むときも、スタックの削除 1 手で済みます（第 11 章）。
 
 ## 未習サービスを型で読む ― Service Bus
 
 Service Bus は本書のどの章でも扱っていません。6 ブロックの型で、公式ドキュメントと最小の実測だけからどこまで読めるかをやってみます。以下の実測は本書の検証環境で実際に行ったものです。
 
-ブロック 1（何のためにあるか）。アプリ間でメッセージを確実に受け渡すキューです。受け手が落ちていても失われない、処理の緩衝材です。
+ブロック 1（何のためにあるか）。アプリ間でメッセージを確実に受け渡すキューです。受け手が止まっていてもメッセージが失われない、処理の受け皿です。
 
 ブロック 2（縦の依存関係）。リソースプロバイダーは Microsoft.ServiceBus で、例によって未登録から始まりました（第 1 章の型どおり `az provider register` で登録）。名前空間の名前はグローバル一意です（第 15 章の型）。
 
@@ -74,10 +74,17 @@ az group create --name azp-ch24-rg --location japaneast \
   --tags azp-book=azure-practice azp-chapter=ch24 azp-lifecycle=ephemeral
 ```
 
+名前空間の名前も世界で一意である必要があるので、サブスクリプション ID から組み立てます。
+
+```bash
+sub=$(az account show --query id -o tsv)
+ns="azpch24$(echo "$sub" | tr -d - | cut -c1-8)"
+```
+
 名前空間を作り、作成直後の認証まわりの既定値を表示させます。
 
 ```bash
-az servicebus namespace create --name <名前空間> -g azp-ch24-rg --sku Basic \
+az servicebus namespace create --name "$ns" -g azp-ch24-rg --sku Basic \
   --query "{sku:sku.name, disableLocalAuth:disableLocalAuth}"
 ```
 
@@ -91,14 +98,14 @@ az servicebus namespace create --name <名前空間> -g azp-ch24-rg --sku Basic 
 disableLocalAuth。第 18 章の Cosmos DB と同じ語彙です。キー（Service Bus では SAS ポリシー）認証が既定で有効で、同じ設計思想で止められると読めます。実際に止まりました。
 
 ```bash
-az servicebus namespace update --name <名前空間> -g azp-ch24-rg --disable-local-auth true
+az servicebus namespace update --name "$ns" -g azp-ch24-rg --disable-local-auth true
 ```
 
 ```text
 true
 ```
 
-データプレーンのロールはどうでしょうか。Cosmos は独自世界でしたが、Service Bus は ARM の RBAC の中にいます。
+データプレーンのロールはどうでしょうか。Cosmos は独自の仕組みを持っていましたが、Service Bus は ARM の RBAC の中にあります。
 
 ```bash
 az role definition list --name "Azure Service Bus Data Sender" \
@@ -114,7 +121,7 @@ az role definition list --name "Azure Service Bus Data Sender" \
 }
 ```
 
-dataActions（第 8 章の語彙）を持つ通常のロールです。つまり割り当ては第 6 章の `az role assignment create` がそのまま使え、Cosmos のような専用コマンドは不要。同じ「データプレーン RBAC」でも実装の系譜が違う、という比較まで、型があるから最初のセッションで到達できます。
+dataActions（第 8 章の語彙）を持つ通常のロールです。つまり割り当ては第 6 章の `az role assignment create` がそのまま使え、Cosmos のような専用コマンドは要りません。同じ「データプレーン RBAC」でも実装の来歴が違う、という比較まで、型があるから最初のセッションで到達できます。
 
 ブロック 4〜5（足回りと課金）。SKU は Basic / Standard / Premium で、キューだけなら Basic、トピック（出版購読）が要るなら Standard、VNet 統合や専有性能が要るなら Premium、と公式の SKU 表から読めます。課金は Basic なら操作 100 万件単位の従量です。
 
