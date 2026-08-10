@@ -30,7 +30,7 @@ WARNING: Resource provider 'Microsoft.OperationalInsights' used by this operatio
 WARNING: Resource provider 'microsoft.insights' used by this operation is not registered. We are registering for you.
 ```
 
-第 1 章で見た自動登録が、また黙って働いています。
+第 1 章で見た自動登録が、ここでも働いています。
 
 リージョンについても 1 点。Flex Consumption は対応リージョンの一覧を持ち、`az functionapp list-flexconsumption-locations` で確認できます。本書の検証時点で 52 リージョンあり、日本の 2 リージョン（japaneast / japanwest）を含む主要リージョンは揃っていました。
 
@@ -52,7 +52,7 @@ DEPLOYMENT_STORAGE_CONNECTION_STRING
 APPLICATIONINSIGHTS_CONNECTION_STRING
 ```
 
-`AzureWebJobsStorage` と `DEPLOYMENT_STORAGE_CONNECTION_STRING` の中身は、対になるストレージへの接続文字列、つまり第 8 章で葬ったはずのキーです。デプロイの認証設定にも同じことが書かれています。
+`AzureWebJobsStorage` と `DEPLOYMENT_STORAGE_CONNECTION_STRING` の中身は、対になるストレージへの接続文字列、つまり第 8 章で止めたはずのキーです。デプロイの認証設定にも同じことが書かれています。
 
 ```bash
 az functionapp deployment config show --name azp-ch14-func -g azp-ch14-rg \
@@ -67,7 +67,7 @@ az functionapp deployment config show --name azp-ch14-func -g azp-ch14-rg \
 }
 ```
 
-既定はいまもキー認証が有効な状態で作られる。これをマネージド ID ベースの接続（`type` を UserAssignedIdentity にし、ストレージ側のキーを無効化する）へ置き換えるのが現在の推奨です。この置き換えは依存先のストレージの話そのものなので、第 15 章で正面から扱います。
+既定ではいまもキー認証が有効な状態で作られます。これをマネージド ID ベースの接続（`type` を UserAssignedIdentity にし、ストレージ側のキーを無効化する）へ置き換えるのが現在の推奨です。この置き換えは依存先のストレージの話そのものなので、第 15 章で正面から扱います。
 
 ### 外向き
 
@@ -106,7 +106,7 @@ az functionapp scale config show --name azp-ch14-func -g azp-ch14-rg -o json
 
 インスタンスのメモリは既定 2048MB で、512 / 2048 / 4096 から選べます。この選択が課金の単価（GB 秒の GB）を直接決めます。
 
-ネットワークについては、Flex Consumption は VNet 統合に対応しています。従来の Consumption プランが閉域化と縁遠かったのと対照的に、サーバーレスのまま閉域構成に入れることが Flex を標準とする大きな理由です。実際に閉域化する手順は、Storage・Key Vault と合わせて第 17 章ならぬ第 19 章で扱います。
+ネットワークについては、Flex Consumption は VNet 統合に対応しています。従来の Consumption プランが閉域化と縁遠かったのと対照的に、サーバーレスのまま閉域構成に入れることが Flex を標準とする大きな理由です。実際に閉域化する手順は、Storage・Key Vault と合わせて第 19 章で扱います。
 
 ## 5. 横の繋がり ― 契約・課金
 
@@ -193,9 +193,17 @@ az rest --method post \
 
 インスタンスメモリに許可されていない値を指定してみます。
 
+ハンズオンで作ったストレージアカウントの名前を控えます。
+
+```bash
+storage=$(az storage account list -g azp-ch14-rg --query "[0].name" -o tsv)
+```
+
+許可されていないメモリ量を指定して、Function App をもう 1 つ作ろうとします。
+
 ```bash
 az functionapp create --name azp-ch14-func3 -g azp-ch14-rg \
-  --storage-account <ストレージ名> --flexconsumption-location japaneast \
+  --storage-account "$storage" --flexconsumption-location japaneast \
   --runtime node --runtime-version 20 --instance-memory 1024
 ```
 
@@ -205,7 +213,7 @@ The specified value of instanceMemoryMB (1024) is not allowed.
 Please set it to one of the allowed values: 512,2048,4096.
 ```
 
-権限でもスコープでも登録でもクォータでもない、5 つ目の失敗の軸、サービス固有の制約です。エラーが許容値まで教えてくれるので、切り分けは容易です。
+権限でもスコープでも登録でもクォータでもない、5 つ目の失敗の軸、サービス固有の制約です。エラーに許容値そのものが書かれているので、切り分けは容易です。
 
 ### クリーンアップ演習
 

@@ -39,9 +39,20 @@ flowchart TB
 
 何も指定せずに Vault を作り、認可モデルを見ます。
 
+Vault の名前も世界で一意である必要があるので、スクリプトと同じ作り方で 2 つ分を組み立てます。
+
 ```bash
-az keyvault create --name <Vault名> -g azp-ch16-rg --location japaneast \
-  --query "{enableRbacAuthorization:properties.enableRbacAuthorization, accessPolicies:length(properties.accessPolicies)}"
+sub=$(az account show --query id -o tsv)
+suffix=$(echo "$sub" | tr -d - | cut -c1-8)
+kv_rbac="azpch16r$suffix"
+kv_legacy="azpch16l$suffix"
+```
+
+1 つ目を、何も指定せずに作ります。
+
+```bash
+az keyvault create --name "$kv_rbac" -g azp-ch16-rg --location japaneast \
+  --query "{name:name, enableRbacAuthorization:properties.enableRbacAuthorization, accessPolicies:length(properties.accessPolicies)}"
 ```
 
 ```text
@@ -55,8 +66,9 @@ az keyvault create --name <Vault名> -g azp-ch16-rg --location japaneast \
 既定は RBAC でした（enableRbacAuthorization: true、アクセスポリシー 0 件）。一方、旧モデルを明示して作ると、様子が違います。
 
 ```bash
-az keyvault create --name <Vault名2> -g azp-ch16-rg --location japaneast \
-  --enable-rbac-authorization false --query "{...同上...}"
+az keyvault create --name "$kv_legacy" -g azp-ch16-rg --location japaneast \
+  --enable-rbac-authorization false \
+  --query "{name:name, enableRbacAuthorization:properties.enableRbacAuthorization, accessPolicies:length(properties.accessPolicies)}"
 ```
 
 ```text
@@ -83,7 +95,7 @@ SKU は standard と premium の 2 つで、違いは premium が HSM（ハー�
 
 ## 5. 横の繋がり ― 契約・課金
 
-純粋な従量課金で、操作の回数（シークレットの取得など 1 万トランザクション単位）に課金されます。保管しているだけでは掛かりません。本書の検証で作る規模では月に 1 円も掛かりません。コスト照会は第 14 章と同じコマンドです。
+純粋な従量課金で、操作の回数（シークレットの取得など 1 万トランザクション単位）に課金されます。保管しているだけではかかりません。本書の検証で作る規模では月に 1 円もかかりません。コスト照会は第 14 章と同じコマンドです。
 
 ## 6. ハンズオン
 
@@ -104,7 +116,7 @@ SKU は standard と premium の 2 つで、違いは premium が HSM（ハー�
 サブスクリプションの Owner のまま、ロール割り当て前の RBAC Vault にシークレットを書こうとした実際の出力です。
 
 ```bash
-az keyvault secret set --vault-name <RBAC側Vault名> --name demo --value secret1
+az keyvault secret set --vault-name "$kv_rbac" --name demo --value secret1
 ```
 
 ```text
@@ -117,13 +129,14 @@ Resource: '.../vaults/azpch16rbac.../secrets/demo'
 
 第 8 章のストレージと同じ構図です。Owner は管理の全権であって、データの権利ではありません。エラーには誰が（Caller）、何の操作で（Action）拒否されたかが正確に出ています。
 
-同じ操作を旧モデルの Vault に対して行うと、自動で入った作成者ポリシーのおかげで即座に成功します。この「新しい Vault では拒否され、古い Vault では通る」という非対称こそ、混在環境の罠です。挙動の違いが認可モデルの違いによるものだと知らなければ、障害調査で迷子になります。ポータルの画面も両者で異なり、RBAC Vault にはアクセスポリシーのタブ自体がありません。
+同じ操作を旧モデルの Vault に対して行うと、自動で入った作成者ポリシーのおかげで即座に成功します。この「新しい Vault では拒否され、古い Vault では通る」という非対称こそ、混在環境の罠です。挙動の違いが認可モデルの違いによるものだと知らなければ、障害調査で原因に辿り着けません。ポータルの画面も両者で異なり、RBAC Vault にはアクセスポリシーのタブ自体がありません。
 
 RBAC 側は、ロールを割り当てれば通るようになります。
 
 ```bash
-az role assignment create --assignee <自分のobjectId> --role "Key Vault Secrets Officer" \
-  --scope <RBAC側VaultのリソースID>
+me=$(az ad signed-in-user show --query id -o tsv)
+az role assignment create --assignee "$me" --role "Key Vault Secrets Officer" \
+  --scope "/subscriptions/$sub/resourceGroups/azp-ch16-rg/providers/Microsoft.KeyVault/vaults/$kv_rbac"
 ```
 
 本書の検証では、伝播を待った 2 回目の試行で書き込みに成功しました。verify の結果です。
@@ -148,7 +161,7 @@ az role assignment create --assignee <自分のobjectId> --role "Key Vault Secre
 リソースグループの削除だけでは終わりません。第 3 章で見たとおり Key Vault は論理削除され、名前が 90 日間予約されます。teardown スクリプトは purge まで実行します。
 
 ```bash
-az keyvault purge --name <Vault名> --location japaneast
+az keyvault purge --name "$kv_rbac" --location japaneast
 ```
 
 論理削除の一覧が空になったかを数えます。

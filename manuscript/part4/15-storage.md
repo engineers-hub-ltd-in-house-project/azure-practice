@@ -25,7 +25,7 @@ Azure Storage は、BLOB（ファイル）、キュー、テーブル、ファ�
 
 Storage への認証は第 8 章で通しで実測しました。アクセスキー、Entra ID 認証（actions と dataActions の分離、データプレーンのロール）、そしてキーの無効化。本章のハンズオンはその総仕上げとして、Functions からの接続を含めてキーを根絶します。
 
-もう 1 つの手段として SAS（共有アクセス署名。キーから派生する期限付きの URL）がありますが、キーが無効なら SAS も大半が無効になります。キーを止める判断は SAS 運用も道連れにする、と覚えておいてください。
+もう 1 つの手段として SAS（共有アクセス署名。キーから派生する期限付きの URL）がありますが、キーが無効なら SAS も大半が無効になります。キーを止めると SAS もほとんど使えなくなる、と覚えておいてください。
 
 RBAC のスコープ選択について毎章の確認です。データプレーンのロールは、アカウント単位だけでなくコンテナー単位のスコープにも割り当てられます。「このコンテナーだけ読ませたい」はロール割り当てで表現でき、ガバナンス階層との一致は要りません。
 
@@ -49,7 +49,7 @@ Storage の SKU は冗長性の選択です。
 
 ## 5. 横の繋がり ― 契約・課金
 
-Storage は純粋な従量課金で、保管容量（GB 月）と操作回数（トランザクション）の 2 系統で課金されます。本書の検証で作る程度のデータでは月に数円も掛かりません。
+Storage は純粋な従量課金で、保管容量（GB 月）と操作回数（トランザクション）の 2 系統で課金されます。本書の検証で作る程度のデータでは月に数円もかかりません。
 
 無料枠は Functions のような形では存在せず、使った分がそのまま計上されます。確認コマンドは第 14 章と同じコスト照会です（作りたてのサブスクリプションでは反映まで待つ必要があることも同じです）。
 
@@ -79,8 +79,17 @@ flowchart LR
 
 Function App を作った直後、ストレージの中を覗くと、頼んだ覚えのないものが入っています。
 
+スクリプトと同じ作り方でストレージアカウント名を組み立てます。
+
 ```bash
-az storage container list --account-name <ストレージ名> --auth-mode login --query "[].name" -o tsv
+sub=$(az account show --query id -o tsv)
+storage="azpch15$(echo "$sub" | tr -d - | cut -c1-8)"
+```
+
+中のコンテナーを一覧します。
+
+```bash
+az storage container list --account-name "$storage" --auth-mode login --query "[].name" -o tsv
 ```
 
 ```text
@@ -93,10 +102,16 @@ Functions のデプロイパッケージ（コードの zip）の置き場です
 
 第 14 章で見たとおり、この関係は既定では接続文字列（キー）で結ばれています。スクリプトの後半はこれを 4 手で解体します。
 
-手順 1: Function App にシステム割り当て ID を与えます（第 7 章）。
+手順 1: Function App にシステム割り当て ID を与えます（第 7 章）。返る principalId を控えます。
 
 ```bash
-az functionapp identity assign --name azp-ch15-func -g azp-ch15-rg
+principal_id=$(az functionapp identity assign --name azp-ch15-func -g azp-ch15-rg --query principalId -o tsv)
+```
+
+割り当てのスコープになるストレージアカウントのリソース ID も組み立てます。
+
+```bash
+scope="/subscriptions/$sub/resourceGroups/azp-ch15-rg/providers/Microsoft.Storage/storageAccounts/$storage"
 ```
 
 手順 2: その ID にデータプレーンのロールを割り当てます（第 8 章）。ホストは BLOB・キュー・テーブルを使うため 3 つです。
@@ -104,19 +119,19 @@ az functionapp identity assign --name azp-ch15-func -g azp-ch15-rg
 BLOB 用です。コードの置き場を読み書きするため、この 1 つだけ Owner です。
 
 ```bash
-az role assignment create --assignee <principalId> --role "Storage Blob Data Owner" --scope <ストレージ>
+az role assignment create --assignee "$principal_id" --role "Storage Blob Data Owner" --scope "$scope"
 ```
 
 キュー用です。
 
 ```bash
-az role assignment create --assignee <principalId> --role "Storage Queue Data Contributor" --scope <ストレージ>
+az role assignment create --assignee "$principal_id" --role "Storage Queue Data Contributor" --scope "$scope"
 ```
 
 テーブル用です。
 
 ```bash
-az role assignment create --assignee <principalId> --role "Storage Table Data Contributor" --scope <ストレージ>
+az role assignment create --assignee "$principal_id" --role "Storage Table Data Contributor" --scope "$scope"
 ```
 
 手順 3: 接続文字列の設定を「アカウント名だけ」の設定に置き換えます。
@@ -124,13 +139,15 @@ az role assignment create --assignee <principalId> --role "Storage Table Data Co
 アカウント名だけを渡す設定を足します。
 
 ```bash
-az functionapp config appsettings set --settings AzureWebJobsStorage__accountName=<ストレージ名> ...
+az functionapp config appsettings set --name azp-ch15-func -g azp-ch15-rg \
+  --settings AzureWebJobsStorage__accountName="$storage"
 ```
 
 古い接続文字列の設定を消します。残したままだとそちらが使われ続けます。
 
 ```bash
-az functionapp config appsettings delete --setting-names AzureWebJobsStorage ...
+az functionapp config appsettings delete --name azp-ch15-func -g azp-ch15-rg \
+  --setting-names AzureWebJobsStorage
 ```
 
 手順 4: デプロイ側の認証も ID へ切り替え、最後にキーを止めます。
@@ -138,13 +155,14 @@ az functionapp config appsettings delete --setting-names AzureWebJobsStorage ...
 デプロイの経路の認証方式を ID に変えます。
 
 ```bash
-az functionapp deployment config set --deployment-storage-auth-type SystemAssignedIdentity ...
+az functionapp deployment config set --name azp-ch15-func -g azp-ch15-rg \
+  --deployment-storage-auth-type SystemAssignedIdentity
 ```
 
 すべての経路が ID になってから、キーを止めます。順序を逆にするとアプリが動かなくなります。
 
 ```bash
-az storage account update --allow-shared-key-access false ...
+az storage account update --name "$storage" -g azp-ch15-rg --allow-shared-key-access false
 ```
 
 `AzureWebJobsStorage__accountName` という設定名が置き換えの鍵です。接続文字列の代わりにアカウント名だけを渡すと、Functions のランタイムは自分のマネージド ID でそのアカウントへ認証しに行きます。秘密の値がどこにも書かれていないことに注目してください。
