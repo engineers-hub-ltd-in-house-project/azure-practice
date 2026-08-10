@@ -1,4 +1,4 @@
-# 第 17 章 AKS ― 5 つの ID scenario と Workload ID
+# 第 17 章 AKS ― 5 種類の ID と Workload ID
 
 AKS（Azure Kubernetes Service）は、これまでの章のサービスと比べて関係する要素が桁違いに多いサービスです。特に ID は、1 つのクラスタに 5 種類が同居します。本章はこの 5 つを 1 つずつ実物で確かめ、山場である Workload ID（Pod から Azure への認証）まで辿ります。
 
@@ -92,7 +92,7 @@ Microsoft.ManagedIdentity/userAssignedIdentities/azp-ch17-aks-agentpool
 
 アプリ（Pod）が Key Vault や Storage へアクセスするときの ID です。ここが本章の山場で、第 8 章のフェデレーションがそのまま再登場します。
 
-かつては Pod-managed identity という仕組みがありましたが廃止済みで、現在は Microsoft Entra Workload ID が正解です。構造は 2 つの世界の橋渡しです。
+かつては Pod-managed identity という仕組みがありましたが廃止済みで、現在は Microsoft Entra Workload ID が正解です。構造は、Kubernetes 側の ID と Azure 側の ID を結び付けるものです。
 
 Kubernetes には ServiceAccount というクラスタ内の ID の仕組みがあり、クラスタは OIDC 発行者としてその ServiceAccount のトークンに署名できます。発行者の URL を見てみます。
 
@@ -129,11 +129,11 @@ az identity federated-credential create --name aks-default-workload \
 }
 ```
 
-subject の形式が Kubernetes の語彙（namespace が default、ServiceAccount 名が workload-sa）になっています。GitHub Actions のときはリポジトリとブランチでしたが（第 8 章）、今回はクラスタ内の ID です。同じフェデレーションの型に、違う世界の素性を差し込んでいるだけだと分かれば、この二重構造は怖くありません。あとはこのマネージド ID にロールを割り当てれば（第 6 章）、Pod はシークレットなしで Azure に届きます。
+subject の形式が Kubernetes の語彙（namespace が default、ServiceAccount 名が workload-sa）になっています。GitHub Actions のときはリポジトリとブランチでしたが（第 8 章）、今回はクラスタ内の ID です。同じフェデレーションの型に、別の発行元の素性を差し込んでいるだけです。あとはこのマネージド ID にロールを割り当てれば（第 6 章）、Pod はシークレットなしで Azure に届きます。
 
 ### その 4: クラスタへのアクセス（人間の認証）
 
-`az aks get-credentials` で取得する接続情報です。既定ではクラスタローカルの資格情報ですが、Entra ID 統合を有効にすれば、クラスタへの入場も第 5 章の世界で管理できます。本書の検証では、ローカルに kubectl を入れずにクラスタ内でコマンドを実行できる `az aks command invoke` を使いました。
+`az aks get-credentials` で取得する接続情報です。既定ではクラスタローカルの資格情報ですが、Entra ID 統合を有効にすれば、クラスタへの入場も第 5 章のテナントの台帳で管理できます。本書の検証では、ローカルに kubectl を入れずにクラスタ内でコマンドを実行できる `az aks command invoke` を使いました。
 
 ```bash
 az aks command invoke --name azp-ch17-aks -g azp-ch17-rg --command "kubectl get nodes"
@@ -182,7 +182,10 @@ az aks create --name azp-ch17-aks -g azp-ch17-rg \
 本書の検証で実際に踏んだ失敗です。
 
 ```bash
-az aks create ... --node-vm-size Standard_B2s ...
+az aks create --name azp-ch17-aks -g azp-ch17-rg \
+  --node-count 1 --node-vm-size Standard_B2s \
+  --enable-oidc-issuer --enable-workload-identity \
+  --generate-ssh-keys --tier free
 ```
 
 ```text
@@ -190,7 +193,7 @@ ERROR: (BadRequest) The VM size of Standard_B2s is not allowed in your subscript
 in location 'japaneast'. The available VM sizes are 'standard_b2als_v2,...'
 ```
 
-権限でもクォータでもなく、サブスクリプションに許可された VM サイズの一覧という、もう 1 つの制約です。エラーが許可リストを返してくれるので、そこからクォータのあるファミリ（`az vm list-usage`）と突き合わせて選び直します。第 1 章から数えて、失敗の軸がまた 1 つ増えました。
+権限でもクォータでもなく、サブスクリプションに許可された VM サイズの一覧という、もう 1 つの制約です。エラーに許可されたサイズの一覧が入っているので、そこからクォータのあるファミリ（`az vm list-usage`）と突き合わせて選び直します。第 1 章から数えて、失敗の軸がまた 1 つ増えました。
 
 ### クリーンアップ演習
 
@@ -198,7 +201,7 @@ in location 'japaneast'. The available VM sizes are 'standard_b2als_v2,...'
 az group delete --name azp-ch17-rg --yes
 ```
 
-自分の RG を消すと、クラスタが消え、連動して `MC_` のノード RG も自動で消えます。消し忘れ = 課金し続け、の章なので、削除の完了まで確認してください。
+自分の RG を消すと、クラスタが消え、連動して `MC_` のノード RG も自動で消えます。消し忘れがそのまま課金になる章なので、削除の完了まで確認してください。
 
 ```bash
 az group list --query "[?starts_with(name,'MC_') || starts_with(name,'azp-ch17')].name" -o tsv

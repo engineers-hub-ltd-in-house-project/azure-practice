@@ -96,7 +96,7 @@ flowchart TB
 | 14  | [Functions ― Flex Consumption を軸に課金とネットワークの関係を辿る](manuscript/part4/14-functions.md) | 執筆済 |
 | 15  | [Storage ― Functions の隠れた依存関係から理解する](manuscript/part4/15-storage.md)                    | 執筆済 |
 | 16  | [Key Vault ― RBAC 既定化とアクセスポリシーの歴史](manuscript/part4/16-key-vault.md)                   | 執筆済 |
-| 17  | [AKS ― 5 つの ID scenario と Workload ID](manuscript/part4/17-aks.md)                                 | 執筆済 |
+| 17  | [AKS ― 5 種類の ID と Workload ID](manuscript/part4/17-aks.md)                                        | 執筆済 |
 | 18  | [Cosmos DB ― コントロールプレーンとデータプレーンの RBAC は別物](manuscript/part4/18-cosmos-db.md)    | 執筆済 |
 | 19  | [Networking ― VNet 統合と Private Endpoint が各層にどう効くか](manuscript/part4/19-networking.md)     | 執筆済 |
 

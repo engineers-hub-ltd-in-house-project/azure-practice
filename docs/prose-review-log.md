@@ -22,12 +22,12 @@
 | [第 11 章 デプロイスコープと Deployment Stacks](../manuscript/part3/11-deployment-scopes-and-stacks.md)                        | 1      | 2026-08-10 | -    |
 | [第 12 章 モジュール化と Azure Verified Modules](../manuscript/part3/12-modules-and-avm.md)                                    | 1      | 2026-08-10 | -    |
 | [第 13 章 ハンズオン ― 第 1〜2 部の構成を IaC で再現する](../manuscript/part3/13-hands-on-iac.md)                              | 1      | 2026-08-10 | -    |
-| [第 14 章 Functions ― Flex Consumption を軸に課金とネットワークの関係を辿る](../manuscript/part4/14-functions.md)              | 0      | -          | -    |
-| [第 15 章 Storage ― Functions の隠れた依存関係から理解する](../manuscript/part4/15-storage.md)                                 | 0      | -          | -    |
-| [第 16 章 Key Vault ― RBAC 既定化とアクセスポリシーの歴史](../manuscript/part4/16-key-vault.md)                                | 0      | -          | -    |
-| [第 17 章 AKS ― 5 つの ID scenario と Workload ID](../manuscript/part4/17-aks.md)                                              | 0      | -          | -    |
-| [第 18 章 Cosmos DB ― コントロールプレーンとデータプレーンの RBAC は別物](../manuscript/part4/18-cosmos-db.md)                 | 0      | -          | -    |
-| [第 19 章 Networking ― VNet 統合と Private Endpoint が各層にどう効くか](../manuscript/part4/19-networking.md)                  | 0      | -          | -    |
+| [第 14 章 Functions ― Flex Consumption を軸に課金とネットワークの関係を辿る](../manuscript/part4/14-functions.md)              | 1      | 2026-08-10 | -    |
+| [第 15 章 Storage ― Functions の隠れた依存関係から理解する](../manuscript/part4/15-storage.md)                                 | 1      | 2026-08-10 | -    |
+| [第 16 章 Key Vault ― RBAC 既定化とアクセスポリシーの歴史](../manuscript/part4/16-key-vault.md)                                | 1      | 2026-08-10 | -    |
+| [第 17 章 AKS ― 5 種類の ID と Workload ID](../manuscript/part4/17-aks.md)                                                     | 1      | 2026-08-10 | -    |
+| [第 18 章 Cosmos DB ― コントロールプレーンとデータプレーンの RBAC は別物](../manuscript/part4/18-cosmos-db.md)                 | 1      | 2026-08-10 | -    |
+| [第 19 章 Networking ― VNet 統合と Private Endpoint が各層にどう効くか](../manuscript/part4/19-networking.md)                  | 1      | 2026-08-10 | -    |
 | [第 20 章 Azure Policy ― 強制（Deny）と監査（Audit）の違い](../manuscript/part5/20-azure-policy.md)                            | 0      | -          | -    |
 | [第 21 章 Cloud Adoption Framework と Landing Zone](../manuscript/part5/21-caf-and-landing-zone.md)                            | 0      | -          | -    |
 | [第 22 章 マルチサブスクリプション設計の実践](../manuscript/part5/22-multi-subscription.md)                                    | 0      | -          | -    |

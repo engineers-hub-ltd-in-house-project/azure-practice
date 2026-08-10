@@ -65,7 +65,7 @@ Cosmos DB Built-in Data Reader
 Cosmos DB Built-in Data Contributor
 ```
 
-次に、同じ名前を ARM の RBAC（第 6 章の世界）で探します。
+次に、同じ名前を ARM のロール定義（第 6 章）から探します。
 
 ```bash
 az role definition list --name "Cosmos DB Built-in Data Contributor" --query "length(@)" -o tsv
@@ -78,15 +78,23 @@ az role definition list --name "Cosmos DB Built-in Data Contributor" --query "le
 存在しません。このロールは ARM のロール定義ではなく、Cosmos DB が自分の中に持つ独自のロールです。割り当ても専用コマンドで行います。
 
 ```bash
+me=$(az ad signed-in-user show --query id -o tsv)
 az cosmosdb sql role assignment create --account-name azp-ch18-cosmos -g azp-ch18-rg \
   --role-definition-name "Cosmos DB Built-in Data Contributor" \
-  --principal-id <objectId> --scope "/"
+  --principal-id "$me" --scope "/"
 ```
 
 割り当てたあとに、ARM 側のロール割り当て（ポータルの IAM 画面に出るもの）を見てみます。
 
 ```bash
-az role assignment list --scope <CosmosアカウントのリソースID> --query "length(@)" -o tsv
+sub=$(az account show --query id -o tsv)
+cosmos_id="/subscriptions/$sub/resourceGroups/azp-ch18-rg/providers/Microsoft.DocumentDB/databaseAccounts/azp-ch18-cosmos"
+```
+
+そのリソース ID をスコープにして数えます。
+
+```bash
+az role assignment list --scope "$cosmos_id" --query "length(@)" -o tsv
 ```
 
 ```text
@@ -110,7 +118,7 @@ HTTP 200 databases: {"_rid":"","Databases":[],"_count":0}
 キーは有効です。では止めます。この設定には専用の CLI フラグがないため、汎用の更新コマンドでプロパティを直接書きます。
 
 ```bash
-az resource update --ids <CosmosアカウントのリソースID> \
+az resource update --ids "$cosmos_id" \
   --set properties.disableLocalAuth=true
 ```
 
@@ -137,7 +145,7 @@ HTTP 401
 Local Authorization is disabled. Use an AAD token to authorize all requests.
 ```
 
-明快な回答です。キーはもう鍵ではなく、Entra ID のトークン（メッセージ中の AAD は Entra ID の旧称です）だけが通ります。ここで先ほどのデータプレーン RBAC が効いてきます。トークンで認証した principal に、Cosmos 独自のロールが割り当てられているか。それが唯一の判定になります。
+キーはもう通用せず、Entra ID のトークン（メッセージ中の AAD は Entra ID の旧称です）だけが通ります。ここで先ほどのデータプレーン RBAC が効いてきます。トークンで認証した principal に、Cosmos 独自のロールが割り当てられているか。それが唯一の判定になります。
 
 一方、コントロールプレーンは影響を受けません。disableLocalAuth を有効にしたまま、ARM 経由でデータベースを作ってみます。
 
@@ -151,7 +159,7 @@ az cosmosdb sql database create --account-name azp-ch18-cosmos -g azp-ch18-rg --
 }
 ```
 
-成功します。disableLocalAuth が止めるのはデータプレーンのキー認証だけで、ARM の管理操作（第 6 章の RBAC で守られる世界）は別の門だからです。2 つのプレーンの分離が、遮断の場面でも一貫していることが確認できました。
+成功します。disableLocalAuth が止めるのはデータプレーンのキー認証だけで、ARM の管理操作（第 6 章の RBAC で守られる側）は別の経路だからです。2 つのプレーンの分離が、遮断の場面でも一貫していることが確認できました。
 
 この設定を組織の全アカウントに強制する方法が、第 20 章の Azure Policy です。
 

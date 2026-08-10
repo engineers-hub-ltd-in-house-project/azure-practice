@@ -64,21 +64,48 @@ az network vnet subnet create --name integration-subnet --vnet-name azp-ch19-vne
 
 サブネットを 2 つに分けたのは役割が違うからです。pe-subnet は入口（Private Endpoint の置き場）、integration-subnet は出口（Functions の VNet 統合用。Flex は Microsoft.App/environments への委任が必要）です。
 
-### Storage に Private Endpoint を生やす
+### Storage に Private Endpoint を作る
 
-キー無効のストレージを作り、BLOB サービスへの Private Endpoint を作ります。
+まず、接続先になるキー無効のストレージを作ります。名前は世界で一意である必要があるので、サブスクリプション ID から組み立てます。
+
+```bash
+sub=$(az account show --query id -o tsv)
+storage="azpch19$(echo "$sub" | tr -d - | cut -c1-8)"
+```
+
+その名前で作ります。
+
+```bash
+az storage account create --name "$storage" -g azp-ch19-rg --location japaneast \
+  --sku Standard_LRS --allow-shared-key-access false --allow-blob-public-access false
+```
+
+BLOB サービスへの Private Endpoint を作ります。接続先はリソース ID で指定します。
+
+```bash
+storage_id=$(az storage account show --name "$storage" -g azp-ch19-rg --query id -o tsv)
+```
+
+その ID を渡します。
 
 ```bash
 az network private-endpoint create --name azp-ch19-pe -g azp-ch19-rg \
   --vnet-name azp-ch19-vnet --subnet pe-subnet \
-  --private-connection-resource-id <ストレージのリソースID> \
+  --private-connection-resource-id "$storage_id" \
   --group-id blob --connection-name azp-ch19-pe-conn
 ```
 
-何ができたかを見ます。Private Endpoint の実体は、サブネットの中に作られるネットワークインターフェイスです。
+何ができたかを見ます。Private Endpoint の実体は、サブネットの中に作られるネットワークインターフェイスです。その ID を取り出します。
 
 ```bash
-az network nic show --ids <PEのNIC> --query "ipConfigurations[0].privateIPAddress" -o tsv
+nic_id=$(az network private-endpoint show --name azp-ch19-pe -g azp-ch19-rg \
+  --query "networkInterfaces[0].id" -o tsv)
+```
+
+割り当てられたプライベート IP を見ます。
+
+```bash
+az network nic show --ids "$nic_id" --query "ipConfigurations[0].privateIPAddress" -o tsv
 ```
 
 ```text
@@ -128,20 +155,20 @@ azpch1912714  10.10.1.4
 20.60.172.1
 ```
 
-同じ名前が、立っている場所によって別の IP に解決される。これが Private Endpoint の DNS の仕組みです。VNet にリンクされたゾーンは VNet の中の視点だけを書き換え、世界の DNS には何も起きていません。
+同じ名前が、問い合わせる場所によって別の IP に解決されます。これが Private Endpoint の DNS の仕組みです。VNet にリンクされたゾーンは VNet の中の視点だけを書き換え、世界の DNS には何も起きていません。
 
-### 壊す演習 ― 外の世界から遮断する
+### 壊す演習 ― インターネットからの経路を閉じる
 
 ここまでの構成では、パブリックな入口もまだ生きています。閉じます。
 
 ```bash
-az storage account update --name <ストレージ名> -g azp-ch19-rg --public-network-access Disabled
+az storage account update --name "$storage" -g azp-ch19-rg --public-network-access Disabled
 ```
 
 そして VNet の外である手元から、第 8 章と同じ Entra ID 認証でアクセスしてみます。
 
 ```bash
-az storage container list --account-name <ストレージ名> --auth-mode login
+az storage container list --account-name "$storage" --auth-mode login
 ```
 
 ```text
@@ -150,7 +177,7 @@ The request may be blocked by network rules of storage account. Please check net
 using 'az storage account show -n accountname --query networkRuleSet'.
 ```
 
-データロールは持っているのに、拒否されました。第 8 章の 403（ロール不足）とはメッセージの種類が違うことに注目してください。認可の門は通ったが、ネットワークの門で止められた。エラーの種類で、どちらの門で止まったかを見分けられます。
+データロールは持っているのに、拒否されました。第 8 章の 403（ロール不足）とはメッセージの種類が違うことに注目してください。認可の門は通ったのに、ネットワークの門で止められています。エラーの種類で、どちらの門で止まったかを見分けられます。
 
 ### Flex Functions を VNet に接続する
 
