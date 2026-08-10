@@ -18,10 +18,10 @@
 | [第 7 章 マネージド ID ― リソース間の内向き認証](../manuscript/part2/07-managed-identity.md)                                   | 1      | 2026-08-10 | -    |
 | [第 8 章 外向き認証 ― アクセスキー・Entra ID 認証・フェデレーションの使い分け](../manuscript/part2/08-outbound-auth.md)        | 1      | 2026-08-10 | -    |
 | [第 9 章 ハンズオン ― ID と権限を 1 つのシナリオで通す](../manuscript/part2/09-hands-on-identity.md)                           | 1      | 2026-08-10 | -    |
-| [第 10 章 ARM テンプレートと Bicep の関係](../manuscript/part3/10-arm-and-bicep.md)                                            | 0      | -          | -    |
-| [第 11 章 デプロイスコープと Deployment Stacks](../manuscript/part3/11-deployment-scopes-and-stacks.md)                        | 0      | -          | -    |
-| [第 12 章 モジュール化と Azure Verified Modules](../manuscript/part3/12-modules-and-avm.md)                                    | 0      | -          | -    |
-| [第 13 章 ハンズオン ― 第 1〜2 部の構成を IaC で再現する](../manuscript/part3/13-hands-on-iac.md)                              | 0      | -          | -    |
+| [第 10 章 ARM テンプレートと Bicep の関係](../manuscript/part3/10-arm-and-bicep.md)                                            | 1      | 2026-08-10 | -    |
+| [第 11 章 デプロイスコープと Deployment Stacks](../manuscript/part3/11-deployment-scopes-and-stacks.md)                        | 1      | 2026-08-10 | -    |
+| [第 12 章 モジュール化と Azure Verified Modules](../manuscript/part3/12-modules-and-avm.md)                                    | 1      | 2026-08-10 | -    |
+| [第 13 章 ハンズオン ― 第 1〜2 部の構成を IaC で再現する](../manuscript/part3/13-hands-on-iac.md)                              | 1      | 2026-08-10 | -    |
 | [第 14 章 Functions ― Flex Consumption を軸に課金とネットワークの関係を辿る](../manuscript/part4/14-functions.md)              | 0      | -          | -    |
 | [第 15 章 Storage ― Functions の隠れた依存関係から理解する](../manuscript/part4/15-storage.md)                                 | 0      | -          | -    |
 | [第 16 章 Key Vault ― RBAC 既定化とアクセスポリシーの歴史](../manuscript/part4/16-key-vault.md)                                | 0      | -          | -    |

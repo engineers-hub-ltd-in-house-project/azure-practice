@@ -29,12 +29,19 @@ flowchart TB
 ./scripts/chapters/ch13-iac-rebuild.sh
 ```
 
+ストレージアカウント名は世界で一意である必要があるので、先に組み立てます。
+
+```bash
+sub=$(az account show --query id -o tsv)
+storage="azpch13$(echo "$sub" | tr -d - | cut -c1-8)"
+```
+
 中核は 1 コマンドです。
 
 ```bash
 az stack sub create --name azp-ch13-stack --location japaneast \
   --template-file infra/bicep/chapters/ch13-iac-rebuild/main.bicep \
-  --parameters storageName=<ストレージ名> includeStorage=true \
+  --parameters storageName="$storage" includeStorage=true \
   --action-on-unmanage deleteAll --deny-settings-mode none --yes
 ```
 
@@ -62,7 +69,7 @@ az stack sub create --name azp-ch13-stack --location japaneast \
 ```bash
 az stack sub create --name azp-ch13-stack --location japaneast \
   --template-file infra/bicep/chapters/ch13-iac-rebuild/main.bicep \
-  --parameters storageName=<ストレージ名> includeStorage=false \
+  --parameters storageName="$storage" includeStorage=false \
   --action-on-unmanage deleteAll --deny-settings-mode none --yes \
   --query "{state:provisioningState, deleted:deletedResources[].id}" -o json
 ```
@@ -111,16 +118,16 @@ az group exists --name azp-ch13-rg
 false
 ```
 
-リソースグループごと消えました。第 4 章の teardown は 5 手の順序依存でした。第 13 章では、構成のすべてがスタックの管理下にあるため、1 手で正しい順序のまま畳まれます。
+リソースグループごと消えました。第 4 章の teardown は 5 手の順序依存でした。第 13 章では、構成のすべてがスタックの管理下にあるため、1 手で正しい順序のまま消えます。
 
 ## 振り返り
 
-| 観点     | 第 4 章・第 9 章（CLI）     | 第 13 章（スタック）        |
-| -------- | --------------------------- | --------------------------- |
-| 作成     | 手順を順番に実行する        | 構成を 1 回宣言する         |
-| 変更     | 差分の手順を自分で考える    | 宣言を変えて再適用する      |
-| 削除     | 依存の逆順を自分で管理する  | 1 操作で管理下ごと畳む      |
-| 消し忘れ | 起きうる（第 11 章 A 実験） | actionOnUnmanage が掃除する |
+| 観点     | 第 4 章・第 9 章（CLI）            | 第 13 章（スタック）        |
+| -------- | ---------------------------------- | --------------------------- |
+| 作成     | 手順を順番に実行する               | 構成を 1 回宣言する         |
+| 変更     | 差分の手順を自分で考える           | 宣言を変えて再適用する      |
+| 削除     | 依存の逆順を自分で管理する         | 1 操作で管理下ごと消す      |
+| 消し忘れ | 起きうる（第 11 章の通常デプロイ） | actionOnUnmanage が掃除する |
 
 CLI の操作で概念を理解し、理解した構成を宣言として固定します。第 4 部からは個々のサービスに入りますが、各章のハンズオンがこの両方の形（scripts/ の CLI と infra/ の Bicep）を持っているのは、この往復を章ごとに繰り返すためです。
 
