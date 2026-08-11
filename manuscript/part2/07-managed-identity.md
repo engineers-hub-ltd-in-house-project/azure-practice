@@ -126,9 +126,13 @@ Depending on your operation, you may need to be assigned one of the following ro
 If you want to use the old authentication method and allow querying for the right account key, please use the "--auth-mode" parameter and "key" value.
 ```
 
-必要なロールが並んでいるので割り当ての漏れに見えますが、割り当ては先ほど済んでいます。エラーの内容は、割り当ての漏れと伝播の待ちで同じです。見分けるには、割り当て自体があるかを確かめます。
+必要なロールが並んでいるので割り当ての漏れに見えますが、割り当ては先ほど済んでいます。エラーの内容は、割り当ての漏れと伝播の待ちで同じです。見分けるには、割り当て自体があるかを確かめます。エラーを踏んでから別のターミナルで調べることもあるので、この手は変数を取り直すところから書いておきます。
 
 ```bash
+sub=$(az account show --query id -o tsv)
+sa="azpch07$(echo "$sub" | tr -d - | cut -c1-8)"
+scope="/subscriptions/$sub/resourceGroups/azp-ch07-rg/providers/Microsoft.Storage/storageAccounts/$sa"
+me=$(az ad signed-in-user show --query id -o tsv)
 az role assignment list --assignee "$me" --scope "$scope" --query "[].roleDefinitionName" -o tsv
 ```
 
@@ -226,9 +230,10 @@ Received invalid token. Please try again.
 
 本書の検証では、続くファイルの一覧の取得が 1 回目に失敗しました。出力の末尾に、先ほど自分で踏んだものと同じ権限のエラーが出ています。ユーザー割り当て ID への Storage Blob Data Reader も割り当て済みですが、コンテナーはその割り当てが効くより先に動き出しました。伝播遅延がもう一度出た形です。
 
-見分け方も同じで、割り当て自体があるかを確かめます。
+見分け方も同じで、割り当て自体があるかを確かめます。こちらも変数を取り直すところから書きます。
 
 ```bash
+uid_pid=$(az identity show --name azp-ch07-uid --resource-group azp-ch07-rg --query principalId -o tsv)
 az role assignment list --assignee "$uid_pid" --all --query "[].{role:roleDefinitionName, scope:scope}" -o table
 ```
 
@@ -338,9 +343,13 @@ Role                      Scope
 Storage Blob Data Reader  /subscriptions/<サブスクリプションID>/resourceGroups/azp-ch07-rg/providers/Microsoft.Storage/storageAccounts/azpch07a1b2c3d4
 ```
 
-残っているものが実際に使えるかを確かめます。同じユーザー割り当て ID だけを割り当てて、コンテナーを作り直します。
+残っているものが実際に使えるかを確かめます。同じユーザー割り当て ID だけを割り当てて、コンテナーを作り直します。ここも変数を取り直すところから書きます。
 
 ```bash
+sub=$(az account show --query id -o tsv)
+sa="azpch07$(echo "$sub" | tr -d - | cut -c1-8)"
+uid_id="/subscriptions/$sub/resourceGroups/azp-ch07-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/azp-ch07-uid"
+uid_client=$(az identity show --name azp-ch07-uid --resource-group azp-ch07-rg --query clientId -o tsv)
 az container create --name azp-ch07-aci2 --resource-group azp-ch07-rg \
   --image mcr.microsoft.com/azure-cli:latest \
   --assign-identity "$uid_id" \

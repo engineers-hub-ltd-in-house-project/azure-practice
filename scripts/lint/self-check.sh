@@ -71,6 +71,8 @@ probe "業界口語（掛ける）" "$CH" "t = t.replace('必須であるがゆ�
 probe "擬人化（生まれる）" "$CH" "t = t.replace('必須であるがゆえに', 'ここで実体が生まれます。必須であるがゆえに')" structure-lint.mjs
 probe "章に実出力が 1 つ以上" "$CH" "t = t.replace('\`\`\`text', '\`\`\`yaml')" structure-lint.mjs
 probe "別章リソースの参照の禁止" "$CH" "t = t.replace('azp-ch03-rg', 'azp-ch09-rg')" structure-lint.mjs
+CH7=manuscript/part2/07-managed-identity.md
+probe "エラー後の確認の手は自己完結" "$CH7" "t = t.replace('me=' + chr(36) + '(az ad signed-in-user show --query id -o tsv)' + chr(10) + 'az role assignment list', 'az role assignment list')" structure-lint.mjs
 probe "Part 4 の 6 ブロック" "$P4" "t = t.replace('## 2. 縦の依存関係', '## 2. たてのはなし')" structure-lint.mjs
 
 echo "== mermaid-lint =="

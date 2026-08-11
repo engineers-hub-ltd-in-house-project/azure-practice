@@ -346,9 +346,12 @@ function bashSteps(body) {
   for (const s of steps) {
     const prev = merged[merged.length - 1];
     if (prev !== undefined && isAssign(prev)) {
-      const name = prev.match(/^\s*(?:export\s+)?(\w+)=/)[1];
+      // 連結済みのブロックでは、先頭だけでなく、そこまでに代入した名前をすべて見る。
+      // 「sub= / sa= / scope= / me= のあとに $me を使う」形を 2 ステップと数えないため。
+      const names = [...prev.matchAll(/^\s*(?:export\s+)?(\w+)=/gm)].map((m) => m[1]);
+      const used = names.some((name) => new RegExp(`\\$\\{?${name}\\b`).test(s));
       // export は後続のコマンドに暗黙に効くので、次の 1 手と同じステップとみなす
-      if (isAssign(s) || /^\s*export\s/.test(prev) || new RegExp(`\\$\\{?${name}\\b`).test(s)) {
+      if (isAssign(s) || /^\s*export\s/.test(prev) || used) {
         merged[merged.length - 1] = `${prev}\n${s}`;
         continue;
       }
@@ -532,6 +535,47 @@ for (const file of [
     if (gap && !prose.includes('|')) {
       errors.push(`${rel}:${i + 1}: 日本語の間に半角スペースが入っている -> ${gap[0]}`);
     }
+  }
+}
+
+
+// エラーの直後に置く確認の手は、変数を取り直すところから書く。読者はエラーを踏んでから
+// 別のターミナルを開いて調べることがあり、そこには前のブロックの変数が無い。実際、第 7 章の
+// 見分け方のコマンドが空の --assignee で usage error になった。
+// 対象は、エラー出力のあとに来る bash ブロックのうち、導入文が見分け・確かめ・調べ・切り分けで
+// 診断だと分かるものに限る。手順の続きまで対象にすると、章じゅうで代入を繰り返すことになる。
+const DIAGNOSTIC_INTRO = /見分け|確かめ|調べ|切り分け/;
+for (const file of walk(MANUSCRIPT)) {
+  const rel = relative(ROOT, file);
+  const lines = readFileSync(file, 'utf8').split('\n');
+  let afterError = false;
+  for (let i = 0; i < lines.length; i++) {
+    const open = lines[i].match(/^\s*```(\w*)\s*$/);
+    if (!open) continue;
+    const lang = open[1];
+    let end = i + 1;
+    while (end < lines.length && !/^\s*```\s*$/.test(lines[end])) end++;
+    const body = lines.slice(i + 1, end).join('\n');
+
+    if (lang === 'text' && /ERROR|error/.test(body)) {
+      afterError = true;
+    } else if (lang === 'bash' && afterError) {
+      let j = i - 1;
+      while (j >= 0 && !lines[j].trim()) j--;
+      if (j >= 0 && DIAGNOSTIC_INTRO.test(lines[j])) {
+        const used = new Set([...body.matchAll(/\$\{?(\w+)/g)].map((m) => m[1]));
+        const assigned = new Set(
+          [...body.matchAll(/^\s*(?:export\s+)?(\w+)=/gm)].map((m) => m[1]),
+        );
+        const stale = [...used].filter((v) => !assigned.has(v));
+        if (stale.length > 0) {
+          errors.push(
+            `${rel}:${i + 1}: エラーのあとの確認の手が前のブロックの変数に頼っている (${stale.join(', ')})。この手は変数を取り直すところから書く`,
+          );
+        }
+      }
+    }
+    i = end;
   }
 }
 
