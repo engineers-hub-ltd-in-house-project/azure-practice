@@ -38,7 +38,7 @@ az storage account create --name "$storage" --resource-group azp-ch08-rg \
   --location japaneast --sku Standard_LRS
 ```
 
-データを入れるコンテナーをキー認証で作ります。`--auth-mode key` が、いま使っている手段を明示しています。
+データを入れる BLOB コンテナーをキー認証で作ります。ここでのコンテナーは、第 7 章で実行したコンテナーではなく、BLOB をまとめるストレージ側の入れ物です。`--auth-mode key` が、いま使っている手段を明示しています。
 
 ```bash
 az storage container create --name demo --account-name "$storage" --auth-mode key
@@ -107,7 +107,7 @@ az storage blob list --container-name demo --account-name "$storage" --auth-mode
 hello.txt
 ```
 
-なお、細かい注意を 1 つ。コンテナーの作成や一覧は、Owner のままでも `--auth-mode login` で通ります。コンテナーは ARM から見えるリソースでもあり、その操作は actions の系統で判定されるためです。データプレーンのロールが要るのは BLOB の中身に触れるときです。「どの操作がどちらの系統か」はエラーになってから知ることが多いので、拒否されたら本節のエラーメッセージのように必要ロールの提示を探してください。
+なお、細かい注意を 1 つ。BLOB コンテナーの作成や一覧は、Owner のままでも `--auth-mode login` で通ります。BLOB コンテナーは ARM から見えるリソースでもあり、その操作は actions の系統で判定されるためです。データプレーンのロールが要るのは BLOB の中身に触れるときです。「どの操作がどちらの系統か」はエラーになってから知ることが多いので、拒否されたら本節のエラーメッセージのように必要ロールの提示を探してください。
 
 ## キーを止める ― ゼロトラスト（Zero Trust）への一歩
 

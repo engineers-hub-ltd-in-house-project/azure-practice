@@ -85,6 +85,7 @@ probe "禁止語（比喩の造語）" "$CH" "t = t.replace('置く単位です�
 probe "禁止語（擬人化）" "$CH" "t = t.replace('置く単位です。', '置く単位です。宿主と一心同体です。')" terms-lint.mjs
 probe "未定義の略語" "$CH" "t = t.replace('置く単位です。', '置く単位です。ZZQ を使います。')" terms-lint.mjs
 probe "図の初見の固有名" "$CH" "t = t.replace('ST[\"ストレージ (japaneast を選択)\"]', 'ST[\"Cosmos Table Storage\"]')" terms-lint.mjs
+probe "多義語の注釈" "$CH" "t = t.replace('ここでのコンテナーは、実行環境のコンテナー（第 7 章）ではありません。', '')" terms-lint.mjs
 probe "設問の語が本文にある" "$CH" "t = t.rstrip()[:-1] + chr(10) + '4. Workload ID について述べてください' + chr(10)" terms-lint.mjs
 
 echo

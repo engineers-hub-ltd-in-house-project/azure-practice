@@ -5,6 +5,7 @@
 // 検査 1: docs/glossary.json の語を、初出章より前の章の本文で使ったら落とす
 // 検査 2: 大文字 2〜6 文字の略語らしきトークンが、許可リストにも用語集にもなければ落とす
 // 検査 3: 図のラベルに出る英語の固有名（ロール名・サービス名）が、読者がまだ見ていない語なら落とす
+// 検査 4: 多義語（コンテナーなど）を、その章での注釈なしに使ったら落とす
 // コードフェンス内は対象外（コマンドと実出力は実物を尊重する）。
 
 import { readFileSync, readdirSync, statSync } from 'node:fs';
@@ -176,6 +177,24 @@ for (const file of files) {
       if (Object.keys(TERMS).some((t) => t.includes(token) && TERMS[t] <= chapter)) continue;
       errors.push(`${rel}:${i + 1}: 略語 "${token}" が用語集にも許可リストにもない。定義するか glossary.json へ`);
     }
+  }
+}
+
+// 多義語は、使う章ごとにその場で注釈する。「コンテナー」は実行環境の意味と
+// ストレージの入れ物の意味の両方で使われ、文脈なしに出ると読者は自分が知っている
+// ほうの意味で読み進めてしまう。用語集への登録では足りない。初出章が前の章であっても、
+// 読者はいま開いている章で意味を確かめるためである。
+const AMBIGUOUS = {
+  コンテナー: ['ここでのコンテナー', 'コンテナーと呼びます'],
+};
+for (const file of files) {
+  const prose = proseOf(readFileSync(file, 'utf8').split('\n'));
+  for (const [term, markers] of Object.entries(AMBIGUOUS)) {
+    if (!prose.includes(term)) continue;
+    if (markers.some((marker) => prose.includes(marker))) continue;
+    errors.push(
+      `${relative(ROOT, file)}: 多義語 "${term}" を注釈なしで使っている。初出の近くに「ここでの${term}は…」を置く`,
+    );
   }
 }
 
