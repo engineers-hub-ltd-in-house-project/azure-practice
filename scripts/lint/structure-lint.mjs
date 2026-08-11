@@ -259,6 +259,8 @@ const FORBIDDEN_IDENTIFIERS = [
   /3ff75678/, /2b138f7e/, /db41e908/, /94ff7b57/, /e5ac5bab/,
   /e40d41ce/, /1c9aacfa/, /9602dd0b/, /01712186/, /f69bee16/,
   /395b9a3f/, /5fd4637e/, /a35fe928/,
+  /f9c6f211/, /2c8cc27b/, /ff069625/, /beda5fbb/, /1b4494bc/,
+  /a418adc3/, /a73fe994/, /83a113e0/, /2f39c04e/,
 ];
 for (const file of [...walk(MANUSCRIPT), join(ROOT, 'README.md'), join(ROOT, 'WRITING_GUIDELINES.md')]) {
   if (!existsSync(file)) continue;
