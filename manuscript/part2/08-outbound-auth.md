@@ -45,8 +45,26 @@ az storage container create --name demo --account-name "$storage" --auth-mode ke
 ```
 
 ```text
-true
+WARNING:
+There are no credentials provided in your command and environment, we will query for account key for your storage account.
+It is recommended to provide --connection-string, --account-key or --sas-token in your command as credentials.
+
+You also can add `--auth-mode login` in your command to use Azure Active Directory (Azure AD) for authorization if your login account is assigned required RBAC roles.
+For more information about RBAC roles in storage, visit https://learn.microsoft.com/azure/storage/common/storage-auth-aad-rbac-cli.
+
+In addition, setting the corresponding environment variables can avoid inputting credentials in your command. Please use --help to get more information about environment variable usage.
+{
+  "created": true
+}
 ```
+
+長い警告が出ますが、失敗ではありません。最後の `"created": true` が作成できたことを示しています。
+
+警告の中身は、キー認証がどう動いているかの説明そのものです。`--auth-mode key` はキーで通すという指定ですが、キーの値そのものは渡していません。そこで CLI は、ストレージアカウントを管理する権限を使ってキーを取得し、それでデータの操作を実行しました。1 つのコマンドの裏で、キーの取得とデータの操作の 2 つが動いています。警告は、キーの取得のほうを黙って行ったという断りです。
+
+警告を出したくない場合は、`--account-key`、`--connection-string`、`--sas-token` のいずれかでキーを渡すか、環境変数に入れます。ただし本書はキーを手元に置かない方針なので、この章ではキー認証の実物を見せるためだけにこの形を使います。
+
+キーの取得が管理の権限で行われている点は、あとで効いてきます。この章の後半でキー認証を無効にすると、このキーの取得が拒否されるようになります。
 
 作れました。この経路の問題は、キーが「誰であるか」を一切問わないことです。キーは人にもプログラムにも紐づいておらず、漏れても誰が使ったのか分かりません。定期的なローテーションも人間の仕事です。第 5 章のサービスプリンシパルの password と同じ重荷が、リソースの数だけ増えていきます。
 
@@ -54,7 +72,7 @@ true
 
 もう 1 つの経路は、第 6 章までに組み立てた仕組みをそのまま使います。サインインした ID と RBAC で、データへのアクセスを判定します。
 
-先に結論を書きます。サブスクリプションの Owner であっても、BLOB の中身は読めません。実際に踏んでみます。
+先に結論を書きます。サブスクリプションの Owner であっても、BLOB の中身は読めません。実際に試してみます。
 
 ```bash
 az storage blob list --container-name demo --account-name "$storage" --auth-mode login
@@ -71,7 +89,20 @@ Depending on your operation, you may need to be assigned one of the following ro
 
 Owner なのに拒否されました。RBAC のロールには、リソースの管理操作（作る・消す・設定を変える）を許す actions と、データそのものの操作を許す dataActions という別の系統があり、Owner が持つ `*` は actions の系統です。管理の全権とデータへのアクセス権は別物として設計されています。ストレージを管理できる人が、中の個人情報を読めるとは限らない、という分離です。
 
-この 2 つの系統には名前が付いています。リソースの管理操作（作る・消す・設定を変える。actions の系統）の層をコントロールプレーン、データそのものの操作（dataActions の系統）の層をデータプレーンと呼びます。同じリソースに 2 枚の層があり、それぞれ別のロールで守られている、という絵で覚えてください。
+この 2 つの系統には名前が付いています。リソースの管理操作（作る・消す・設定を変える。actions の系統）の層をコントロールプレーンと呼びます。データそのものの操作（dataActions の系統）の層をデータプレーンと呼びます。同じ 1 つのストレージアカウントに 2 つの層があり、それぞれ別のロールで守られています。
+
+```mermaid
+flowchart TB
+  ME["自分 (Owner)"] -->|"actions を持つ"| CP
+  subgraph ST["同じ 1 つのストレージアカウント"]
+    CP["コントロールプレーン (作る・消す・設定を変える)"]
+    DP["データプレーン (BLOB の中身を読み書きする)"]
+  end
+  ME -.->|"dataActions が無いので拒否される"| DP
+  ROLE["Storage Blob Data Contributor (dataActions を持つ)"] --> DP
+```
+
+Owner が持つ `*` は上の層だけを許します。下の層に触れるには、dataActions を持つロールが別に要ります。ここまでの拒否は、権限が足りないのではなく、権限の付いている層が違ったということです。
 
 エラーメッセージに挙がっている Storage Blob Data Contributor が、dataActions を持つデータプレーンのロールです。自分に割り当てます。
 

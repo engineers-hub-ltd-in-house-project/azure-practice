@@ -179,7 +179,7 @@ az aks create --name azp-ch17-aks -g azp-ch17-rg \
 
 ### 壊す演習 ― サブスクリプションが許さないサイズ
 
-本書の検証で実際に踏んだ失敗です。
+本書の検証で実際に起きた失敗です。
 
 ```bash
 az aks create --name azp-ch17-aks -g azp-ch17-rg \
