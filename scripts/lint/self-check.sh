@@ -88,6 +88,13 @@ probe "図の初見の固有名" "$CH" "t = t.replace('ST[\"ストレージ (jap
 probe "多義語の注釈" "$CH" "t = t.replace('ここでのコンテナーは、実行環境のコンテナー（第 7 章）ではありません。', '')" terms-lint.mjs
 probe "設問の語が本文にある" "$CH" "t = t.rstrip()[:-1] + chr(10) + '4. Workload ID について述べてください' + chr(10)" terms-lint.mjs
 
+echo "== vocab-lint =="
+probe "比喩の導入句" "$CH" "t = t.replace('置く単位です。', '置く単位です。リソースグループはいわば箱です。')" vocab-lint.mjs
+probe "造語の宣言は用語集登録とセット" "$CH" "t = t.replace('置く単位です。', '置く単位です。これを本書では入れ物の層と呼びます。')" vocab-lint.mjs
+probe "新語ゲート" "$CH" "t = t.replace('置く単位です。', '置く単位です。ここで疑似連関を導入します。')" vocab-lint.mjs
+probe "操作語の出典" "docs/vocabulary.json" "t = t.replace('\"source\": \"az role assignment create\"', '\"source\": \"\"')" vocab-lint.mjs
+
+
 echo
 if [ "$dead" -gt 0 ]; then
   echo "検出器の自己検査に失敗: 発火 ${pass} / 沈黙 ${dead}"

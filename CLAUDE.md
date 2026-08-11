@@ -18,6 +18,7 @@ az bicep build --file <対象>.bicep --stdout > /dev/null
 - 実行コマンドは実機検証したものだけを書く。検証したら scripts/record-verification.sh <章番号> <状態> [API バージョン] で記録する。docs/verification-log.md は手で編集しない
 - 本文にコマンド列を直接埋め込まず、scripts/ と infra/ の実ファイルを参照させる
 - ハンズオンは検証用サンドボックスでのみ実行する。顧客・本番サブスクリプションでは実行しない
+- 新しい語を使う前に docs/vocabulary.json を見る。操作の語は az のコマンドやフラグに実在するものだけを使う。語彙を増やすときは npm run vocab:update で差分を確かめる
 
 ## Git の運用
 

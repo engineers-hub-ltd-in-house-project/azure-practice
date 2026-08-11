@@ -1,0 +1,91 @@
+{
+  "_comment": "本書が使う語の正典。書き手はまずここを見る。検出器もこの表から動くので、語の追加はこのファイル 1 か所で済む。層の意味は WRITING_GUIDELINES.md の「語を決める 3 層のフィルター」を参照。",
+
+  "_layer1": "方針。操作を表す語は、Azure が公式に使う語から採る。出典（az のコマンドやフラグ、または公式ドキュメントの日本語表記）を持たない語は、この表に登録できない。",
+  "operations": [
+    {
+      "object": "ロール",
+      "verb": "割り当てる",
+      "source": "az role assignment create",
+      "avoid": ["掛ける", "付与する", "あてがう"]
+    },
+    {
+      "object": "マネージド ID",
+      "verb": "割り当てる",
+      "source": "az container create --assign-identity / az functionapp identity assign",
+      "avoid": ["載せる", "積む", "紐づける"]
+    },
+    {
+      "object": "ポリシー",
+      "verb": "適用する",
+      "source": "az policy assignment create（割り当ての語も公式。効果の話をするときは適用する）",
+      "avoid": ["掛ける", "効かせる"]
+    },
+    { "object": "ロック", "verb": "設定する", "source": "az lock create", "avoid": ["掛ける"] },
+    {
+      "object": "予算",
+      "verb": "作成する",
+      "source": "az consumption budget create",
+      "avoid": ["仕掛ける", "張る"]
+    },
+    { "object": "タグ", "verb": "付ける", "source": "az resource tag / --tags", "avoid": ["刺す"] },
+    {
+      "object": "リソース",
+      "verb": "作成する・削除する",
+      "source": "az group create / az group delete",
+      "avoid": ["生まれる", "産む"]
+    },
+    {
+      "object": "テンプレート",
+      "verb": "デプロイする",
+      "source": "az deployment group create",
+      "avoid": ["流す", "撃つ"]
+    },
+    {
+      "object": "リソースプロバイダー",
+      "verb": "登録する",
+      "source": "az provider register",
+      "avoid": ["有効化する"]
+    }
+  ],
+
+  "_layer3": "語単位の言い換え表。lint 欄は、その語を落とす検出器を示す。structure = structure-lint.mjs、terms = terms-lint.mjs、vocab = vocab-lint.mjs。",
+  "denied": [
+    {
+      "pattern": "掛け(る|られ|ま|た|て|な|れ|方|算)",
+      "instead": "割り当てる・適用する・設定する・作成する のうち実際の操作",
+      "why": "何をする操作なのかが語から分からない",
+      "lint": "structure"
+    },
+    {
+      "pattern": "生まれ(る|た|ま|て|な)",
+      "instead": "作られる・できる・出る",
+      "why": "リソースは生き物ではない",
+      "lint": "structure"
+    },
+    {
+      "pattern": "(名前|ID|appId|キー|値|一覧|台帳|そこ|ここ)(で|から|を)引(く|き|け|い)",
+      "instead": "取得する・解決する・問い合わせる・引用する",
+      "why": "検索か取得か名前解決かが読者に伝わらない",
+      "lint": "structure"
+    },
+    {
+      "pattern": "載せ先|ID を載せ|ID が載っ",
+      "instead": "割り当て先・ID を割り当て",
+      "why": "Azure に無い比喩。CLI のフラグは --assign-identity",
+      "lint": "vocab"
+    },
+    {
+      "pattern": "いわば|たとえるなら|例えるなら|見立て|のようなもので",
+      "instead": "対象そのものの説明",
+      "why": "比喩の導入句。ここから本書だけの語が作られてきた",
+      "lint": "vocab"
+    }
+  ],
+
+  "_layer2": "文脈。語を新しく決める行為そのものを検査する。宣言したら用語集に登録する。",
+  "coining": {
+    "markers": ["と呼びます", "と呼ぶことにします", "と名付けます"],
+    "note": "この形で語を決めたら、その語を docs/glossary.json の terms へ初出章つきで登録する。登録は、その語を本書の語彙として抱えるという判断を明示する手続きである。"
+  }
+}
