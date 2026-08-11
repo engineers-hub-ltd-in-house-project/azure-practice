@@ -38,7 +38,7 @@ WARNING: Resource provider 'microsoft.insights' used by this operation is not re
 
 ### 内向き
 
-Function App から他のサービスへのアクセスは、第 7 章のマネージド ID が正道です。システム割り当てとユーザー割り当ての両方を載せられます。
+Function App から他のサービスへのアクセスは、第 7 章のマネージド ID が正道です。システム割り当てとユーザー割り当ての両方を割り当てられます。
 
 ただし、既定の作成直後の状態はその理想と違います。アプリ設定を見ます。
 

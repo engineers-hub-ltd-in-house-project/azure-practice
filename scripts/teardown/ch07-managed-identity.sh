@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 第 7 章のクリーンアップ。
 # ロール割り当てはすべて RG 配下のスコープに割り当てたので、RG の削除で一緒に消える。
-# システム割り当ての ID は、載せ先のコンテナーが消えた時点でテナントの台帳からも消える。
+# システム割り当ての ID は、ID を割り当てたコンテナーが消えた時点でテナントの台帳からも消える。
 
 # shellcheck source=../lib/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/common.sh"

@@ -2,7 +2,7 @@
 # 第 7 章 マネージド ID ― リソース間の内向き認証
 #
 # シナリオ: コンテナーが、キーもパスワードも持たずにストレージのファイルを読む。
-# ユーザー割り当てマネージド ID を載せ先より先に作り、権限まで割り当ててから
+# ユーザー割り当てマネージド ID をリソースより先に作り、権限まで割り当ててから
 # コンテナーを作る。コンテナーの中では IMDS からトークンを取得して読む。
 
 # shellcheck source=../lib/common.sh
@@ -23,7 +23,7 @@ log "リソースグループ ${rg} を作る"
 az group create --name "$rg" --location "$location" \
   --tags azp-book=azure-practice azp-chapter="$chapter" azp-lifecycle=ephemeral -o none
 
-# --- 2. 載せ先より先に ID を作る ---
+# --- 2. ID を割り当てるリソースより先に ID を作る ---
 log "ユーザー割り当てマネージド ID を作る"
 az identity create --name "${prefix}-${chapter}-uid" --resource-group "$rg" -o none
 uid_pid=$(az identity show --name "${prefix}-${chapter}-uid" --resource-group "$rg" \
@@ -58,7 +58,7 @@ echo "hello from managed identity" > "$tmp"
 retry 5 20 put_file "$tmp"
 rm -f "$tmp"
 
-# --- 5. 載せ先がまだ無い時点で、ID に権限を割り当てる ---
+# --- 5. ID を使うリソースがまだ無い時点で、ID に権限を割り当てる ---
 log "ユーザー割り当て ID に Storage Blob Data Reader を割り当てる"
 assign_uid() {
   az role assignment create --assignee-object-id "$uid_pid" \
@@ -67,7 +67,7 @@ assign_uid() {
 }
 retry 3 20 assign_uid
 
-# --- 6. 載せ先を作る。2 種類の ID を同時に載せて動かす ---
+# --- 6. リソースを作る。2 種類の ID を同時に割り当てて動かす ---
 uid_id="/subscriptions/${sub_id}/resourceGroups/${rg}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${prefix}-${chapter}-uid"
 imds="http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fstorage.azure.com%2F"
 inner="curl -s -H 'Metadata: true' '${imds}'; echo; \
@@ -75,7 +75,7 @@ curl -s -H 'Metadata: true' '${imds}&client_id=${uid_client}'; echo; \
 az login --identity --client-id ${uid_client} -o none; \
 az storage blob list --account-name ${sa} --container-name docs --auth-mode login -o table"
 
-log "コンテナーインスタンスを作る（システム割り当てとユーザー割り当ての両方を載せる）"
+log "コンテナーインスタンスを作る（システム割り当てとユーザー割り当ての両方を割り当てる）"
 az container create --name "${prefix}-${chapter}-aci" --resource-group "$rg" \
   --image mcr.microsoft.com/azure-cli:latest \
   --assign-identity "[system]" "$uid_id" \

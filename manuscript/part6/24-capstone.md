@@ -36,7 +36,7 @@ flowchart TB
 
 ### 横の設計 ― ID と認証
 
-- ユーザー割り当てマネージド ID を 1 つ作り、Functions に載せます。ユーザー割り当てを選ぶのは、IaC の再デプロイで ID と権限を保つためです（第 7 章）
+- ユーザー割り当てマネージド ID を 1 つ作り、Functions に割り当てます。ユーザー割り当てを選ぶのは、IaC の再デプロイで ID と権限を保つためです（第 7 章）
 - Storage・Service Bus・Key Vault はすべてキー認証を無効にし、この ID への RBAC だけで繋ぎます（第 8 章・第 15 章・第 16 章）
 - ロールは最小に。Storage Blob Data Contributor、Azure Service Bus Data Sender / Receiver、Key Vault Secrets User を、それぞれのリソーススコープで（第 6 章）
 - デプロイは GitHub Actions からのフェデレーションで、シークレットレスにします（第 8 章）
