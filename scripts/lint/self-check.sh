@@ -91,6 +91,7 @@ probe "設問の語が本文にある" "$CH" "t = t.rstrip()[:-1] + chr(10) + '4
 echo "== vocab-lint =="
 probe "比喩の導入句" "$CH" "t = t.replace('置く単位です。', '置く単位です。リソースグループはいわば箱です。')" vocab-lint.mjs
 probe "造語の宣言は用語集登録とセット" "$CH" "t = t.replace('置く単位です。', '置く単位です。これを本書では入れ物の層と呼びます。')" vocab-lint.mjs
+probe "造語の宣言（かぎ括弧つき）" "$CH" "t = t.replace('置く単位です。', '置く単位です。これを本書では「入れ物の層」と呼びます。')" vocab-lint.mjs
 probe "新語ゲート" "$CH" "t = t.replace('置く単位です。', '置く単位です。ここで疑似連関を導入します。')" vocab-lint.mjs
 probe "操作語の出典" "docs/vocabulary.json" "t = t.replace('\"source\": \"az role assignment create\"', '\"source\": \"\"')" vocab-lint.mjs
 

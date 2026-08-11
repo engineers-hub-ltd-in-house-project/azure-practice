@@ -58,8 +58,12 @@ for (const file of files) {
       if (!line.includes(marker)) continue;
       const before = line.slice(0, line.indexOf(marker));
       const quoted = [...before.matchAll(/[「『]([^」』]+)[」』]/g)].map((q) => q[1]);
-      const bare = before.match(/([ァ-ヶー一-龥々A-Za-z][ァ-ヶー一-龥々A-Za-z0-9 ]*)$/);
-      const candidates = quoted.length > 0 ? quoted : bare ? [bare[1].trim()] : [];
+      // 送り仮名や「の」を挟む語（入れ物の層、内向き）も 1 語として取り出す。
+      // 助詞が 2 つ続く箇所（本書では）で切れるので、文の頭までは飲み込まない。
+      const bare = before.match(
+        /[ァ-ヶーA-Za-z0-9一-龥々]+(?:(?![をがはへにともでやかね])[ぁ-ん][ァ-ヶーA-Za-z0-9一-龥々]+)*[ぁ-ん]?$/,
+      );
+      const candidates = quoted.length > 0 ? quoted : bare ? [bare[0].trim()] : [];
       for (const term of candidates) {
         if (!term || term.length < 2) continue;
         if (known.has(term)) continue;

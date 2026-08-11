@@ -88,6 +88,8 @@ me=$(az ad signed-in-user show --query id -o tsv)
 az role assignment create --assignee "$me" --role "Storage Blob Data Contributor" --scope "$scope"
 ```
 
+割り当ては、作った直後には効きません。第 2 章と第 6 章で見た伝播遅延です。本書の検証では、割り当てから 27 秒後に効きました。ここで 30 秒ほど待ってから次へ進んでください。
+
 BLOB コンテナーを作ります。
 
 ```bash
@@ -106,6 +108,35 @@ echo "hello from managed identity" > sample.txt
 az storage blob upload --account-name "$sa" --container-name docs \
   --name sample.txt --file sample.txt --auth-mode login --overwrite
 ```
+
+待たずに実行すると、この手が次のエラーで止まります。本書でも再現しました。
+
+```text
+ERROR:
+You do not have the required permissions needed to perform this operation.
+Depending on your operation, you may need to be assigned one of the following roles:
+    "Storage Blob Data Owner"
+    "Storage Blob Data Contributor"
+    "Storage Blob Data Reader"
+    "Storage Queue Data Contributor"
+    "Storage Queue Data Reader"
+    "Storage Table Data Contributor"
+    "Storage Table Data Reader"
+
+If you want to use the old authentication method and allow querying for the right account key, please use the "--auth-mode" parameter and "key" value.
+```
+
+必要なロールが並んでいるので割り当ての漏れに見えますが、割り当ては先ほど済んでいます。エラーの内容は、割り当ての漏れと伝播の待ちで同じです。見分けるには、割り当て自体があるかを確かめます。
+
+```bash
+az role assignment list --assignee "$me" --scope "$scope" --query "[].roleDefinitionName" -o tsv
+```
+
+```text
+Storage Blob Data Contributor
+```
+
+行が出れば割り当ては届いているので、数十秒待って同じコマンドを実行し直します。行が出ない場合は割り当て自体が無いので、`az role assignment create` からやり直します。章スクリプト（`scripts/chapters/ch07-managed-identity.sh`）は、この手を成功するまで再試行します。
 
 ここでユーザー割り当て ID に、Blob の読み取りだけを許す組み込みロール Storage Blob Data Reader を割り当てます。この ID を使うコンテナーは、まだ 1 つも作っていません。それでも権限の準備が完了します。
 
@@ -193,26 +224,9 @@ Received invalid token. Please try again.
 
 ## 1 回目は権限エラーで失敗する
 
-本書の検証では、続くファイルの一覧の取得が 1 回目に失敗しました。
+本書の検証では、続くファイルの一覧の取得が 1 回目に失敗しました。出力の末尾に、先ほど自分で踏んだものと同じ権限のエラーが出ています。ユーザー割り当て ID への Storage Blob Data Reader も割り当て済みですが、コンテナーはその割り当てが効くより先に動き出しました。伝播遅延がもう一度出た形です。
 
-```text
-ERROR:
-You do not have the required permissions needed to perform this operation.
-Depending on your operation, you may need to be assigned one of the following roles:
-    "Storage Blob Data Owner"
-    "Storage Blob Data Contributor"
-    "Storage Blob Data Reader"
-    "Storage Queue Data Contributor"
-    "Storage Queue Data Reader"
-    "Storage Table Data Contributor"
-    "Storage Table Data Reader"
-
-If you want to use the old authentication method and allow querying for the right account key, please use the "--auth-mode" parameter and "key" value.
-```
-
-Storage Blob Data Reader は先ほど割り当て済みです。それでも失敗したのは、第 2 章と第 6 章で見た伝播遅延によるものです。ロール割り当てが実際に効くまでには数十秒かかることがあり、割り当てた直後に始まったコンテナーは、まだ効いていない状態でストレージへ要求しました。
-
-割り当ての漏れと伝播遅延は、同じエラーで見分けが付きません。見分けるには、割り当て自体が存在するかを別のコマンドで確かめます。
+見分け方も同じで、割り当て自体があるかを確かめます。
 
 ```bash
 az role assignment list --assignee "$uid_pid" --all --query "[].{role:roleDefinitionName, scope:scope}" -o table
@@ -249,6 +263,30 @@ az ad sp show --id 66667777-8888-9999-aaaa-bbbbccccdddd \
   "servicePrincipalType": "ManagedIdentity"
 }
 ```
+
+## ここまでで出来上がったもの
+
+削除に入る前に、作ったものの関係を 1 枚にまとめます。
+
+```mermaid
+flowchart TB
+  subgraph RG["azp-ch07-rg (リソースグループ)"]
+    ACI["azp-ch07-aci (コンテナー)"]
+    SYS["システム割り当ての ID (azp-ch07-aci の属性)"]
+    UID["azp-ch07-uid (ユーザー割り当てマネージド ID)"]
+    SA["azpch07... (ストレージアカウント)"]
+    DOCS["docs (BLOB コンテナー)"]
+    FILE["sample.txt (BLOB)"]
+  end
+  ME["自分 (ユーザー)"] -->|"Storage Blob Data Contributor"| SA
+  ACI ---|"作成と同時にできる"| SYS
+  ACI -->|"割り当てる"| UID
+  UID -->|"Storage Blob Data Reader"| SA
+  SA --> DOCS --> FILE
+  ACI -->|"トークンを添えて読む"| FILE
+```
+
+見どころは、ロールを割り当てた相手が 2 つに分かれていることです。自分にはファイルを置くための Storage Blob Data Contributor を、ユーザー割り当て ID には読み取りだけの Storage Blob Data Reader を割り当てました。コンテナーはこの ID として読むので、読み取りより強い権限を持ちません。システム割り当ての ID は、この構成では 1 つも権限を持たないままです。ここから先で、この 2 つの ID の寿命の違いを確かめます。
 
 ## クリーンアップ演習 ― リソースを消すと何が起きるか
 
