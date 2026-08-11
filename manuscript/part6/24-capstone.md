@@ -49,7 +49,7 @@ flowchart TB
 
 ### 実装の形
 
-第 13 章の型をそのまま使います。AVM モジュール + 自作モジュールを束ねた Bicep を、Deployment Stack として `actionOnUnmanage: deleteResources` で運用します。構成から消えたものは実世界からも消えます。このアプリを畳むときも、スタックの削除 1 手で済みます（第 11 章）。
+第 13 章の型をそのまま使います。AVM モジュール + 自作モジュールを束ねた Bicep を、Deployment Stack として `actionOnUnmanage: deleteResources` で運用します。構成から消えたものは Azure 側からも消えます。このアプリを畳むときも、スタックの削除 1 手で済みます（第 11 章）。
 
 ## 未習サービスを型で読む ― Service Bus
 
