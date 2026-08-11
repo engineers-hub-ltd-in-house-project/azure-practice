@@ -209,6 +209,22 @@ storage123 は、世界の誰かが使っています。この一意性はテナ
 | 4 足回り   | LRS の選択（検証用途の判断）と匿名アクセスの遮断            |
 | 5 課金     | 容量 + 操作の 2 系統。検証規模では数円未満                  |
 
+### ここまでで出来上がったもの
+
+キーを根絶した構成がどうなったかをまとめます。ホストが使うのは BLOB だけではないため、Storage Blob Data Owner に加えて、キュー用の Storage Queue Data Contributor とテーブル用の Storage Table Data Contributor も割り当ててあります。
+
+```mermaid
+flowchart TB
+  RG["azp-ch15-rg (リソースグループ)"] --> FUNC["azp-ch15-func (Function App)"]
+  RG --> ST["ストレージアカウント (キー認証は無効)"]
+  FUNC -->|"システム割り当てマネージド ID"| MI["ホストの ID"]
+  MI -->|"Storage Blob Data Owner"| ST
+  MI -->|"Storage Queue Data Contributor"| ST
+  MI -->|"Storage Table Data Contributor"| ST
+```
+
+見どころは、ロールが 3 つ要ることです。Function App のホストは BLOB だけでなくキューとテーブルも使うため、1 つのロールでは足りません。キー認証を無効にすると、この 3 つが揃うまでホストは動きません。隠れた依存関係は、キーを止めたときに初めて姿を現します。
+
 ## 検証環境
 
 | 項目           | 値                                                                           |

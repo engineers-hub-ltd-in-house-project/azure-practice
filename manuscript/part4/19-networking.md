@@ -232,6 +232,24 @@ Private Endpoint・DNS ゾーン・VNet・Functions・ストレージが 1 手�
 | 5 課金     | Private Endpoint の存在時間課金ゆえの即時削除     |
 | 6 演習     | 中と外で同じ名前が違う IP に解決される DNS の実測 |
 
+### ここまでで出来上がったもの
+
+経路を閉じるために作ったものを 1 枚にまとめます。
+
+```mermaid
+flowchart TB
+  RG["azp-ch19-rg (リソースグループ)"] --> VNET["azp-ch19-vnet (仮想ネットワーク)"]
+  VNET --> SUBNET["integration-subnet (サブネット)"]
+  RG --> ST["ストレージアカウント"]
+  RG --> PE["azp-ch19-pe (Private Endpoint)"]
+  PE -->|"名前をプライベート IP へ解決する"| DNS["privatelink のプライベート DNS ゾーン"]
+  DNS --> VNET
+  PE --> ST
+  SUBNET -->|"VNet 統合"| FUNC["azp-ch19-func (Function App)"]
+```
+
+見どころは、Private Endpoint だけでは足りないことです。プライベート IP を用意しても、名前がその IP へ解決されなければ、通信は元の公開された経路へ戻ります。プライベート DNS ゾーンと仮想ネットワークへのリンクまで揃えて、初めて経路が閉じます。作るものの数が多い章ですが、目的はこの 1 つです。
+
 ## 検証環境
 
 | 項目           | 値                                                                                                   |

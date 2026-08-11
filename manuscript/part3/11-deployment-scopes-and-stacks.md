@@ -185,6 +185,22 @@ deleteResources は本章のような「コードが真実」の運用に向き�
 az group delete --name azp-ch11-rg --yes
 ```
 
+## ここまでで出来上がったもの
+
+2 つの経路で同じ構成の変更を試したので、結果を並べます。
+
+```mermaid
+flowchart TB
+  V1["v1.bicep (app1 と app2 を宣言)"] --> D["az deployment group create"]
+  V2["v2.bicep (app1 だけを宣言)"] --> D
+  V2 --> S["az stack group create (actionOnUnmanage)"]
+  D -.->|"構成から消しても残る"| A2["app2 (マネージド ID)"]
+  S -->|"deleteResources なら消す"| A2
+  RG["azp-ch11-rg (リソースグループ)"] --> A1["app1 (マネージド ID)"]
+```
+
+見どころは、同じ v2 を適用しても結果が 2 通りに分かれることです。`az deployment` は宣言に無いものへ手を出さないので、app2 は残ります。スタックは、自分が作ったものの一覧を持っていて、宣言から外れたものを `actionOnUnmanage` の設定に従って処理します。構成ファイルと実世界を一致させたいなら、後者を選ぶことになります。
+
 ## 検証環境
 
 | 項目           | 値                                                                                                                 |

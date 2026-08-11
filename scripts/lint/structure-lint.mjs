@@ -579,6 +579,23 @@ for (const file of walk(MANUSCRIPT)) {
   }
 }
 
+
+// リソースを作る章は、作ったものの関係を 1 枚にまとめた節を持つ。
+// 手順を追うだけでは、何と何がどう繋がったのかが読者の頭に残らない。第 7 章で
+// この節を足したところ分かりやすくなったので、作るものがある章すべてに広げた。
+// 対象は、本文に az の作成コマンドがある章。概念だけの章と付録は対象外。
+const SUMMARY_HEADING = /^#{2,3} ここまでで出来上がったもの\s*$/m;
+for (const file of walk(MANUSCRIPT)) {
+  const rel = relative(ROOT, file);
+  const text = readFileSync(file, 'utf8');
+  const builds = /^az [\w -]*(?:create|register)\b/m.test(text);
+  if (!builds) continue;
+  if (SUMMARY_HEADING.test(text)) continue;
+  errors.push(
+    `${rel}: 「ここまでで出来上がったもの」の節がない。作ったものの関係を 1 枚の図にして、クリーンアップか検証環境の前に置く`,
+  );
+}
+
 if (errors.length > 0) {
   console.error('構成規約の違反:');
   for (const e of errors) console.error(`  - ${e}`);

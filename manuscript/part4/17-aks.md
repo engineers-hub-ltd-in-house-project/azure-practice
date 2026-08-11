@@ -216,6 +216,21 @@ az group list --query "[?starts_with(name,'MC_') || starts_with(name,'azp-ch17')
 | 4 足回り   | Free tier + 最小ノードという検証構成の選択                                      |
 | 5 課金     | 時間課金ゆえの即時 teardown                                                     |
 
+### ここまでで出来上がったもの
+
+5 種類の ID のうち、この章で自分の手で作ったものを図にします。
+
+```mermaid
+flowchart TB
+  RG["azp-ch17-rg (リソースグループ)"] --> AKS["azp-ch17-aks (クラスタ)"]
+  AKS --> MC["MC_ で始まる RG (ノード用、AKS が作る)"]
+  RG --> WID["azp-ch17-workload-id (ユーザー割り当てマネージド ID)"]
+  WID -->|"連合資格情報"| SA["クラスタの ServiceAccount"]
+  SA --> POD["Pod"]
+```
+
+見どころは、リソースグループが 2 つあることです。自分で作ったものの中にクラスタが置かれ、ノードなどの部品は AKS が作る `MC_` の中に置かれます。もう 1 つは、Pod が使う ID が連合資格情報でクラスタ側の ServiceAccount と結び付いていることです。password を渡す代わりに、どの ServiceAccount を信用するかを ID 側に書きます。
+
 ## 検証環境
 
 | 項目           | 値                                                                               |

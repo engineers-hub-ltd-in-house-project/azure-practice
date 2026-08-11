@@ -133,6 +133,20 @@ Resource changes: 1 to create.
 az group delete --name azp-ch10-rg --yes
 ```
 
+## ここまでで出来上がったもの
+
+この章で手元に残ったものと、Azure 側に残ったものを分けて見ます。
+
+```mermaid
+flowchart TB
+  BICEP["storage.bicep (15 行)"] -->|"az bicep build"| JSON["storage.json (ARM テンプレート)"]
+  JSON -->|"az deployment group create --what-if"| ARM["ARM"]
+  ARM -.->|"作らずに差分だけ返す"| ST["ストレージアカウント (未作成)"]
+  RG["azp-ch10-rg (リソースグループ)"] --> ST
+```
+
+見どころは、Azure 側にはリソースグループしか増えていないことです。what-if は差分を計算して返すだけで、ストレージは作られていません。手元に増えたのは変換後の JSON で、これが ARM の受け取る形です。Bicep と ARM テンプレートの関係は、書く側の都合と受け取る側の都合の違いにあたります。
+
 ## 検証環境
 
 | 項目           | 値                                                     |

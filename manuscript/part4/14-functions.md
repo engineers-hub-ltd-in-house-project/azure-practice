@@ -232,6 +232,20 @@ Please set it to one of the allowed values: 512,2048,4096.
 | 4 足回り   | capacity 0 のプランと scale config の実測                                       |
 | 5 課金     | Always Ready の設定・解除。コスト照会は反映待ちで NotFound                      |
 
+### ここまでで出来上がったもの
+
+この章で作った 3 つの関係をまとめます。
+
+```mermaid
+flowchart TB
+  RG["azp-ch14-rg (リソースグループ)"] --> FUNC["azp-ch14-func (Function App、Flex Consumption)"]
+  RG --> ST["ストレージアカウント (Function App のホストが使う)"]
+  FUNC -->|"コードとメタデータを置く"| ST
+  FUNC -.->|"対応しないリージョンでは作れない"| NG["azp-ch14-func3 (作成に失敗)"]
+```
+
+見どころは、Function App が単体では成り立たないことです。ストレージアカウントは自分で使うデータの置き場ではなく、Function App のホストが動くために要る依存先です。壊す演習で見たとおり、そのリージョンが対応しているかどうかも作成の可否を決めます。サービスを 1 つ作るという操作の裏に、依存先とリージョンという 2 つの前提があります。
+
 ## 検証環境
 
 | 項目           | 値                                                                              |

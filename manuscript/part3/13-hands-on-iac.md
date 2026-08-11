@@ -96,6 +96,20 @@ az resource list -g azp-ch13-rg --query "[].name" -o tsv
 azp-ch13-id
 ```
 
+## ここまでで出来上がったもの
+
+片付ける前に、スタック 1 本が持っている構成を確かめます。
+
+```mermaid
+flowchart TB
+  STACK["azp-ch13-stack (サブスクリプションスコープのスタック)"] --> RG["azp-ch13-rg (リソースグループ)"]
+  RG --> ID["ユーザー割り当てマネージド ID"]
+  RG -.->|"includeStorage を false にすると外れる"| ST["ストレージアカウント (キー認証は無効)"]
+  ID -->|"Storage Blob Data Contributor"| ST
+```
+
+見どころは、第 4 章と第 9 章で `az` コマンドを積み上げて作った構成が、テンプレート 1 つの宣言になっていることです。スタックはこの構成に含まれるものの一覧を持っているので、パラメーターを 1 つ変えるだけで、ストレージとそのロール割り当てを構成から外せます。外れたものをどう扱うかは `actionOnUnmanage` が決めます。
+
 ## クリーンアップ演習
 
 ```bash

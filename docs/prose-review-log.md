@@ -6,34 +6,34 @@
 
 `scripts/lint/review-lint.mjs` が、全章の版が `WRITING_GUIDELINES.md` の現行版と一致することを検査する。規約を 1 条足したら版を進め、全章を新しい条で読み直すまで CI は赤のままになる。
 
-規約版 2 で足した第 8 条（語を決める 3 層のフィルター）は、全部が機械検査である。`npm run lint:vocab` の 5 つの検査が全 27 章を通り、造語の宣言 5 件を用語集へ登録したうえで版を 2 にした。散文としての読み直しは規約版 1 のときの記録を引き継ぐ。
+規約版 3 で足した第 9 条（出来上がったものを 1 枚にまとめる）では、リソースを作る 21 章すべてに図と見どころの段落を書き足した。規約版 2 で足した第 8 条（語を決める 3 層のフィルター）は、全部が機械検査である。`npm run lint:vocab` の 5 つの検査が全 27 章を通り、造語の宣言 5 件を用語集へ登録したうえで版を 2 にした。散文としての読み直しは規約版 1 のときの記録を引き継ぐ。
 
 | 章                                                                                                                             | 規約版 | レビュー日 | 備考 |
 | ------------------------------------------------------------------------------------------------------------------------------ | ------ | ---------- | ---- |
-| [第 0 章 Azure を使い始める ― アカウント作成からサブスクリプションまで](../manuscript/part1/00-getting-started.md)             | 2      | 2026-08-11 | -    |
-| [第 1 章 テナントとサブスクリプション ― 契約と分離の境界](../manuscript/part1/01-tenant-and-subscription.md)                   | 2      | 2026-08-11 | -    |
-| [第 2 章 管理グループ ― ポリシーと RBAC が上から下に伝わる仕組み](../manuscript/part1/02-management-groups.md)                 | 2      | 2026-08-11 | -    |
-| [第 3 章 リソースグループ ― ライフサイクルをまとめる単位の設計](../manuscript/part1/03-resource-groups.md)                     | 2      | 2026-08-11 | -    |
-| [第 4 章 ハンズオン ― 4 階層を 1 つのシナリオで通しで作る](../manuscript/part1/04-hands-on-four-layers.md)                     | 2      | 2026-08-11 | -    |
-| [第 5 章 Entra ID の基本 ― ユーザー・グループ・サービスプリンシパル・マネージド ID](../manuscript/part2/05-entra-id-basics.md) | 2      | 2026-08-11 | -    |
-| [第 6 章 RBAC ― スコープとロールの組み合わせで権限が決まる](../manuscript/part2/06-rbac.md)                                    | 2      | 2026-08-11 | -    |
-| [第 7 章 マネージド ID ― リソース間の内向き認証](../manuscript/part2/07-managed-identity.md)                                   | 2      | 2026-08-11 | -    |
-| [第 8 章 外向き認証 ― アクセスキー・Entra ID 認証・フェデレーションの使い分け](../manuscript/part2/08-outbound-auth.md)        | 2      | 2026-08-11 | -    |
-| [第 9 章 ハンズオン ― ID と権限を 1 つのシナリオで通す](../manuscript/part2/09-hands-on-identity.md)                           | 2      | 2026-08-11 | -    |
-| [第 10 章 ARM テンプレートと Bicep の関係](../manuscript/part3/10-arm-and-bicep.md)                                            | 2      | 2026-08-11 | -    |
-| [第 11 章 デプロイスコープと Deployment Stacks](../manuscript/part3/11-deployment-scopes-and-stacks.md)                        | 2      | 2026-08-11 | -    |
-| [第 12 章 モジュール化と Azure Verified Modules](../manuscript/part3/12-modules-and-avm.md)                                    | 2      | 2026-08-11 | -    |
-| [第 13 章 ハンズオン ― 第 1〜2 部の構成を IaC で再現する](../manuscript/part3/13-hands-on-iac.md)                              | 2      | 2026-08-11 | -    |
-| [第 14 章 Functions ― Flex Consumption を軸に課金とネットワークの関係を辿る](../manuscript/part4/14-functions.md)              | 2      | 2026-08-11 | -    |
-| [第 15 章 Storage ― Functions の隠れた依存関係から理解する](../manuscript/part4/15-storage.md)                                 | 2      | 2026-08-11 | -    |
-| [第 16 章 Key Vault ― RBAC 既定化とアクセスポリシーの歴史](../manuscript/part4/16-key-vault.md)                                | 2      | 2026-08-11 | -    |
-| [第 17 章 AKS ― 5 種類の ID と Workload ID](../manuscript/part4/17-aks.md)                                                     | 2      | 2026-08-11 | -    |
-| [第 18 章 Cosmos DB ― コントロールプレーンとデータプレーンの RBAC は別物](../manuscript/part4/18-cosmos-db.md)                 | 2      | 2026-08-11 | -    |
-| [第 19 章 Networking ― VNet 統合と Private Endpoint が各層にどう効くか](../manuscript/part4/19-networking.md)                  | 2      | 2026-08-11 | -    |
-| [第 20 章 Azure Policy ― 強制（Deny）と監査（Audit）の違い](../manuscript/part5/20-azure-policy.md)                            | 2      | 2026-08-11 | -    |
-| [第 21 章 Cloud Adoption Framework と Landing Zone](../manuscript/part5/21-caf-and-landing-zone.md)                            | 2      | 2026-08-11 | -    |
-| [第 22 章 マルチサブスクリプション設計の実践](../manuscript/part5/22-multi-subscription.md)                                    | 2      | 2026-08-11 | -    |
-| [第 23 章 コストの見方 ― タグとスコープで課金を切り分ける](../manuscript/part5/23-cost-management.md)                          | 2      | 2026-08-11 | -    |
-| [第 24 章 1 つのアプリケーションをゼロから設計し、全階層を貫通させる](../manuscript/part6/24-capstone.md)                      | 2      | 2026-08-11 | -    |
-| [付録 A 型の適用シート](../manuscript/appendix/a-worksheet.md)                                                                 | 2      | 2026-08-11 | -    |
-| [付録 B 命名規約とタグ設計](../manuscript/appendix/b-naming-and-tags.md)                                                       | 2      | 2026-08-11 | -    |
+| [第 0 章 Azure を使い始める ― アカウント作成からサブスクリプションまで](../manuscript/part1/00-getting-started.md)             | 3      | 2026-08-11 | -    |
+| [第 1 章 テナントとサブスクリプション ― 契約と分離の境界](../manuscript/part1/01-tenant-and-subscription.md)                   | 3      | 2026-08-11 | -    |
+| [第 2 章 管理グループ ― ポリシーと RBAC が上から下に伝わる仕組み](../manuscript/part1/02-management-groups.md)                 | 3      | 2026-08-11 | -    |
+| [第 3 章 リソースグループ ― ライフサイクルをまとめる単位の設計](../manuscript/part1/03-resource-groups.md)                     | 3      | 2026-08-11 | -    |
+| [第 4 章 ハンズオン ― 4 階層を 1 つのシナリオで通しで作る](../manuscript/part1/04-hands-on-four-layers.md)                     | 3      | 2026-08-11 | -    |
+| [第 5 章 Entra ID の基本 ― ユーザー・グループ・サービスプリンシパル・マネージド ID](../manuscript/part2/05-entra-id-basics.md) | 3      | 2026-08-11 | -    |
+| [第 6 章 RBAC ― スコープとロールの組み合わせで権限が決まる](../manuscript/part2/06-rbac.md)                                    | 3      | 2026-08-11 | -    |
+| [第 7 章 マネージド ID ― リソース間の内向き認証](../manuscript/part2/07-managed-identity.md)                                   | 3      | 2026-08-11 | -    |
+| [第 8 章 外向き認証 ― アクセスキー・Entra ID 認証・フェデレーションの使い分け](../manuscript/part2/08-outbound-auth.md)        | 3      | 2026-08-11 | -    |
+| [第 9 章 ハンズオン ― ID と権限を 1 つのシナリオで通す](../manuscript/part2/09-hands-on-identity.md)                           | 3      | 2026-08-11 | -    |
+| [第 10 章 ARM テンプレートと Bicep の関係](../manuscript/part3/10-arm-and-bicep.md)                                            | 3      | 2026-08-11 | -    |
+| [第 11 章 デプロイスコープと Deployment Stacks](../manuscript/part3/11-deployment-scopes-and-stacks.md)                        | 3      | 2026-08-11 | -    |
+| [第 12 章 モジュール化と Azure Verified Modules](../manuscript/part3/12-modules-and-avm.md)                                    | 3      | 2026-08-11 | -    |
+| [第 13 章 ハンズオン ― 第 1〜2 部の構成を IaC で再現する](../manuscript/part3/13-hands-on-iac.md)                              | 3      | 2026-08-11 | -    |
+| [第 14 章 Functions ― Flex Consumption を軸に課金とネットワークの関係を辿る](../manuscript/part4/14-functions.md)              | 3      | 2026-08-11 | -    |
+| [第 15 章 Storage ― Functions の隠れた依存関係から理解する](../manuscript/part4/15-storage.md)                                 | 3      | 2026-08-11 | -    |
+| [第 16 章 Key Vault ― RBAC 既定化とアクセスポリシーの歴史](../manuscript/part4/16-key-vault.md)                                | 3      | 2026-08-11 | -    |
+| [第 17 章 AKS ― 5 種類の ID と Workload ID](../manuscript/part4/17-aks.md)                                                     | 3      | 2026-08-11 | -    |
+| [第 18 章 Cosmos DB ― コントロールプレーンとデータプレーンの RBAC は別物](../manuscript/part4/18-cosmos-db.md)                 | 3      | 2026-08-11 | -    |
+| [第 19 章 Networking ― VNet 統合と Private Endpoint が各層にどう効くか](../manuscript/part4/19-networking.md)                  | 3      | 2026-08-11 | -    |
+| [第 20 章 Azure Policy ― 強制（Deny）と監査（Audit）の違い](../manuscript/part5/20-azure-policy.md)                            | 3      | 2026-08-11 | -    |
+| [第 21 章 Cloud Adoption Framework と Landing Zone](../manuscript/part5/21-caf-and-landing-zone.md)                            | 3      | 2026-08-11 | -    |
+| [第 22 章 マルチサブスクリプション設計の実践](../manuscript/part5/22-multi-subscription.md)                                    | 3      | 2026-08-11 | -    |
+| [第 23 章 コストの見方 ― タグとスコープで課金を切り分ける](../manuscript/part5/23-cost-management.md)                          | 3      | 2026-08-11 | -    |
+| [第 24 章 1 つのアプリケーションをゼロから設計し、全階層を貫通させる](../manuscript/part6/24-capstone.md)                      | 3      | 2026-08-11 | -    |
+| [付録 A 型の適用シート](../manuscript/appendix/a-worksheet.md)                                                                 | 3      | 2026-08-11 | -    |
+| [付録 B 命名規約とタグ設計](../manuscript/appendix/b-naming-and-tags.md)                                                       | 3      | 2026-08-11 | -    |
