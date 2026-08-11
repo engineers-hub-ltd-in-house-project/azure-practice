@@ -280,7 +280,7 @@ ERROR: main.bicep(20,63) : Error BCP135: Scope "resourceGroup" is not valid for 
 main.bicep(35,10) : Error BCP134: Scope "resource" is not valid for this module. Permitted scopes: "resourceGroup". [https://aka.ms/bicep/core-diagnostics#BCP134]
 ```
 
-注目すべきは、このエラーが Azure から返ってきたものではないことです。`az deployment` はテンプレートを ARM へ送る前に Bicep のコンパイルを行い、スコープ違反はその型検査（BCP135）が止めます。リクエストは Azure に届いてすらいません。2 つ目の BCP134 は、リソースグループの定義だけでなく、その中身を書き込むモジュールのスコープ指定も連鎖して不正になったことを示しています。
+注目すべきは、このエラーが Azure から返ってきたものではないことです。`az deployment` はテンプレートを ARM（Azure Resource Manager）へ送る前に Bicep のコンパイルを行い、スコープ違反はその型検査（BCP135）が止めます。リクエストは Azure に届いてすらいません。2 つ目の BCP134 は、リソースグループの定義だけでなく、その中身を書き込むモジュールのスコープ指定も連鎖して不正になったことを示しています。
 
 権限の問題ではありません。そのスコープでは、そもそもその種類のリソースを書けないのです。第 1 章で見た登録やクォータのエラーが ARM まで届いてから返されるのに対し、スコープ違反は手元のコンパイルで止まります。失敗には「どの軸か」だけでなく「どの層で起きたか」という切り分けもある、というのがこの演習の収穫です。
 
